@@ -29,7 +29,7 @@ final class CacheTag
         return new self($type[0] . $id);
     }
 
-    public function asString(): string
+    public function toString(): string
     {
         return $this->tag;
     }

@@ -40,7 +40,7 @@ final class CacheTags implements \IteratorAggregate
      */
     public function toArray(): array
     {
-        $tags = array_map(static fn (CacheTag $tag): string => $tag->asString(), $this->tags);
+        $tags = array_map(static fn (CacheTag $tag): string => $tag->toString(), $this->tags);
         natsort($tags);
 
         return $tags;

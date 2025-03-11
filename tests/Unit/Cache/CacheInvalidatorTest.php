@@ -57,7 +57,7 @@ final class CacheInvalidatorTest extends TestCase
 
         $this->cacheInvalidator->invalidateElement($element->reveal(), ElementType::Asset);
 
-        $this->cacheManager->invalidateTags([$tag->asString()])->shouldHaveBeenCalledOnce();
+        $this->cacheManager->invalidateTags([$tag->toString()])->shouldHaveBeenCalledOnce();
     }
 
     /**
@@ -94,8 +94,8 @@ final class CacheInvalidatorTest extends TestCase
         $this->cacheInvalidator->invalidateElementTags($tags, ElementType::Asset);
 
         $this->cacheManager->invalidateTags([
-            CacheTag::fromElement($document1->reveal())->asString(),
-            CacheTag::fromElement($document2->reveal())->asString(),
+            CacheTag::fromElement($document1->reveal())->toString(),
+            CacheTag::fromElement($document2->reveal())->toString(),
         ])->shouldHaveBeenCalledOnce();
     }
 

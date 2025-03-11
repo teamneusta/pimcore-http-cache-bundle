@@ -26,7 +26,7 @@ final class CacheInvalidator implements CacheInvalidatorInterface
             return;
         }
 
-        $this->cacheManager->invalidateTags([CacheTag::fromElement($element)->asString()]);
+        $this->cacheManager->invalidateTags([CacheTag::fromElement($element)->toString()]);
     }
 
     public function invalidateElementTags(CacheTags $tags, ElementType $type): void
