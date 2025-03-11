@@ -7,7 +7,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
-final class NeustaPimcoreCacheInvalidationExtension extends ConfigurableExtension
+final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
 {
     /**
      * @param array<mixed> $mergedConfig
