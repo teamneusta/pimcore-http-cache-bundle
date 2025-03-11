@@ -1,0 +1,38 @@
+services:
+  database:
+    image: mariadb:10.11.11
+    command: [ "mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci" ]
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      MYSQL_DATABASE: pimcore
+      MYSQL_PASSWORD: pimcore
+      MYSQL_USER: pimcore
+    tmpfs:
+      - /tmp/
+      - /var/lib/mysql/
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 10s
+
+  php:
+    image: neusta/pimcore-cache-invalidation-bundle:${BUNDLE_VERSION:-latest}
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM pimcore/pimcore:php${PHP_VERSION:-8.2}-debug-latest
+        # Install additional PHP extensions required by transient dependencies of this bundle.
+        # See: https://github.com/mlocati/docker-php-extension-installer?tab=readme-ov-file#downloading-the-script-on-the-fly-with-add
+        # If build-* helper scritps exist, execute them to install build additional dependencies.
+        RUN set -x; \
+            if [ -f /usr/local/bin/build-install.sh ]; then sh /usr/local/bin/build-install.sh; fi; \
+            curl -sSL https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - | sh -s xsl; \
+            if [ -f /usr/local/bin/build-cleanup.sh ]; then sh /usr/local/bin/build-cleanup.sh; fi;
+
+    volumes:
+      - ./:/var/www/html/
+    environment:
+      MYSQL_SERVER_VERSION: 10.11.10-MariaDB
+    depends_on:
+      database:
+        condition: service_healthy

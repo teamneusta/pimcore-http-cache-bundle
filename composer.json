@@ -1,0 +1,84 @@
+{
+  "name": "teamneusta/pimcore-http-cache-bundle",
+  "description": "Adds active cache invalidation to pimcore via cache tags.",
+  "license": "GPL-3.0-or-later",
+  "type": "pimcore-bundle",
+  "authors": [
+    {
+      "name": "team neusta GmbH",
+      "email": "info@team-neusta.de",
+      "homepage": "https://www.team-neusta.de/",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": "~8.1.0 || ~8.2.0",
+    "friendsofsymfony/http-cache-bundle": "^2.11",
+    "pimcore/pimcore": "^10.6.0 || ^11.2",
+    "sensio/framework-extra-bundle": "^6.2.10"
+  },
+  "require-dev": {
+    "coreshop/core-shop": "^3.2 || ^4",
+    "dg/bypass-finals": "^1.6",
+    "dms/phpunit-arraysubset-asserts": "^0.5.0",
+    "ergebnis/composer-normalize": "^2.45",
+    "friendsofphp/php-cs-fixer": "^3.11",
+    "jangregor/phpstan-prophecy": "^1.0",
+    "phpspec/prophecy-phpunit": "^2.0",
+    "phpstan/extension-installer": "^1.1",
+    "phpstan/phpstan": "^1.8",
+    "phpstan/phpstan-phpunit": "^1.1",
+    "phpstan/phpstan-symfony": "^1.2",
+    "phpunit/phpunit": "^9.5",
+    "teamneusta/pimcore-testing-framework": "^0.12.3"
+  },
+  "conflict": {
+    "friendsofsymfony/http-cache": "<2.12.0",
+    "jms/serializer-bundle": "<4.2",
+    "masterminds/html5": "<2.7.5",
+    "phpspec/prophecy": "<1.15.0",
+    "webmozart/assert": "<1.11"
+  },
+  "autoload": {
+    "psr-4": {
+      "Neusta\\Pimcore\\HttpCacheBundle\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Neusta\\Pimcore\\HttpCacheBundle\\Tests\\": "tests/"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "ergebnis/composer-normalize": true,
+      "php-http/discovery": false,
+      "phpstan/extension-installer": true
+    }
+  },
+  "extra": {
+    "pimcore": {
+      "bundles": [
+        "Neusta\\Pimcore\\HttpCacheBundle\\NeustaPimcoreHttpCacheBundle"
+      ]
+    }
+  },
+  "scripts": {
+    "cs:check": "@cs:fix --dry-run",
+    "cs:check:ci": "@cs:check --format=checkstyle",
+    "cs:fix": "php-cs-fixer fix --ansi --verbose --diff",
+    "phpstan": "phpstan analyse --ansi",
+    "phpstan:ci": "phpstan analyse --ansi --no-interaction --no-progress --error-format=github",
+    "tests": "phpunit",
+    "tests:coverage:ci": "phpunit --teamcity --coverage-cobertura .coverage/cobertura.xml"
+  },
+  "scripts-descriptions": {
+    "cs:check": "Checks code style (but doesn't fix anything)",
+    "cs:check:ci": "Checks code style and creates output in GitHub format",
+    "cs:fix": "Checks and fixes code style",
+    "phpstan": "Checks for code smells",
+    "phpstan:ci": "Checks for code smells and creates output in GitHub format",
+    "tests": "Runs all phpunit tests",
+    "tests:coverage:ci": "Runs all phpunit tests and creates coverage reports"
+  }
+}

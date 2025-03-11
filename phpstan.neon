@@ -1,0 +1,9 @@
+parameters:
+
+	level: 8
+
+	paths:
+		- src
+
+	bootstrapFiles:
+		- vendor/pimcore/pimcore/stubs/dynamic-constants.php

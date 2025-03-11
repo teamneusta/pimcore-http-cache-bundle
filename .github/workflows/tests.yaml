@@ -1,0 +1,71 @@
+name: Tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+  schedule:
+    - cron: "10 4 * * 2" # Every Tuesday at 4:10 AM UTC
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: PHPUnit with PHP ${{ matrix.php-version }} ${{ matrix.dependencies }}
+    runs-on: ubuntu-latest
+
+    # from https://ldarren.medium.com/number-of-ways-to-setup-database-in-github-actions-2cd48df9faae
+    services:
+      db:
+        image: mariadb:10.11.11
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+          MYSQL_DATABASE: 'pimcore'
+          MYSQL_USER: 'pimcore'
+          MYSQL_PASSWORD: 'pimcore'
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+        ports:
+          - 3306:3306
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php-version: "8.1"
+            dependencies: "lowest" # Pimcore 10.6.0
+          - php-version: "8.1"
+            dependencies: "highest" # Pimcore 11.*
+          - php-version: "8.2"
+            dependencies: "highest" # Pimcore 11.*
+
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v4
+
+      - name: PHP Setup
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          dependency-versions: ${{ matrix.dependencies }}
+          composer-options: ${{ matrix.composer-options }}
+
+      - name: Add Pimcore Admin UI
+        run: composer require --dev pimcore/admin-ui-classic-bundle --no-interaction
+        if: matrix.dependencies == 'highest'
+
+      - name: Execute tests
+        run: composer tests
+        env:
+          MYSQL_HOST: '127.0.0.1'
+          MYSQL_SERVER_VERSION: '10.11.11-MariaDB'
