@@ -2,7 +2,7 @@
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagCollector;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
-use Neusta\Pimcore\HttpCacheBundle\Element\TagDocumentListener;
+use Neusta\Pimcore\HttpCacheBundle\Element\Document\TagDocumentListener;
 use Pimcore\Event\DocumentEvents;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;

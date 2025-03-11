@@ -3,8 +3,8 @@
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagCollector;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
+use Neusta\Pimcore\HttpCacheBundle\Element\Asset\TagAssetListener;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
-use Neusta\Pimcore\HttpCacheBundle\Element\TagAssetListener;
 use Pimcore\Event\AssetEvents;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;

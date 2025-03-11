@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Element;
+namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Element\Asset;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagCollector;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
-use Neusta\Pimcore\HttpCacheBundle\Element\TagAssetListener;
+use Neusta\Pimcore\HttpCacheBundle\Element\Asset\TagAssetListener;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Event\Model\AssetEvent;
 use Pimcore\Model\Asset;

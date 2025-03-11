@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Element;
+namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Element\Object;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagCollector;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
-use Neusta\Pimcore\HttpCacheBundle\Element\TagObjectListener;
+use Neusta\Pimcore\HttpCacheBundle\Element\Object\TagObjectListener;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Event\Model\DataObjectEvent;
 use Pimcore\Model\DataObject;
