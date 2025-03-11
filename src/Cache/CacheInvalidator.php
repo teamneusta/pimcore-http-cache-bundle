@@ -11,7 +11,7 @@ final class CacheInvalidator implements CacheInvalidatorInterface
 {
     public function __construct(
         private readonly CacheActivator $cacheActivator,
-        private readonly PurgeChecker $purgeChecker,
+        private readonly PurgeCheckerInterface $purgeChecker,
         private readonly CacheManager $cacheManager,
     ) {
     }
