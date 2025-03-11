@@ -7,9 +7,9 @@ use Pimcore\Model\Element\Service;
 
 enum ElementType: string
 {
-    case ASSET = 'asset';
-    case DOCUMENT = 'document';
-    case OBJECT = 'object';
+    case Asset = 'asset';
+    case Document = 'document';
+    case Object = 'object';
 
     public static function fromElement(ElementInterface $element): self
     {

@@ -6,7 +6,7 @@ final class InvalidateDocumentListener
 {
     public function onInvalidation(ElementInvalidationEvent $event): void
     {
-        if (ElementType::DOCUMENT !== $event->elementType) {
+        if (ElementType::Document !== $event->elementType) {
             return;
         }
 

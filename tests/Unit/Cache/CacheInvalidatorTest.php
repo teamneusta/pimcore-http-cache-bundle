@@ -53,9 +53,9 @@ final class CacheInvalidatorTest extends TestCase
         $tag = CacheTag::fromElement($element->reveal());
 
         $this->cacheActivator->isCachingActive()->willReturn(true);
-        $this->purgeChecker->isEnabled(ElementType::ASSET->value)->willReturn(true);
+        $this->purgeChecker->isEnabled(ElementType::Asset->value)->willReturn(true);
 
-        $this->cacheInvalidator->invalidateElement($element->reveal(), ElementType::ASSET);
+        $this->cacheInvalidator->invalidateElement($element->reveal(), ElementType::Asset);
 
         $this->cacheManager->invalidateTags([$tag->asString()])->shouldHaveBeenCalledOnce();
     }
@@ -69,7 +69,7 @@ final class CacheInvalidatorTest extends TestCase
 
         $this->cacheActivator->isCachingActive()->willReturn(false);
 
-        $this->cacheInvalidator->invalidateElement($element->reveal(), ElementType::ASSET);
+        $this->cacheInvalidator->invalidateElement($element->reveal(), ElementType::Asset);
 
         $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
     }
@@ -89,9 +89,9 @@ final class CacheInvalidatorTest extends TestCase
             $document2->reveal(),
         ]);
         $this->cacheActivator->isCachingActive()->willReturn(true);
-        $this->purgeChecker->isEnabled(ElementType::ASSET->value)->willReturn(true);
+        $this->purgeChecker->isEnabled(ElementType::Asset->value)->willReturn(true);
 
-        $this->cacheInvalidator->invalidateElementTags($tags, ElementType::ASSET);
+        $this->cacheInvalidator->invalidateElementTags($tags, ElementType::Asset);
 
         $this->cacheManager->invalidateTags([
             CacheTag::fromElement($document1->reveal())->asString(),
@@ -115,7 +115,7 @@ final class CacheInvalidatorTest extends TestCase
         ]);
         $this->cacheActivator->isCachingActive()->willReturn(false);
 
-        $this->cacheInvalidator->invalidateElementTags($tags, ElementType::DOCUMENT);
+        $this->cacheInvalidator->invalidateElementTags($tags, ElementType::Document);
 
         $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
     }
@@ -128,9 +128,9 @@ final class CacheInvalidatorTest extends TestCase
         $tags = new CacheTags();
 
         $this->cacheActivator->isCachingActive()->willReturn(true);
-        $this->purgeChecker->isEnabled(ElementType::DOCUMENT->value)->willReturn(true);
+        $this->purgeChecker->isEnabled(ElementType::Document->value)->willReturn(true);
 
-        $this->cacheInvalidator->invalidateElementTags($tags, ElementType::DOCUMENT);
+        $this->cacheInvalidator->invalidateElementTags($tags, ElementType::Document);
 
         $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
     }
