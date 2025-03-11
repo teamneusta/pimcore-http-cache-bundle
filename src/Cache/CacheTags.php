@@ -5,7 +5,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Cache;
 use Pimcore\Model\Element\ElementInterface;
 
 /**
- * @implements \IteratorAggregate<CacheTag>
+ * @implements \IteratorAggregate<int, CacheTag>
  */
 final class CacheTags implements \IteratorAggregate
 {
@@ -24,7 +24,7 @@ final class CacheTags implements \IteratorAggregate
      */
     public static function fromElements(array $elements): self
     {
-        return new self(...array_map([CacheTag::class, 'fromElement'], $elements));
+        return new self(...array_map(CacheTag::fromElement(...), $elements));
     }
 
     /**

@@ -41,7 +41,7 @@ Please remember to create an issue before creating large pull requests.
 
 ### Local Development
 
-Build the inline Dockerfile with:
+Build the Docker container with:
 
 ```shell
 docker compose build

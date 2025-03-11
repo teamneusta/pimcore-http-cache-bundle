@@ -16,23 +16,21 @@ services:
       timeout: 10s
 
   php:
-    image: neusta/pimcore-cache-invalidation-bundle:${BUNDLE_VERSION:-latest}
     build:
       context: .
       dockerfile_inline: |
         FROM pimcore/pimcore:php${PHP_VERSION:-8.2}-debug-latest
         # Install additional PHP extensions required by transient dependencies of this bundle.
         # See: https://github.com/mlocati/docker-php-extension-installer?tab=readme-ov-file#downloading-the-script-on-the-fly-with-add
-        # If build-* helper scritps exist, execute them to install build additional dependencies.
+        # If build-* helper scripts exist, execute them to install build additional dependencies.
         RUN set -x; \
             if [ -f /usr/local/bin/build-install.sh ]; then sh /usr/local/bin/build-install.sh; fi; \
             curl -sSL https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - | sh -s xsl; \
             if [ -f /usr/local/bin/build-cleanup.sh ]; then sh /usr/local/bin/build-cleanup.sh; fi;
-
     volumes:
       - ./:/var/www/html/
     environment:
-      MYSQL_SERVER_VERSION: 10.11.10-MariaDB
+      MYSQL_SERVER_VERSION: 10.11.11-MariaDB
     depends_on:
       database:
         condition: service_healthy

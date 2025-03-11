@@ -10,7 +10,6 @@ final class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('neusta_pimcore_http_cache');
-
         $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
