@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Element;
+namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Element\Document;
 
-use Neusta\Pimcore\HttpCacheBundle\Element\DocumentType;
+use Neusta\Pimcore\HttpCacheBundle\Element\Document\DocumentType;
+use Neusta\Pimcore\HttpCacheBundle\Element\Document\InvalidateDocumentListener;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementInvalidationEvent;
-use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateDocumentListener;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject;

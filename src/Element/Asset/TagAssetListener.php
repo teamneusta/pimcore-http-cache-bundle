@@ -1,32 +1,32 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\Element;
+namespace Neusta\Pimcore\HttpCacheBundle\Element\Asset;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagCollector;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
-use Pimcore\Event\Model\DataObjectEvent;
+use Pimcore\Event\Model\AssetEvent;
 
-final class TagObjectListener
+final class TagAssetListener
 {
     public function __construct(
-        private readonly CacheTagCollector $cacheTagCollector,
         private readonly CacheActivator $cacheActivator,
+        private readonly CacheTagCollector $cacheTagCollector,
     ) {
     }
 
-    public function __invoke(DataObjectEvent $event): void
+    public function __invoke(AssetEvent $event): void
     {
         if (!$this->cacheActivator->isCachingActive()) {
             return;
         }
 
-        $object = $event->getObject();
+        $asset = $event->getAsset();
 
-        if ('folder' === $object->getType()) {
+        if ('folder' === $asset->getType()) {
             return;
         }
 
-        $this->cacheTagCollector->addTag(CacheTag::fromElement($object));
+        $this->cacheTagCollector->addTag(CacheTag::fromElement($asset));
     }
 }
