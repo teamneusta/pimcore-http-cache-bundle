@@ -24,13 +24,11 @@ TODO
 
 ```yaml
 neusta_pimcore_http_cache:
-  # Enables or disables CachePurgeSubscriber, CacheTagSubscriber. When enabled these listeners will add
-  # x-key tags to http responses and send invalidation requests when pimcore objects change. You normally
-  # should leave these subscribers enabled in order to make use of tagging and banning of pimcore objects.
-  # If you need to customize tagging and banning functionality, or you want to opt out of tagging and banning
-  # completely, set this option to `false`.
-  # Default is: `true`
-  # listeners: false
+  # Enable/disable cache handling for certain element types
+  # (tagging and banning when elements of these types change).
+  asset: true
+  document: true
+  object: true
 ```
 
 ## Contribution
