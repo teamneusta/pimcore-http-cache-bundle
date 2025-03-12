@@ -10,7 +10,7 @@ final class ElementInvalidationEvent extends Event
 {
     public bool $cancel = false;
 
-    public CacheTags $cacheTags;
+    public readonly CacheTags $cacheTags;
 
     private function __construct(
         public readonly ElementInterface $element,
