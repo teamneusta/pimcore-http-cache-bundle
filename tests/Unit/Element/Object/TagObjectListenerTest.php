@@ -9,6 +9,7 @@ use Neusta\Pimcore\HttpCacheBundle\Element\Object\TagObjectListener;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Event\Model\DataObjectEvent;
 use Pimcore\Model\DataObject;
+use Pimcore\Model\DataObject\Folder;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -41,12 +42,12 @@ final class TagObjectListenerTest extends TestCase
     public function it_should_tag_elements_of_type_object(): void
     {
         $object = $this->prophesize(DataObject::class);
+        $object->getId()->willReturn(42);
+        $object->getType()->willReturn('object');
         $objectEvent = new DataObjectEvent($object->reveal());
-        $cacheTag = new CacheTag('o42');
+        $cacheTag = CacheTag::fromElement($object->reveal());
 
         $this->cacheActivator->isCachingActive()->willReturn(true);
-        $object->getType()->willReturn('object');
-        $object->getId()->willReturn(42);
 
         ($this->tagObjectListener)($objectEvent);
 
@@ -58,7 +59,7 @@ final class TagObjectListenerTest extends TestCase
      */
     public function it_should_not_tag_objects_of_type_folder(): void
     {
-        $object = $this->prophesize(DataObject::class);
+        $object = $this->prophesize(Folder::class);
         $objectEvent = new DataObjectEvent($object->reveal());
 
         $this->cacheActivator->isCachingActive()->willReturn(true);

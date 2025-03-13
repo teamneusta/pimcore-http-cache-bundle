@@ -2,14 +2,11 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Cache;
 
-use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 use Pimcore\Model\Element\ElementInterface;
 
 interface CacheInvalidatorInterface
 {
-    public function invalidateElement(ElementInterface $element, ElementType $type): void;
-
-    public function invalidateElementTags(CacheTags $tags, ElementType $type): void;
+    public function invalidateElement(ElementInterface $element): void;
 
     public function invalidateTags(CacheTags $tags): void;
 }
