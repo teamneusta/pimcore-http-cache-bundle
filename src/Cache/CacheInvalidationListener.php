@@ -2,14 +2,14 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Cache;
 
+use FOS\HttpCache\CacheInvalidator as FosCacheInvalidator;
 use FOS\HttpCache\Exception\ExceptionCollection;
-use FOS\HttpCacheBundle\CacheManager;
 use Psr\Log\LoggerInterface;
 
 final class CacheInvalidationListener
 {
     public function __construct(
-        private readonly CacheManager $cacheManager,
+        private readonly FosCacheInvalidator $invalidator,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -17,7 +17,7 @@ final class CacheInvalidationListener
     public function __invoke(): void
     {
         try {
-            if (0 < $numberOfBans = $this->cacheManager->flush()) {
+            if (0 < $numberOfBans = $this->invalidator->flush()) {
                 $this->logger->info(\sprintf('Successfully flushed "%s" ban requests', $numberOfBans));
             }
         } catch (ExceptionCollection $exceptions) {

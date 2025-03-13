@@ -2,7 +2,7 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Cache;
 
-use FOS\HttpCacheBundle\CacheManager;
+use FOS\HttpCache\CacheInvalidator as FosCacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 use Pimcore\Model\Element\ElementInterface;
@@ -12,7 +12,7 @@ final class CacheInvalidator implements CacheInvalidatorInterface
     public function __construct(
         private readonly CacheActivator $cacheActivator,
         private readonly PurgeCheckerInterface $purgeChecker,
-        private readonly CacheManager $cacheManager,
+        private readonly FosCacheInvalidator $invalidator,
     ) {
     }
 
@@ -26,7 +26,7 @@ final class CacheInvalidator implements CacheInvalidatorInterface
             return;
         }
 
-        $this->cacheManager->invalidateTags([CacheTag::fromElement($element)->toString()]);
+        $this->invalidator->invalidateTags([CacheTag::fromElement($element)->toString()]);
     }
 
     public function invalidateElementTags(CacheTags $tags, ElementType $type): void
@@ -43,7 +43,7 @@ final class CacheInvalidator implements CacheInvalidatorInterface
             return;
         }
 
-        $this->cacheManager->invalidateTags($tags->toArray());
+        $this->invalidator->invalidateTags($tags->toArray());
     }
 
     public function invalidateTags(CacheTags $tags): void
@@ -56,6 +56,6 @@ final class CacheInvalidator implements CacheInvalidatorInterface
             return;
         }
 
-        $this->cacheManager->invalidateTags($tags->toArray());
+        $this->invalidator->invalidateTags($tags->toArray());
     }
 }

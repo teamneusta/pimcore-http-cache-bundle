@@ -25,7 +25,7 @@ return static function (ContainerConfigurator $configurator) {
     $services->set(CacheInvalidatorInterface::class, CacheInvalidator::class)
         ->arg('$cacheActivator', service(CacheActivator::class))
         ->arg('$purgeChecker', service(PurgeCheckerInterface::class))
-        ->arg('$cacheManager', service(CacheManager::class));
+        ->arg('$invalidator', service(CacheManager::class));
 
     $services->set(CacheTagCollector::class)
         ->arg('$responseTagger', service('fos_http_cache.http.symfony_response_tagger'));
@@ -34,7 +34,7 @@ return static function (ContainerConfigurator $configurator) {
         ->arg('$types', abstract_arg('Set in the extension'));
 
     $services->set(CacheInvalidationListener::class)
-        ->arg('$cacheManager', service(CacheManager::class))
+        ->arg('$invalidator', service(CacheManager::class))
         ->arg('$logger',  service('logger'))
         ->tag('kernel.event_listener', ['event' => WorkerMessageHandledEvent::class]);
 
