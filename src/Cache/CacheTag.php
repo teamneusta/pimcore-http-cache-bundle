@@ -3,34 +3,39 @@
 namespace Neusta\Pimcore\HttpCacheBundle\Cache;
 
 use Pimcore\Model\Element\ElementInterface;
-use Pimcore\Model\Element\Service;
 
 final class CacheTag
 {
-    private string $tag;
-
-    public function __construct(string $tag)
-    {
+    private function __construct(
+        private readonly string $tag,
+        private readonly CacheType $type,
+    ) {
         if ('' === trim($tag)) {
-            throw new \InvalidArgumentException('The cache tag must not be empty');
+            throw new \InvalidArgumentException('The cache tag must not be empty.');
         }
+    }
 
-        $this->tag = $tag;
+    public static function fromString(string $tag, ?CacheType $elementType = null): self
+    {
+        return new self($tag, $elementType ?? CacheType::empty());
     }
 
     public static function fromElement(ElementInterface $element): self
     {
         if (!$id = $element->getId()) {
-            throw new \InvalidArgumentException('The given element has no id');
+            throw new \InvalidArgumentException('The given element has no id.');
         }
 
-        $type = Service::getElementType($element) ?? 'element';
+        return new self((string) $id, CacheType::fromElement($element));
+    }
 
-        return new self($type[0] . $id);
+    public function isEnabled(CacheTypeChecker $checker): bool
+    {
+        return $this->type->isEnabled($checker);
     }
 
     public function toString(): string
     {
-        return $this->tag;
+        return $this->type->applyTo($this->tag);
     }
 }

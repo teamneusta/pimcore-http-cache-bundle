@@ -34,6 +34,6 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
             ElementType::Asset->value => $mergedConfig['elements']['assets'],
             ElementType::Object->value => $mergedConfig['elements']['objects'],
             ElementType::Document->value => $mergedConfig['elements']['documents'],
-        ]);
+        ] + $mergedConfig['cache_types']);
     }
 }
