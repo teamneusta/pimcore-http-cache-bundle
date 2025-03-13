@@ -13,10 +13,19 @@ final class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
+            ->fixXmlConfig('element')
             ->children()
-                ->booleanNode('asset')->defaultTrue()->end()
-                ->booleanNode('document')->defaultTrue()->end()
-                ->booleanNode('object')->defaultTrue()->end()
+                ->arrayNode('elements')
+                    ->addDefaultsIfNotSet()
+                    ->fixXmlConfig('asset')
+                    ->fixXmlConfig('document')
+                    ->fixXmlConfig('object')
+                    ->children()
+                        ->booleanNode('assets')->defaultTrue()->end()
+                        ->booleanNode('documents')->defaultTrue()->end()
+                        ->booleanNode('objects')->defaultTrue()->end()
+                    ->end()
+                ->end()
             ->end();
 
         return $treeBuilder;

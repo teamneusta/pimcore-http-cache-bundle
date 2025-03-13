@@ -20,20 +20,19 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
 
         $loader->load('services.php');
 
-        if ($mergedConfig['document']) {
+        if ($mergedConfig['elements']['document']) {
             $loader->load('document.php');
         }
-        if ($mergedConfig['asset']) {
+        if ($mergedConfig['elements']['asset']) {
             $loader->load('asset.php');
         }
-        if ($mergedConfig['object']) {
+        if ($mergedConfig['elements']['object']) {
             $loader->load('object.php');
         }
 
         $container->getDefinition(StaticCacheTypeChecker::class)->setArgument('$types', [
-            ElementType::Asset->value => $mergedConfig['asset'],
-            ElementType::Object->value => $mergedConfig['object'],
-            ElementType::Document->value => $mergedConfig['document'],
-        ]);
+            ElementType::Asset->value => $mergedConfig['elements']['asset'],
+            ElementType::Object->value => $mergedConfig['elements']['object'],
+            ElementType::Document->value => $mergedConfig['elements']['document'],
     }
 }
