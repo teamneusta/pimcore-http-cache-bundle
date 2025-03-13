@@ -2,7 +2,7 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\DependencyInjection;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\PurgeCheckerInterface;
+use Neusta\Pimcore\HttpCacheBundle\Cache\StaticCacheTypeChecker;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -18,6 +18,8 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
     {
         $loader = new Loader\PhpFileLoader($container, new FileLocator(\dirname(__DIR__, 2) . '/config'));
 
+        $loader->load('services.php');
+
         if ($mergedConfig['document']) {
             $loader->load('document.php');
         }
@@ -28,9 +30,7 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
             $loader->load('object.php');
         }
 
-        $loader->load('services.php');
-
-        $container->getDefinition(PurgeCheckerInterface::class)->setArgument('$types', [
+        $container->getDefinition(StaticCacheTypeChecker::class)->setArgument('$types', [
             ElementType::Asset->value => $mergedConfig['asset'],
             ElementType::Object->value => $mergedConfig['object'],
             ElementType::Document->value => $mergedConfig['document'],
