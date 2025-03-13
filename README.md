@@ -24,11 +24,11 @@ TODO
 
 ```yaml
 neusta_pimcore_http_cache:
-  # Enable/disable cache handling for certain element types
-  # (tagging and banning when elements of these types change).
-  asset: true
-  document: true
-  object: true
+    # Enable/disable cache handling for certain element types.
+    elements:
+        assets: true
+        documents: true
+        objects: true
 ```
 
 ## Contribution
