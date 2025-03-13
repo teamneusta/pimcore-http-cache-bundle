@@ -14,6 +14,7 @@ final class Configuration implements ConfigurationInterface
 
         $rootNode
             ->fixXmlConfig('element')
+            ->fixXmlConfig('cache_type')
             ->children()
                 ->arrayNode('elements')
                     ->addDefaultsIfNotSet()
@@ -25,6 +26,12 @@ final class Configuration implements ConfigurationInterface
                         ->booleanNode('documents')->defaultTrue()->end()
                         ->booleanNode('objects')->defaultTrue()->end()
                     ->end()
+                ->end()
+                ->arrayNode('cache_types')
+                    ->info('Enable/disable cache handling for custom cache types.')
+                    ->normalizeKeys(false)
+                    ->useAttributeAsKey('type')
+                    ->booleanPrototype()->end()
                 ->end()
             ->end();
 
