@@ -7,7 +7,6 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidatorInterface;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagCollector;
 use Neusta\Pimcore\HttpCacheBundle\Cache\PurgeChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\PurgeCheckerInterface;
-use Neusta\Pimcore\HttpCacheBundle\Cache\PurgeCheckerInterface;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
 use Pimcore\Event\AssetEvents;
