@@ -18,7 +18,7 @@
 
 ## Usage
 
-TODO
+TODO - Add ful usage with exsamples
 
 ## Configuration
 
