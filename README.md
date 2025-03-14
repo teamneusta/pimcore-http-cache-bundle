@@ -19,6 +19,7 @@
 ## Usage
 
 TODO
+Itegrate with code rabbit.
 
 ## Configuration
 
