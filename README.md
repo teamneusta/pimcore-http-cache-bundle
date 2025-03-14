@@ -29,6 +29,12 @@ neusta_pimcore_http_cache:
         assets: true
         documents: true
         objects: true
+
+    # Enable/disable cache handling for custom cache types.
+    # Note that custom types MUST be defined (and enabled) here to be tagged/invalidated!
+    cache_types:
+        someType: true
+        otherType: false
 ```
 
 ## Contribution
