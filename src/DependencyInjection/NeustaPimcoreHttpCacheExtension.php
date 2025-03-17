@@ -2,11 +2,11 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\DependencyInjection;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\StaticCacheTypeChecker;
-use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTypeChecker\ElementCacheTypeChecker;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTypeChecker\StaticCacheTypeChecker;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
 final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
@@ -16,24 +16,28 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
      */
     public function loadInternal(array $mergedConfig, ContainerBuilder $container): void
     {
-        $loader = new Loader\PhpFileLoader($container, new FileLocator(\dirname(__DIR__, 2) . '/config'));
+        $loader = new PhpFileLoader($container, new FileLocator(\dirname(__DIR__, 2) . '/config'));
 
         $loader->load('services.php');
 
-        if ($mergedConfig['elements']['documents']) {
+        if ($mergedConfig['elements']['documents']['enabled']) {
             $loader->load('document.php');
         }
-        if ($mergedConfig['elements']['assets']) {
+
+        if ($mergedConfig['elements']['assets']['enabled']) {
             $loader->load('asset.php');
         }
-        if ($mergedConfig['elements']['objects']) {
+
+        if ($mergedConfig['elements']['objects']['enabled']) {
             $loader->load('object.php');
         }
 
-        $container->getDefinition(StaticCacheTypeChecker::class)->setArgument('$types', [
-            ElementType::Asset->value => $mergedConfig['elements']['assets'],
-            ElementType::Object->value => $mergedConfig['elements']['objects'],
-            ElementType::Document->value => $mergedConfig['elements']['documents'],
-        ] + $mergedConfig['cache_types']);
+        $container->getDefinition(StaticCacheTypeChecker::class)
+            ->setArgument('$types', $mergedConfig['cache_types']);
+
+        $container->getDefinition(ElementCacheTypeChecker::class)
+            ->setArgument('$assets', $mergedConfig['elements']['assets'])
+            ->setArgument('$documents', $mergedConfig['elements']['documents'])
+            ->setArgument('$objects', $mergedConfig['elements']['objects']);
     }
 }

@@ -7,8 +7,8 @@ use Pimcore\Model\Element\ElementInterface;
 final class CacheTag
 {
     private function __construct(
-        private readonly string $tag,
-        private readonly CacheType $type,
+        public readonly string $tag,
+        public readonly CacheType $type,
     ) {
         if ('' === trim($tag)) {
             throw new \InvalidArgumentException('The cache tag must not be empty.');
@@ -17,7 +17,7 @@ final class CacheTag
 
     public static function fromString(string $tag, ?CacheType $elementType = null): self
     {
-        return new self($tag, $elementType ?? CacheType::empty());
+        return new self($tag, $elementType ?? CacheTypeFactory::createEmpty());
     }
 
     public static function fromElement(ElementInterface $element): self
@@ -26,12 +26,7 @@ final class CacheTag
             throw new \InvalidArgumentException('The given element has no id.');
         }
 
-        return new self((string) $id, CacheType::fromElement($element));
-    }
-
-    public function isEnabled(CacheTypeChecker $checker): bool
-    {
-        return $this->type->isEnabled($checker);
+        return new self((string) $id, CacheTypeFactory::createFromElement($element));
     }
 
     public function toString(): string
