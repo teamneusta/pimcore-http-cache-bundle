@@ -7,7 +7,7 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTypeChecker;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 use PHPUnit\Framework\TestCase;
@@ -26,8 +26,8 @@ final class CacheInvalidatorTest extends TestCase
     /** @var ObjectProphecy<CacheActivator> */
     private $cacheActivator;
 
-    /** @var ObjectProphecy<CacheTypeChecker> */
-    private $typeChecker;
+    /** @var ObjectProphecy<CacheTagChecker> */
+    private $tagChecker;
 
     /** @var ObjectProphecy<CacheManager> */
     private $cacheManager;
@@ -35,11 +35,11 @@ final class CacheInvalidatorTest extends TestCase
     protected function setUp(): void
     {
         $this->cacheActivator = $this->prophesize(CacheActivator::class);
-        $this->typeChecker = $this->prophesize(CacheTypeChecker::class);
+        $this->tagChecker = $this->prophesize(CacheTagChecker::class);
         $this->cacheManager = $this->prophesize(CacheManager::class);
         $this->cacheInvalidator = new CacheInvalidator(
             $this->cacheActivator->reveal(),
-            $this->typeChecker->reveal(),
+            $this->tagChecker->reveal(),
             $this->cacheManager->reveal(),
         );
     }
@@ -54,7 +54,7 @@ final class CacheInvalidatorTest extends TestCase
         $tag = CacheTag::fromElement($element->reveal());
 
         $this->cacheActivator->isCachingActive()->willReturn(true);
-        $this->typeChecker->isEnabled(CacheType::fromString(ElementType::Asset->value))->willReturn(true);
+        $this->tagChecker->isEnabled(CacheType::fromString(ElementType::Asset->value))->willReturn(true);
 
         $this->cacheInvalidator->invalidateElement($element->reveal());
 
@@ -91,7 +91,7 @@ final class CacheInvalidatorTest extends TestCase
             $document2->reveal(),
         ]);
         $this->cacheActivator->isCachingActive()->willReturn(true);
-        $this->typeChecker->isEnabled(CacheType::fromString(ElementType::Document->value))->willReturn(true);
+        $this->tagChecker->isEnabled(CacheType::fromString(ElementType::Document->value))->willReturn(true);
 
         $this->cacheInvalidator->invalidateTags($tags);
 

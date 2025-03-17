@@ -10,7 +10,7 @@ final class CacheInvalidator implements CacheInvalidatorInterface
 {
     public function __construct(
         private readonly CacheActivator $cacheActivator,
-        private readonly CacheTypeChecker $typeChecker,
+        private readonly CacheTagChecker $tagChecker,
         private readonly FosCacheInvalidator $invalidator,
     ) {
     }
@@ -26,7 +26,7 @@ final class CacheInvalidator implements CacheInvalidatorInterface
             return;
         }
 
-        $tags = $tags->withoutDisabled($this->typeChecker);
+        $tags = $tags->withoutDisabled($this->tagChecker);
 
         if ($tags->isEmpty()) {
             return;

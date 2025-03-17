@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\Cache\CacheTypeChecker;
+namespace Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTypeChecker;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject;
 use Pimcore\Model\Document;
 
-final class ElementCacheTypeChecker implements CacheTypeChecker
+final class ElementCacheTagChecker implements CacheTagChecker
 {
     /**
      * @param array{enabled: bool, types: array<string, bool>} $assets
@@ -17,7 +17,7 @@ final class ElementCacheTypeChecker implements CacheTypeChecker
      * @param array{enabled: bool, types: array<string, bool>, classes: array<string, bool>} $objects
      */
     public function __construct(
-        private readonly CacheTypeChecker $inner,
+        private readonly CacheTagChecker $inner,
         private readonly array $assets,
         private readonly array $documents,
         private readonly array $objects,
