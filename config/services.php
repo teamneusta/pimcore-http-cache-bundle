@@ -44,7 +44,8 @@ return static function (ContainerConfigurator $configurator) {
     $services->alias(CacheTagChecker::class, StaticCacheTagChecker::class);
 
     $services->set(TagElementListener::class)
-        ->arg('$tagCollector', service(CacheTagCollector::class));
+        ->arg('$tagCollector', service(CacheTagCollector::class))
+        ->arg('$dispatcher', service('event_dispatcher'));
 
     $services->set(CacheInvalidationListener::class)
         ->arg('$invalidator', service(CacheManager::class))
