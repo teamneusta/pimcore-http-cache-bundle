@@ -26,7 +26,7 @@ final class CacheInvalidator implements CacheInvalidatorInterface
             return;
         }
 
-        $tags = $tags->onlyEnabled($this->typeChecker);
+        $tags = $tags->withoutDisabled($this->typeChecker);
 
         if ($tags->isEmpty()) {
             return;

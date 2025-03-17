@@ -3,15 +3,10 @@ declare(strict_types=1);
 
 namespace Neusta\Pimcore\HttpCacheBundle\Cache\CacheType;
 
-/**
- * @internal
- */
-final class EmptyCacheType
-{
-    public function __construct()
-    {
-    }
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType;
 
+final class EmptyCacheType implements CacheType
+{
     public function applyTo(string $tag): string
     {
         return $tag;
@@ -20,5 +15,10 @@ final class EmptyCacheType
     public function toString(): string
     {
         return '';
+    }
+
+    public function isEmpty(): bool
+    {
+        return true;
     }
 }
