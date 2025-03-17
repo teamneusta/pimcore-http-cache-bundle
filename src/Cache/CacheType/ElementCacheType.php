@@ -3,12 +3,10 @@ declare(strict_types=1);
 
 namespace Neusta\Pimcore\HttpCacheBundle\Cache\CacheType;
 
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 
-/**
- * @internal
- */
-final class ElementCacheType
+final class ElementCacheType implements CacheType
 {
     public function __construct(
         private readonly ElementType $type,
@@ -31,5 +29,10 @@ final class ElementCacheType
     public function toString(): string
     {
         return $this->type->value;
+    }
+
+    public function isEmpty(): bool
+    {
+        return false;
     }
 }

@@ -6,7 +6,8 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidatorInterface;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagCollector;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTypeChecker;
-use Neusta\Pimcore\HttpCacheBundle\Cache\StaticCacheTypeChecker;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTypeChecker\ElementCacheTypeChecker;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTypeChecker\StaticCacheTypeChecker;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
 use Pimcore\Event\AssetEvents;
@@ -32,6 +33,14 @@ return static function (ContainerConfigurator $configurator) {
 
     $services->set(StaticCacheTypeChecker::class)
         ->arg('$types', abstract_arg('Set in the extension'));
+
+    $services->set(ElementCacheTypeChecker::class)
+        ->decorate(StaticCacheTypeChecker::class)
+        ->arg('$inner', service('.inner'))
+        ->arg('$assets', abstract_arg('Set in the extension'))
+        ->arg('$documents', abstract_arg('Set in the extension'))
+        ->arg('$objects', abstract_arg('Set in the extension'));
+
     $services->alias(CacheTypeChecker::class, StaticCacheTypeChecker::class);
 
     $services->set(CacheInvalidationListener::class)

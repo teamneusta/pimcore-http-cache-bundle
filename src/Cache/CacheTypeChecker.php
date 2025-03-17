@@ -5,5 +5,5 @@ namespace Neusta\Pimcore\HttpCacheBundle\Cache;
 
 interface CacheTypeChecker
 {
-    public function isEnabled(CacheType $type): bool;
+    public function isEnabled(CacheTag $tag): bool;
 }
