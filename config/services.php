@@ -4,10 +4,10 @@ use FOS\HttpCacheBundle\CacheManager;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidationListener;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidatorInterface;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\ElementCacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\StaticCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagCollector;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTypeChecker;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTypeChecker\ElementCacheTypeChecker;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTypeChecker\StaticCacheTypeChecker;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
 use Pimcore\Event\AssetEvents;
@@ -25,23 +25,23 @@ return static function (ContainerConfigurator $configurator) {
 
     $services->set(CacheInvalidatorInterface::class, CacheInvalidator::class)
         ->arg('$cacheActivator', service(CacheActivator::class))
-        ->arg('$typeChecker', service(CacheTypeChecker::class))
+        ->arg('$tagChecker', service(CacheTagChecker::class))
         ->arg('$invalidator', service(CacheManager::class));
 
     $services->set(CacheTagCollector::class)
         ->arg('$responseTagger', service('fos_http_cache.http.symfony_response_tagger'));
 
-    $services->set(StaticCacheTypeChecker::class)
+    $services->set(StaticCacheTagChecker::class)
         ->arg('$types', abstract_arg('Set in the extension'));
 
-    $services->set(ElementCacheTypeChecker::class)
-        ->decorate(StaticCacheTypeChecker::class)
+    $services->set(ElementCacheTagChecker::class)
+        ->decorate(StaticCacheTagChecker::class)
         ->arg('$inner', service('.inner'))
         ->arg('$assets', abstract_arg('Set in the extension'))
         ->arg('$documents', abstract_arg('Set in the extension'))
         ->arg('$objects', abstract_arg('Set in the extension'));
 
-    $services->alias(CacheTypeChecker::class, StaticCacheTypeChecker::class);
+    $services->alias(CacheTagChecker::class, StaticCacheTagChecker::class);
 
     $services->set(CacheInvalidationListener::class)
         ->arg('$invalidator', service(CacheManager::class))

@@ -35,7 +35,7 @@ final class CacheTags implements \IteratorAggregate
         return new \ArrayIterator($this->tags);
     }
 
-    public function withoutDisabled(CacheTypeChecker $checker): self
+    public function withoutDisabled(CacheTagChecker $checker): self
     {
         return new self(...array_filter($this->tags, fn (CacheTag $tag) => $checker->isEnabled($tag)));
     }

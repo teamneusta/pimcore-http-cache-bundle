@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\Cache\CacheTypeChecker;
+namespace Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTypeChecker;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
 
-final class StaticCacheTypeChecker implements CacheTypeChecker
+final class StaticCacheTagChecker implements CacheTagChecker
 {
     /**
      * @param array<string, bool> $types
