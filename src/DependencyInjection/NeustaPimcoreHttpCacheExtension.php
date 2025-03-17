@@ -2,8 +2,8 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\DependencyInjection;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTypeChecker\ElementCacheTypeChecker;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTypeChecker\StaticCacheTypeChecker;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\ElementCacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\StaticCacheTagChecker;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
@@ -32,10 +32,10 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
             $loader->load('object.php');
         }
 
-        $container->getDefinition(StaticCacheTypeChecker::class)
+        $container->getDefinition(StaticCacheTagChecker::class)
             ->setArgument('$types', $mergedConfig['cache_types']);
 
-        $container->getDefinition(ElementCacheTypeChecker::class)
+        $container->getDefinition(ElementCacheTagChecker::class)
             ->setArgument('$assets', $mergedConfig['elements']['assets'])
             ->setArgument('$documents', $mergedConfig['elements']['documents'])
             ->setArgument('$objects', $mergedConfig['elements']['objects']);
