@@ -10,9 +10,7 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\StaticCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagCollector;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
-use Pimcore\Event\AssetEvents;
-use Pimcore\Event\DataObjectEvents;
-use Pimcore\Event\DocumentEvents;
+use Neusta\Pimcore\HttpCacheBundle\Element\TagElementListener;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\Messenger\Event\WorkerMessageHandledEvent;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\abstract_arg;
@@ -37,11 +35,16 @@ return static function (ContainerConfigurator $configurator) {
     $services->set(ElementCacheTagChecker::class)
         ->decorate(StaticCacheTagChecker::class)
         ->arg('$inner', service('.inner'))
-        ->arg('$assets', abstract_arg('Set in the extension'))
-        ->arg('$documents', abstract_arg('Set in the extension'))
-        ->arg('$objects', abstract_arg('Set in the extension'));
+        ->arg('$assets', ['enabled' => false, 'types' => []])
+        ->arg('$documents', ['enabled' => false, 'types' => []])
+        ->arg('$objects', ['enabled' => false, 'types' => [], 'classes' => []]);
 
     $services->alias(CacheTagChecker::class, StaticCacheTagChecker::class);
+
+    $services->set(TagElementListener::class)
+        ->arg('$activator', service(CacheActivator::class))
+        ->arg('$tagChecker', service(CacheTagChecker::class))
+        ->arg('$tagCollector', service(CacheTagCollector::class));
 
     $services->set(CacheInvalidationListener::class)
         ->arg('$invalidator', service(CacheManager::class))
@@ -50,11 +53,5 @@ return static function (ContainerConfigurator $configurator) {
 
     $services->set(InvalidateElementListener::class)
         ->arg('$cacheInvalidator', service(CacheInvalidatorInterface::class))
-        ->arg('$dispatcher', service('event_dispatcher'))
-        ->tag('kernel.event_listener', ['event' => AssetEvents::POST_UPDATE, 'method' => 'onUpdated'])
-        ->tag('kernel.event_listener', ['event' => AssetEvents::POST_DELETE, 'method' => 'onDeleted'])
-        ->tag('kernel.event_listener', ['event' => DataObjectEvents::POST_UPDATE, 'method' => 'onUpdated'])
-        ->tag('kernel.event_listener', ['event' => DataObjectEvents::POST_DELETE, 'method' => 'onDeleted'])
-        ->tag('kernel.event_listener', ['event' => DocumentEvents::POST_UPDATE, 'method' => 'onUpdated'])
-        ->tag('kernel.event_listener', ['event' => DocumentEvents::POST_DELETE, 'method' => 'onDeleted']);
+        ->arg('$dispatcher', service('event_dispatcher'));
 };
