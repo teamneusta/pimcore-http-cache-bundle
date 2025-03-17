@@ -18,7 +18,7 @@
 
 ## Usage
 
-TODO
+Nothing to do here. Oder?
 
 ## Configuration
 
