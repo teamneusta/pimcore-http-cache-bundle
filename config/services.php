@@ -27,6 +27,8 @@ return static function (ContainerConfigurator $configurator) {
         ->arg('$invalidator', service(CacheManager::class));
 
     $services->set(CacheTagCollector::class)
+        ->arg('$activator', service(CacheActivator::class))
+        ->arg('$tagChecker', service(CacheTagChecker::class))
         ->arg('$responseTagger', service('fos_http_cache.http.symfony_response_tagger'));
 
     $services->set(StaticCacheTagChecker::class)
@@ -42,8 +44,6 @@ return static function (ContainerConfigurator $configurator) {
     $services->alias(CacheTagChecker::class, StaticCacheTagChecker::class);
 
     $services->set(TagElementListener::class)
-        ->arg('$activator', service(CacheActivator::class))
-        ->arg('$tagChecker', service(CacheTagChecker::class))
         ->arg('$tagCollector', service(CacheTagCollector::class));
 
     $services->set(CacheInvalidationListener::class)
