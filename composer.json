@@ -29,6 +29,7 @@
     "ergebnis/composer-normalize": "^2.45",
     "friendsofphp/php-cs-fixer": "^3.71",
     "jangregor/phpstan-prophecy": "^1.0",
+    "laminas/laminas-zendframework-bridge": "^1.8",
     "phpspec/prophecy": "^1.20",
     "phpspec/prophecy-phpunit": "^2.3",
     "phpstan/extension-installer": "^1.4",
