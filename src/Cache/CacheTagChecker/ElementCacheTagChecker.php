@@ -12,8 +12,8 @@ use Pimcore\Model\Document;
 final class ElementCacheTagChecker implements CacheTagChecker
 {
     /**
-     * @param array{enabled: bool, types: array<string, bool>} $assets
-     * @param array{enabled: bool, types: array<string, bool>} $documents
+     * @param array{enabled: bool, types: array<string, bool>}                               $assets
+     * @param array{enabled: bool, types: array<string, bool>}                               $documents
      * @param array{enabled: bool, types: array<string, bool>, classes: array<string, bool>} $objects
      */
     public function __construct(
@@ -27,9 +27,9 @@ final class ElementCacheTagChecker implements CacheTagChecker
     public function isEnabled(CacheTag $tag): bool
     {
         return match (ElementType::tryFrom($tag->type->toString())) {
-            ElementType::Asset => $this->checkAsset((int)$tag->tag),
-            ElementType::Document => $this->checkDocument((int)$tag->tag),
-            ElementType::Object => $this->checkObject((int)$tag->tag),
+            ElementType::Asset => $this->checkAsset((int) $tag->tag),
+            ElementType::Document => $this->checkDocument((int) $tag->tag),
+            ElementType::Object => $this->checkObject((int) $tag->tag),
             default => $this->inner->isEnabled($tag),
         };
     }

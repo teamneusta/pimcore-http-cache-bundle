@@ -5,11 +5,9 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Cache;
 use FOS\HttpCacheBundle\CacheManager;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
-use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Model\Asset;
 use Pimcore\Model\Document;
@@ -54,7 +52,7 @@ final class CacheInvalidatorTest extends TestCase
         $tag = CacheTag::fromElement($element->reveal());
 
         $this->cacheActivator->isCachingActive()->willReturn(true);
-        $this->tagChecker->isEnabled(CacheType::fromString(ElementType::Asset->value))->willReturn(true);
+        $this->tagChecker->isEnabled($tag)->willReturn(true);
 
         $this->cacheInvalidator->invalidateElement($element->reveal());
 
@@ -91,7 +89,7 @@ final class CacheInvalidatorTest extends TestCase
             $document2->reveal(),
         ]);
         $this->cacheActivator->isCachingActive()->willReturn(true);
-        $this->tagChecker->isEnabled(CacheType::fromString(ElementType::Document->value))->willReturn(true);
+        $this->tagChecker->isEnabled(Argument::type(CacheTag::class))->willReturn(true);
 
         $this->cacheInvalidator->invalidateTags($tags);
 
@@ -100,7 +98,6 @@ final class CacheInvalidatorTest extends TestCase
             CacheTag::fromElement($document2->reveal())->toString(),
         ])->shouldHaveBeenCalledOnce();
     }
-
 
     /**
      * @test
@@ -121,9 +118,13 @@ final class CacheInvalidatorTest extends TestCase
      */
     public function invalidateTags_should_invalidate_tags(): void
     {
-        $tags = new CacheTags(CacheTag::fromString('tag1'), CacheTag::fromString('tag2'));
+        $cacheTag1 = CacheTag::fromString('tag1');
+        $cacheTag2 = CacheTag::fromString('tag2');
+        $tags = new CacheTags($cacheTag1, $cacheTag2);
 
         $this->cacheActivator->isCachingActive()->willReturn(true);
+        $this->tagChecker->isEnabled($cacheTag1)->willReturn(true);
+        $this->tagChecker->isEnabled($cacheTag2)->willReturn(true);
 
         $this->cacheInvalidator->invalidateTags($tags);
 
