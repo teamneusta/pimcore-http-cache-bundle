@@ -42,8 +42,10 @@ jobs:
             dependencies: "lowest" # Pimcore 10.6.0
           - php-version: "8.1"
             dependencies: "highest" # Pimcore 11.*
+            tests: --fail-on-risky
           - php-version: "8.2"
             dependencies: "highest" # Pimcore 11.*
+            tests: --fail-on-risky
 
     steps:
       - name: Git Checkout
@@ -65,7 +67,7 @@ jobs:
         if: matrix.dependencies == 'highest'
 
       - name: Execute tests
-        run: composer tests
+        run: composer tests -- ${{ matrix.tests }}
         env:
           MYSQL_HOST: '127.0.0.1'
           MYSQL_SERVER_VERSION: '10.11.11-MariaDB'
