@@ -1,0 +1,6 @@
+fos_http_cache:
+  proxy_client:
+    noop: true
+  tags:
+    enabled: true
+    annotations: false

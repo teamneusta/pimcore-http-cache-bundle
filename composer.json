@@ -52,7 +52,10 @@
   "autoload-dev": {
     "psr-4": {
       "Neusta\\Pimcore\\HttpCacheBundle\\Tests\\": "tests/"
-    }
+    },
+    "classmap": [
+      "tests/app/TestKernel.php"
+    ]
   },
   "config": {
     "allow-plugins": {
