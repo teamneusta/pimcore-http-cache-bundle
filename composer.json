@@ -15,8 +15,8 @@
     "php": "~8.1.0 || ~8.2.0",
     "friendsofsymfony/http-cache": "^2.16",
     "friendsofsymfony/http-cache-bundle": "^2.17",
-    "pimcore/pimcore": "^10.6.0 || ^11.2",
-    "psr/log": "^3.0",
+    "pimcore/pimcore": "^10.6 || ^11.2",
+    "psr/log": "^1.0 || ^2.0 || ^3.0",
     "symfony/config": "^5.4 || ^6.4",
     "symfony/contracts": "^2.5 || ^3.5",
     "symfony/dependency-injection": "^5.4 || ^6.4",
@@ -29,6 +29,7 @@
     "ergebnis/composer-normalize": "^2.45",
     "friendsofphp/php-cs-fixer": "^3.71",
     "jangregor/phpstan-prophecy": "^1.0",
+    "laminas/laminas-zendframework-bridge": "^1.8",
     "phpspec/prophecy": "^1.20",
     "phpspec/prophecy-phpunit": "^2.3",
     "phpstan/extension-installer": "^1.4",
@@ -52,7 +53,10 @@
   "autoload-dev": {
     "psr-4": {
       "Neusta\\Pimcore\\HttpCacheBundle\\Tests\\": "tests/"
-    }
+    },
+    "classmap": [
+      "tests/app/TestKernel.php"
+    ]
   },
   "config": {
     "allow-plugins": {
