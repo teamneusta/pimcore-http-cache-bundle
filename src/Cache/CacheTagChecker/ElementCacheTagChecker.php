@@ -4,10 +4,9 @@ namespace Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
-use Pimcore\Model\Asset;
-use Pimcore\Model\DataObject;
-use Pimcore\Model\Document;
+use Pimcore\Model\DataObject\Concrete;
 
 final class ElementCacheTagChecker implements CacheTagChecker
 {
@@ -18,6 +17,7 @@ final class ElementCacheTagChecker implements CacheTagChecker
      */
     public function __construct(
         private readonly CacheTagChecker $inner,
+        private readonly ElementRepository $repository,
         private readonly array $assets,
         private readonly array $documents,
         private readonly array $objects,
@@ -40,7 +40,7 @@ final class ElementCacheTagChecker implements CacheTagChecker
             return false;
         }
 
-        if (!$asset = Asset::getById($id)) {
+        if (!$asset = $this->repository->findAsset($id)) {
             return false;
         }
 
@@ -53,7 +53,7 @@ final class ElementCacheTagChecker implements CacheTagChecker
             return false;
         }
 
-        if (!$document = Document::getById($id)) {
+        if (!$document = $this->repository->findDocument($id)) {
             return false;
         }
 
@@ -66,7 +66,7 @@ final class ElementCacheTagChecker implements CacheTagChecker
             return false;
         }
 
-        if (!$object = DataObject::getById($id)) {
+        if (!$object = $this->repository->findObject($id)) {
             return false;
         }
 
@@ -74,7 +74,7 @@ final class ElementCacheTagChecker implements CacheTagChecker
             return false;
         }
 
-        if (!$object instanceof DataObject\Concrete) {
+        if (!$object instanceof Concrete) {
             return true;
         }
 
