@@ -28,38 +28,44 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
         $container->getDefinition(StaticCacheTagChecker::class)
             ->setArgument('$types', $mergedConfig['cache_types']);
 
-        if ($mergedConfig['elements']['assets']['enabled']) {
-            $container->getDefinition(ElementCacheTagChecker::class)
-                ->setArgument('$assets', $mergedConfig['elements']['assets']);
+        $this->registerElements($container, $mergedConfig['elements']);
+    }
 
-            $container->getDefinition(TagElementListener::class)
-                ->addTag('kernel.event_listener', ['event' => AssetEvents::POST_LOAD]);
+    /**
+     * @param array<mixed> $config
+     */
+    private function registerElements(ContainerBuilder $container, array $config): void
+    {
+        $tagChecker = $container->getDefinition(ElementCacheTagChecker::class);
+        $tagListener = $container->getDefinition(TagElementListener::class);
+        $invalidateListener = $container->getDefinition(InvalidateElementListener::class);
 
-            $container->getDefinition(InvalidateElementListener::class)
+        if ($config['assets']['enabled']) {
+            $tagChecker->setArgument('$assets', $config['assets']);
+
+            $tagListener->addTag('kernel.event_listener', ['event' => AssetEvents::POST_LOAD]);
+
+            $invalidateListener
                 ->addTag('kernel.event_listener', ['event' => AssetEvents::POST_UPDATE, 'method' => 'onUpdated'])
                 ->addTag('kernel.event_listener', ['event' => AssetEvents::POST_DELETE, 'method' => 'onDeleted']);
         }
 
-        if ($mergedConfig['elements']['documents']['enabled']) {
-            $container->getDefinition(ElementCacheTagChecker::class)
-                ->setArgument('$documents', $mergedConfig['elements']['documents']);
+        if ($config['documents']['enabled']) {
+            $tagChecker->setArgument('$documents', $config['documents']);
 
-            $container->getDefinition(TagElementListener::class)
-                ->addTag('kernel.event_listener', ['event' => DocumentEvents::POST_LOAD]);
+            $tagListener->addTag('kernel.event_listener', ['event' => DocumentEvents::POST_LOAD]);
 
-            $container->getDefinition(InvalidateElementListener::class)
+            $invalidateListener
                 ->addTag('kernel.event_listener', ['event' => DocumentEvents::POST_UPDATE, 'method' => 'onUpdated'])
                 ->addTag('kernel.event_listener', ['event' => DocumentEvents::POST_DELETE, 'method' => 'onDeleted']);
         }
 
-        if ($mergedConfig['elements']['objects']['enabled']) {
-            $container->getDefinition(ElementCacheTagChecker::class)
-                ->setArgument('$objects', $mergedConfig['elements']['objects']);
+        if ($config['objects']['enabled']) {
+            $tagChecker->setArgument('$objects', $config['objects']);
 
-            $container->getDefinition(TagElementListener::class)
-                ->addTag('kernel.event_listener', ['event' => DataObjectEvents::POST_LOAD]);
+            $tagListener->addTag('kernel.event_listener', ['event' => DataObjectEvents::POST_LOAD]);
 
-            $container->getDefinition(InvalidateElementListener::class)
+            $invalidateListener
                 ->addTag('kernel.event_listener', ['event' => DataObjectEvents::POST_UPDATE, 'method' => 'onUpdated'])
                 ->addTag('kernel.event_listener', ['event' => DataObjectEvents::POST_DELETE, 'method' => 'onDeleted']);
         }
