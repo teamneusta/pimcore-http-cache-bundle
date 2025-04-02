@@ -70,7 +70,14 @@ final class ElementCacheTagChecker implements CacheTagChecker
             return false;
         }
 
-        return ($this->objects['types'][$object->getType()] ?? true)
-            && ($this->objects['classes'][$object->getClassName()] ?? true);
+        if (!($this->objects['types'][$object->getType()] ?? true)) {
+            return false;
+        }
+
+        if (!$object instanceof DataObject\Concrete) {
+            return true;
+        }
+
+        return $this->objects['classes'][$object->getClassName()] ?? true;
     }
 }
