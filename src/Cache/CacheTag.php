@@ -2,6 +2,7 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Cache;
 
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType\ElementCacheType;
 use Pimcore\Model\Element\ElementInterface;
 
 final class CacheTag
@@ -13,11 +14,18 @@ final class CacheTag
         if ('' === trim($tag)) {
             throw new \InvalidArgumentException('The cache tag must not be empty.');
         }
+
+        if (!$type instanceof ElementCacheType && ElementCacheType::isReserved($type->toString())) {
+            throw new \InvalidArgumentException(\sprintf(
+                'The cache type "%s" is reserved for Pimcore elements.',
+                $type->toString(),
+            ));
+        }
     }
 
-    public static function fromString(string $tag, ?CacheType $elementType = null): self
+    public static function fromString(string $tag, ?CacheType $type = null): self
     {
-        return new self($tag, $elementType ?? CacheTypeFactory::createEmpty());
+        return new self($tag, $type ?? CacheTypeFactory::createEmpty());
     }
 
     public static function fromElement(ElementInterface $element): self

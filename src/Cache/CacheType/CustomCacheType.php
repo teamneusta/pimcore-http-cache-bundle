@@ -13,10 +13,6 @@ final class CustomCacheType implements CacheType
         if ('' === $this->type) {
             throw new \InvalidArgumentException('The cache type must not be empty.');
         }
-
-        if (ElementCacheType::isReserved($type)) {
-            throw new \InvalidArgumentException('The given cache type is reserved for Pimcore Elements.');
-        }
     }
 
     public function applyTo(string $tag): string

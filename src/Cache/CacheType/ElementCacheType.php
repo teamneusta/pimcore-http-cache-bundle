@@ -13,6 +13,9 @@ final class ElementCacheType implements CacheType
     ) {
     }
 
+    /**
+     * @internal
+     */
     public static function isReserved(string $value): bool
     {
         static $prefixes;
@@ -23,12 +26,12 @@ final class ElementCacheType implements CacheType
 
     public function applyTo(string $tag): string
     {
-        return $this->type->value[0] . $tag;
+        return $this->toString() . $tag;
     }
 
     public function toString(): string
     {
-        return $this->type->value;
+        return $this->type->value[0];
     }
 
     public function isEmpty(): bool
