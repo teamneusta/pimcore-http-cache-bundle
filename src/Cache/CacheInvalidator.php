@@ -11,7 +11,7 @@ final class CacheInvalidator implements CacheInvalidatorInterface
 {
     public function __construct(
         private readonly CacheActivator $cacheActivator,
-        private readonly PurgeCheckerInterface $purgeChecker,
+        private readonly CacheTypeChecker $typeChecker,
         private readonly FosCacheInvalidator $invalidator,
     ) {
     }
@@ -22,7 +22,7 @@ final class CacheInvalidator implements CacheInvalidatorInterface
             return;
         }
 
-        if (!$this->purgeChecker->isEnabled($type->value)) {
+        if (!$this->typeChecker->isEnabled($type->value)) {
             return;
         }
 
@@ -35,7 +35,7 @@ final class CacheInvalidator implements CacheInvalidatorInterface
             return;
         }
 
-        if (!$this->purgeChecker->isEnabled($type->value)) {
+        if (!$this->typeChecker->isEnabled($type->value)) {
             return;
         }
 
