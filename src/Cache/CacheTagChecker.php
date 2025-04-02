@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Neusta\Pimcore\HttpCacheBundle\Cache;
 
-interface CacheTypeChecker
+interface CacheTagChecker
 {
-    public function isEnabled(string $type): bool;
+    public function isEnabled(CacheTag $tag): bool;
 }

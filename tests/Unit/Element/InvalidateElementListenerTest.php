@@ -7,7 +7,6 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidatorInterface;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementInvalidationEvent;
-use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Event\Model\AssetEvent;
@@ -100,13 +99,12 @@ final class InvalidateElementListenerTest extends TestCase
     public function onUpdated_should_invalidate_elements(ElementEventInterface $event): void
     {
         $element = $event->getElement();
-        $elementType = ElementType::fromElement($element);
 
         $this->invalidateElementListener->onUpdated($event);
 
-        $this->cacheInvalidator->invalidateElement($element, $elementType)
+        $this->cacheInvalidator->invalidateElement($element)
             ->shouldHaveBeenCalledOnce();
-        $this->cacheInvalidator->invalidateElementTags(Argument::type(CacheTags::class), $elementType)
+        $this->cacheInvalidator->invalidateTags(Argument::type(CacheTags::class))
             ->shouldHaveBeenCalledOnce();
     }
 
@@ -118,7 +116,6 @@ final class InvalidateElementListenerTest extends TestCase
     public function onUpdated_should_not_invalidate_when_event_was_canceled(ElementEventInterface $event): void
     {
         $element = $event->getElement();
-        $elementType = ElementType::fromElement($element);
         $invalidationEvent = ElementInvalidationEvent::fromElement($element);
         $invalidationEvent->cancel = true;
 
@@ -127,9 +124,9 @@ final class InvalidateElementListenerTest extends TestCase
 
         $this->invalidateElementListener->onUpdated($event);
 
-        $this->cacheInvalidator->invalidateElement($element, $elementType)
+        $this->cacheInvalidator->invalidateElement($element)
             ->shouldNotHaveBeenCalled();
-        $this->cacheInvalidator->invalidateElementTags(Argument::type(CacheTags::class), $elementType)
+        $this->cacheInvalidator->invalidateTags(Argument::type(CacheTags::class))
             ->shouldNotHaveBeenCalled();
     }
 
@@ -141,19 +138,18 @@ final class InvalidateElementListenerTest extends TestCase
     public function onUpdated_should_invalidate_additional_tags_when_requested(ElementEventInterface $event): void
     {
         $element = $event->getElement();
-        $elementType = ElementType::fromElement($element);
         $invalidationEvent = ElementInvalidationEvent::fromElement($element);
-        $invalidationEvent->cacheTags->add(new CacheTag('tag1'));
-        $invalidationEvent->cacheTags->add(new CacheTag('tag2'));
+        $invalidationEvent->cacheTags->add(CacheTag::fromString('tag1'));
+        $invalidationEvent->cacheTags->add(CacheTag::fromString('tag2'));
 
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
             ->willReturn($invalidationEvent);
 
         $this->invalidateElementListener->onUpdated($event);
 
-        $this->cacheInvalidator->invalidateElement($element, $elementType)
+        $this->cacheInvalidator->invalidateElement($element)
             ->shouldHaveBeenCalledOnce();
-        $this->cacheInvalidator->invalidateElementTags($invalidationEvent->cacheTags, $elementType)
+        $this->cacheInvalidator->invalidateTags($invalidationEvent->cacheTags)
             ->shouldHaveBeenCalledOnce();
     }
 
@@ -178,13 +174,12 @@ final class InvalidateElementListenerTest extends TestCase
     public function onDeleted_should_invalidate_elements(ElementEventInterface $event): void
     {
         $element = $event->getElement();
-        $elementType = ElementType::fromElement($element);
 
         $this->invalidateElementListener->onDeleted($event);
 
-        $this->cacheInvalidator->invalidateElement($element, $elementType)
+        $this->cacheInvalidator->invalidateElement($element)
             ->shouldHaveBeenCalledOnce();
-        $this->cacheInvalidator->invalidateElementTags(Argument::type(CacheTags::class), $elementType)
+        $this->cacheInvalidator->invalidateTags(Argument::type(CacheTags::class))
             ->shouldHaveBeenCalledOnce();
     }
 
@@ -196,7 +191,6 @@ final class InvalidateElementListenerTest extends TestCase
     public function onDeleted_should_not_invalidate_when_event_was_canceled(ElementEventInterface $event): void
     {
         $element = $event->getElement();
-        $elementType = ElementType::fromElement($element);
         $invalidationEvent = ElementInvalidationEvent::fromElement($element);
         $invalidationEvent->cancel = true;
 
@@ -205,9 +199,9 @@ final class InvalidateElementListenerTest extends TestCase
 
         $this->invalidateElementListener->onDeleted($event);
 
-        $this->cacheInvalidator->invalidateElement($element, $elementType)
+        $this->cacheInvalidator->invalidateElement($element)
             ->shouldNotHaveBeenCalled();
-        $this->cacheInvalidator->invalidateElementTags(Argument::type(CacheTags::class), $elementType)
+        $this->cacheInvalidator->invalidateTags(Argument::type(CacheTags::class))
             ->shouldNotHaveBeenCalled();
     }
 
@@ -219,19 +213,18 @@ final class InvalidateElementListenerTest extends TestCase
     public function onDeleted_should_invalidate_additional_tags_when_requested(ElementEventInterface $event): void
     {
         $element = $event->getElement();
-        $elementType = ElementType::fromElement($element);
         $invalidationEvent = ElementInvalidationEvent::fromElement($element);
-        $invalidationEvent->cacheTags->add(new CacheTag('tag1'));
-        $invalidationEvent->cacheTags->add(new CacheTag('tag2'));
+        $invalidationEvent->cacheTags->add(CacheTag::fromString('tag1'));
+        $invalidationEvent->cacheTags->add(CacheTag::fromString('tag2'));
 
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
             ->willReturn($invalidationEvent);
 
         $this->invalidateElementListener->onDeleted($event);
 
-        $this->cacheInvalidator->invalidateElement($element, $elementType)
+        $this->cacheInvalidator->invalidateElement($element)
             ->shouldHaveBeenCalledOnce();
-        $this->cacheInvalidator->invalidateElementTags($invalidationEvent->cacheTags, $elementType)
+        $this->cacheInvalidator->invalidateTags($invalidationEvent->cacheTags)
             ->shouldHaveBeenCalledOnce();
     }
 
