@@ -25,6 +25,6 @@ final class TagElementListener
         }
 
         $this->tagCollector->addTag(CacheTag::fromElement($taggingEvent->element));
-        $this->tagCollector->addTag($taggingEvent->cacheTags);
+        $this->tagCollector->addTags($taggingEvent->cacheTags);
     }
 }
