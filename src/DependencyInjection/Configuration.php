@@ -60,7 +60,6 @@ final class Configuration implements ConfigurationInterface
                             ->fixXmlConfig('type')
                             ->fixXmlConfig('class')
                             ->canBeDisabled()
-                            ->canBeDisabled()
                             ->addDefaultsIfNotSet()
                             ->children()
                                 ->arrayNode('types')
