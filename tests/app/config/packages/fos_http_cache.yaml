@@ -1,6 +1,9 @@
 fos_http_cache:
   proxy_client:
-    noop: true
-  tags:
-    enabled: true
-    annotations: false
+    varnish:
+      http:
+        servers:
+          - 'localhost'
+        base_url: 'http://localhost'
+  user_context:
+    enabled: false

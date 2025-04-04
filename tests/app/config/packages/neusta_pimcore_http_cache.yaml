@@ -1,0 +1,6 @@
+neusta_pimcore_http_cache:
+  # Enable/disable cache handling for certain element types.
+  elements:
+    assets: false
+    documents: false
+    objects: true
