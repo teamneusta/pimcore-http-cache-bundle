@@ -38,7 +38,7 @@
     "phpstan/phpstan-symfony": "^1.4",
     "phpunit/phpunit": "^9.6",
     "pimcore/admin-ui-classic-bundle": "^1.0",
-    "symfony/browser-kit": "^7.2",
+    "symfony/browser-kit": "^5.4 || ^6.4",
     "teamneusta/pimcore-testing-framework": "^0.12.8"
   },
   "conflict": {
