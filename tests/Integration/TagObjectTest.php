@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration;
 
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
+use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\DataObject\TestDataObject;
 
@@ -15,6 +16,13 @@ final class TagObjectTest extends ConfigurableWebTestcase
     /**
      * @test
      */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'assets' => false,
+            'documents' => false,
+            'objects' => true,
+        ],
+    ])]
     public function response_is_tagged_with_expected_tags(): void
     {
         $client = self::createClient();
