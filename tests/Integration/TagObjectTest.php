@@ -33,6 +33,9 @@ final class TagObjectTest extends ConfigurableWebTestcase
         $object->setPublished(true);
         $object->setParentId(1);
         $object->save();
+
+        // Clear the runtime cache, as it prevents the object from being loaded and thus tagged.
+        // Note: in reality, objects are created and loaded/used in separate requests.
         RuntimeCache::clear();
 
         $client->request('GET', '/get-object?id=42');
