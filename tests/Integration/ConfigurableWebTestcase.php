@@ -59,7 +59,7 @@ abstract class ConfigurableWebTestcase extends WebTestCase
             // remove them from the arguments passed to the test method
             (new \ReflectionProperty(TestCase::class, 'data'))->setValue($this, array_values(array_filter(
                 $providedData,
-                fn($data) => !$data instanceof KernelConfiguration,
+                fn ($data) => !$data instanceof KernelConfiguration,
             )));
         }
 
