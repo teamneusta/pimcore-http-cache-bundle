@@ -7,6 +7,11 @@ use Neusta\Pimcore\TestingFramework\Test\Attribute\KernelConfiguration;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Test\WebTestCase;
 
+/**
+ * @internal
+ *
+ * @todo move to teamneusta/pimcore-testing-framework
+ */
 abstract class ConfigurableWebTestcase extends WebTestCase
 {
     /** @var KernelConfiguration */
