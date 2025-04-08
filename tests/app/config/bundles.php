@@ -3,5 +3,6 @@
 use Neusta\Pimcore\HttpCacheBundle\NeustaPimcoreHttpCacheBundle;
 
 return [
+    Symfony\Bundle\FrameworkBundle\FrameworkBundle::class => ['all' => true],
     NeustaPimcoreHttpCacheBundle::class => ['all' => true],
 ];

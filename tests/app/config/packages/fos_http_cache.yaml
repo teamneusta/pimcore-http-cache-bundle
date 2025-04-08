@@ -5,5 +5,3 @@ fos_http_cache:
         servers:
           - 'localhost'
         base_url: 'http://localhost'
-  user_context:
-    enabled: false
