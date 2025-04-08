@@ -14,7 +14,7 @@ use Pimcore\Test\WebTestCase;
  */
 abstract class ConfigurableWebTestcase extends WebTestCase
 {
-    /** @var KernelConfiguration */
+    /** @var list<KernelConfiguration> */
     private static iterable $kernelConfigurations = [];
 
     /**
