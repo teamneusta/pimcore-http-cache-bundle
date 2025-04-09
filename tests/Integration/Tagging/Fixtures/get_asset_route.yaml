@@ -1,0 +1,3 @@
+get_asset:
+  path: /get-asset
+  controller: App\Controller\GetAssetController

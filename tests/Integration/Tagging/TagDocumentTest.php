@@ -1,12 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Integration;
+namespace Integration\Tagging;
 
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
 use Neusta\Pimcore\HttpCacheBundle\Element\Document\DocumentType;
-use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\ConfigurableWebTestcase;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
+use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureRoute;
+use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\Document;
 
@@ -19,6 +20,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
      *
      * @dataProvider documentsTypeProvider
      */
+    #[ConfigureRoute(__DIR__ . '/Fixtures/get_document_route.yaml')]
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'assets' => false,
@@ -57,6 +59,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
      *
      * @dataProvider documentsTypeProvider
      */
+    #[ConfigureRoute(__DIR__ . '/Fixtures/get_document_route.yaml')]
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'assets' => true,
@@ -104,6 +107,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
      *
      * @dataProvider unsupportedDocumentTypeProvider
      */
+    #[ConfigureRoute(__DIR__ . '/Fixtures/get_document_route.yaml')]
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'assets' => false,
@@ -149,6 +153,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     /**
      * @test
      */
+    #[ConfigureRoute(__DIR__ . '/Fixtures/get_document_route.yaml')]
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'assets' => false,
@@ -185,6 +190,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     /**
      * @test
      */
+    #[ConfigureRoute(__DIR__ . '/Fixtures/get_document_route.yaml')]
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'assets' => false,
