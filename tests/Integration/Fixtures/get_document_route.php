@@ -5,5 +5,5 @@ use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 return function (RoutingConfigurator $routes) {
     $routes->add('get_document', '/get-document')
-        ->controller([GetDocumentController::class, '__invoke']);
+        ->controller(GetDocumentController::class);
 };
