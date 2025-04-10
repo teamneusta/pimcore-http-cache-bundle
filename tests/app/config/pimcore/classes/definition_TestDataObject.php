@@ -2,7 +2,7 @@
 
 return Pimcore\Model\DataObject\ClassDefinition::__set_state([
     'dao' => null,
-    'id' => '13',
+    'id' => 'test_data_object',
     'name' => 'TestDataObject',
     'description' => '',
     'creationDate' => 0,
