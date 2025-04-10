@@ -1,3 +1,0 @@
-get_object:
-    path: /get-object
-    controller:  App\Controller\GetObjectController

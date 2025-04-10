@@ -10,6 +10,7 @@ use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\DataObject\TestDataObject;
 
+#[ConfigureRoute(__DIR__ . '/Fixtures/get_object_route.php')]
 final class TagObjectTest extends ConfigurableWebTestcase
 {
     use ResetDatabase;
@@ -17,7 +18,6 @@ final class TagObjectTest extends ConfigurableWebTestcase
     /**
      * @test
      */
-    #[ConfigureRoute(__DIR__ . '/Fixtures/get_object_route.yaml')]
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'assets' => false,
@@ -54,7 +54,6 @@ final class TagObjectTest extends ConfigurableWebTestcase
     /**
      * @test
      */
-    #[ConfigureRoute(__DIR__ . '/Fixtures/get_object_route.yaml')]
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'assets' => false,
@@ -91,7 +90,6 @@ final class TagObjectTest extends ConfigurableWebTestcase
     /**
      * @test
      */
-    #[ConfigureRoute(__DIR__ . '/Fixtures/get_object_route.yaml')]
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'assets' => false,

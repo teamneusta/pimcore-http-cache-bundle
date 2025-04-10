@@ -1,4 +1,0 @@
-get_document:
-    path: /get-document
-    controller: App\Controller\GetDocumentController
-
