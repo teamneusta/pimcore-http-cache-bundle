@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Integration\Tagging;
+namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Tagging;
 
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
 use Neusta\Pimcore\HttpCacheBundle\Element\Document\DocumentType;
@@ -17,8 +17,6 @@ final class TagDocumentTest extends ConfigurableWebTestcase
 
     /**
      * @test
-     *
-     * @dataProvider documentsTypeProvider
      */
     #[ConfigureRoute(__DIR__ . '/Fixtures/get_document_route.yaml')]
     #[ConfigureExtension('neusta_pimcore_http_cache', [
@@ -28,16 +26,15 @@ final class TagDocumentTest extends ConfigurableWebTestcase
             'objects' => false,
         ],
     ])]
-    public function response_is_tagged_with_expected_tags_when_document_is_loaded(DocumentType $type): void
+    public function response_is_tagged_with_expected_tags_when_page_is_loaded(): void
     {
         $client = self::createClient();
 
-        $document = new Document();
+        $document = new Document\Page();
         $document->setId(42);
-        $document->setKey('test_document');
+        $document->setKey('test_document_page');
         $document->setPublished(true);
         $document->setParentId(1);
-        $document->setType($type->value);
         $document->save();
 
         // Clear the runtime cache, as it prevents the object from being loaded and thus tagged.
@@ -47,7 +44,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
         $client->request('GET', '/get-document?id=42');
 
         $response = $client->getResponse();
-        self::assertSame('Document with key: test_document', $response->getContent());
+        self::assertSame('Document with key: test_document_page', $response->getContent());
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
@@ -56,56 +53,6 @@ final class TagDocumentTest extends ConfigurableWebTestcase
 
     /**
      * @test
-     *
-     * @dataProvider documentsTypeProvider
-     */
-    #[ConfigureRoute(__DIR__ . '/Fixtures/get_document_route.yaml')]
-    #[ConfigureExtension('neusta_pimcore_http_cache', [
-        'elements' => [
-            'assets' => true,
-            'documents' => false,
-            'objects' => true,
-        ],
-    ])]
-    public function response_is_not_tagged_when_caching_documents_is_not_allowed(DocumentType $type): void
-    {
-        $client = self::createClient();
-
-        $document = new Document();
-        $document->setId(42);
-        $document->setKey('test_document');
-        $document->setPublished(true);
-        $document->setParentId(1);
-        $document->setType($type->value);
-        $document->save();
-
-        // Clear the runtime cache, as it prevents the object from being loaded and thus tagged.
-        // Note: in reality, objects are created and loaded/used in separate requests.
-        RuntimeCache::clear();
-
-        $client->request('GET', '/get-document?id=42');
-
-        $response = $client->getResponse();
-        self::assertSame('Document with key: test_document', $response->getContent());
-        self::assertSame(200, $response->getStatusCode());
-        self::assertTrue($response->headers->getCacheControlDirective('public'));
-        self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertNull($response->headers->get('X-Cache-Tags'));
-    }
-
-    public function documentsTypeProvider(): iterable
-    {
-        yield 'page' => ['type' => DocumentType::Page];
-
-        yield 'link' => ['type' => DocumentType::Link];
-
-        yield 'folder' => ['type' => DocumentType::Snippet];
-    }
-
-    /**
-     * @test
-     *
-     * @dataProvider unsupportedDocumentTypeProvider
      */
     #[ConfigureRoute(__DIR__ . '/Fixtures/get_document_route.yaml')]
     #[ConfigureExtension('neusta_pimcore_http_cache', [
@@ -115,16 +62,15 @@ final class TagDocumentTest extends ConfigurableWebTestcase
             'objects' => false,
         ],
     ])]
-    public function response_is_not_tagged_when_document_type_is_not_enabled(string $type): void
+    public function response_is_tagged_with_expected_tags_when_snippet_is_loaded(): void
     {
         $client = self::createClient();
 
-        $document = new Document();
+        $document = new Document\Snippet();
         $document->setId(42);
-        $document->setKey('test_document');
+        $document->setKey('test_document_snippet');
         $document->setPublished(true);
         $document->setParentId(1);
-        $document->setType($type);
         $document->save();
 
         // Clear the runtime cache, as it prevents the object from being loaded and thus tagged.
@@ -134,20 +80,119 @@ final class TagDocumentTest extends ConfigurableWebTestcase
         $client->request('GET', '/get-document?id=42');
 
         $response = $client->getResponse();
-        self::assertSame('Document with key: test_document', $response->getContent());
+        self::assertSame('Document with key: test_document_snippet', $response->getContent());
+        self::assertSame(200, $response->getStatusCode());
+        self::assertTrue($response->headers->getCacheControlDirective('public'));
+        self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
+        self::assertSame('d1,d42', $response->headers->get('X-Cache-Tags'));
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureRoute(__DIR__ . '/Fixtures/get_document_route.yaml')]
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'assets' => false,
+            'documents' => true,
+            'objects' => false,
+        ],
+    ])]
+    public function response_is_not_tagged_when_document_type_is_email(): void
+    {
+        $client = self::createClient();
+
+        $document = new Document\Email();
+        $document->setId(42);
+        $document->setKey('test_document_link');
+        $document->setPublished(true);
+        $document->setParentId(1);
+        $document->save();
+
+        // Clear the runtime cache, as it prevents the object from being loaded and thus tagged.
+        // Note: in reality, objects are created and loaded/used in separate requests.
+        RuntimeCache::clear();
+
+        $client->request('GET', '/get-document?id=42');
+
+        $response = $client->getResponse();
+        self::assertSame('Document with key: test_document_link', $response->getContent());
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
         self::assertSame('d1', $response->headers->get('X-Cache-Tags'));
     }
 
-    public function unsupportedDocumentTypeProvider(): iterable
+    /**
+     * @test
+     */
+    #[ConfigureRoute(__DIR__ . '/Fixtures/get_document_route.yaml')]
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'assets' => false,
+            'documents' => true,
+            'objects' => false,
+        ],
+    ])]
+    public function response_is_not_tagged_when_document_type_is_hard_link(): void
     {
-        yield 'Email' => ['type' => 'email'];
+        $client = self::createClient();
 
-        yield 'Hardlink' => ['type' => 'hardlink'];
+        $document = new Document\Hardlink();
+        $document->setId(42);
+        $document->setKey('test_document_hard_link');
+        $document->setPublished(true);
+        $document->setParentId(1);
+        $document->save();
 
-        yield 'Folder' => ['type' => 'folder'];
+        // Clear the runtime cache, as it prevents the object from being loaded and thus tagged.
+        // Note: in reality, objects are created and loaded/used in separate requests.
+        RuntimeCache::clear();
+
+        $client->request('GET', '/get-document?id=42');
+
+        $response = $client->getResponse();
+        self::assertSame('Document with key: test_document_hard_link', $response->getContent());
+        self::assertSame(200, $response->getStatusCode());
+        self::assertTrue($response->headers->getCacheControlDirective('public'));
+        self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
+        self::assertSame('d1', $response->headers->get('X-Cache-Tags'));
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureRoute(__DIR__ . '/Fixtures/get_document_route.yaml')]
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'assets' => false,
+            'documents' => true,
+            'objects' => false,
+        ],
+    ])]
+    public function response_is_not_tagged_when_document_type_is_folder(): void
+    {
+        $client = self::createClient();
+
+        $document = new Document\Folder();
+        $document->setId(42);
+        $document->setKey('test_document_folder');
+        $document->setPublished(true);
+        $document->setParentId(1);
+        $document->save();
+
+        // Clear the runtime cache, as it prevents the object from being loaded and thus tagged.
+        // Note: in reality, objects are created and loaded/used in separate requests.
+        RuntimeCache::clear();
+
+        $client->request('GET', '/get-document?id=42');
+
+        $response = $client->getResponse();
+        self::assertSame('Document with key: test_document_folder', $response->getContent());
+        self::assertSame(200, $response->getStatusCode());
+        self::assertTrue($response->headers->getCacheControlDirective('public'));
+        self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
+        self::assertSame('d1', $response->headers->get('X-Cache-Tags'));
     }
 
     /**
