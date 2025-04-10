@@ -10,7 +10,7 @@ use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\Asset;
 
-#[ConfigureRoute(__DIR__ . '/Fixtures/get_asset_route.php')]
+#[ConfigureRoute(__DIR__ . '/../Fixtures/get_asset_route.php')]
 final class TagAssetTest extends ConfigurableWebTestcase
 {
     use ResetDatabase;

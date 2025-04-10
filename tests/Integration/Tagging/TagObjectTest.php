@@ -10,7 +10,7 @@ use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\DataObject\TestDataObject;
 
-#[ConfigureRoute(__DIR__ . '/Fixtures/get_object_route.php')]
+#[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
 final class TagObjectTest extends ConfigurableWebTestcase
 {
     use ResetDatabase;

@@ -11,7 +11,7 @@ use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\Document;
 
-#[ConfigureRoute(__DIR__ . '/Fixtures/get_document_route.php')]
+#[ConfigureRoute(__DIR__ . '/../Fixtures/get_document_route.php')]
 final class TagDocumentTest extends ConfigurableWebTestcase
 {
     use ResetDatabase;
