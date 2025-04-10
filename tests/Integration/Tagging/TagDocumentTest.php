@@ -41,7 +41,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
         // Note: in reality, objects are created and loaded/used in separate requests.
         RuntimeCache::clear();
 
-        $client->request('GET', '/get-document?id=42');
+        $client->request('GET', '/test_document_page');
 
         $response = $client->getResponse();
         self::assertSame('Document with key: test_document_page', $response->getContent());
