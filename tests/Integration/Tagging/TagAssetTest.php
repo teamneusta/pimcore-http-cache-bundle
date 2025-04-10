@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Integration\Tagging;
+namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Tagging;
 
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
