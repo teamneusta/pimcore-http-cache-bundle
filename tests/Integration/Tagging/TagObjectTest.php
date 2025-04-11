@@ -8,23 +8,19 @@ use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureRoute;
 use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
-use Pimcore\Cache\RuntimeCache;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
 final class TagObjectTest extends ConfigurableWebTestcase
 {
     use ResetDatabase;
 
-    private $client;
+    private KernelBrowser $client;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->client = self::createClient();
-        TestObjectFactory::simple()->save();
-        // Clear the runtime cache, as it prevents the object from being loaded and thus tagged.
-        // Note: in reality, objects are created and loaded/used in separate requests.
-        RuntimeCache::clear();
     }
 
     /**
@@ -39,6 +35,8 @@ final class TagObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_expected_tags_when_object_is_loaded(): void
     {
+        TestObjectFactory::simple()->save();
+
         $this->client->request('GET', '/get-object?id=42');
 
         $response = $this->client->getResponse();
@@ -61,6 +59,8 @@ final class TagObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_objects_is_not_enabled(): void
     {
+        TestObjectFactory::simple()->save();
+
         $this->client->request('GET', '/get-object?id=42');
 
         $response = $this->client->getResponse();
@@ -84,6 +84,8 @@ final class TagObjectTest extends ConfigurableWebTestcase
     public function response_is_not_tagged_when_caching_is_deactivated(): void
     {
         static::getContainer()->get(CacheActivator::class)->deactivateCaching();
+
+        TestObjectFactory::simple()->save();
 
         $this->client->request('GET', '/get-object?id=42');
 
