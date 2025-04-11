@@ -7,7 +7,6 @@ use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestObjectFactory;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
 use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
-use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\DataObject\TestDataObject;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -31,9 +30,6 @@ final class InvalidateObjectTest extends ConfigurableWebTestcase
         $this->cacheManager = $this->prophesize(CacheManager::class);
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
         $this->object = TestObjectFactory::simple()->save();
-        // Clear the runtime cache, as it prevents the object from being loaded and thus tagged.
-        // Note: in reality, objects are created and loaded/used in separate requests.
-        RuntimeCache::clear();
         parent::setUp();
     }
 

@@ -2,6 +2,7 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use App\Service\ClearRuntimeListener;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidatorInterface;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
 use Pimcore\Event\AssetEvents;
@@ -16,6 +17,14 @@ return function (ContainerConfigurator $container): void {
 
     $services->load('App\\', '../src/')
         ->exclude('../src/TestKernel.php}');
+
+    $services->set(ClearRuntimeListener::class)
+        ->tag('kernel.event_listener', ['event' => AssetEvents::POST_UPDATE])
+        ->tag('kernel.event_listener', ['event' => AssetEvents::POST_DELETE])
+        ->tag('kernel.event_listener', ['event' => DataObjectEvents::POST_UPDATE])
+        ->tag('kernel.event_listener', ['event' => DataObjectEvents::POST_DELETE])
+        ->tag('kernel.event_listener', ['event' => DocumentEvents::POST_UPDATE])
+        ->tag('kernel.event_listener', ['event' => DocumentEvents::POST_DELETE]);
 
     // TODO: Remove!
     $services->set(InvalidateElementListener::class)
