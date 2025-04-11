@@ -2,6 +2,7 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use App\Service\CancelInvalidationListener;
 use App\Service\ClearRuntimeListener;
 use App\Service\InvalidateAdditionalTagListener;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidatorInterface;
@@ -28,6 +29,9 @@ return function (ContainerConfigurator $container): void {
         ->tag('kernel.event_listener', ['event' => DocumentEvents::POST_DELETE]);
 
     $services->set(InvalidateAdditionalTagListener::class)
+        ->public();
+
+    $services->set(CancelInvalidationListener::class)
         ->public();
 
     // TODO: Remove!
