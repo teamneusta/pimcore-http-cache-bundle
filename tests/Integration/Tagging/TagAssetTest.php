@@ -8,7 +8,6 @@ use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureRoute;
 use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
-use Pimcore\Cache\RuntimeCache;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 #[ConfigureRoute(__DIR__ . '/../Fixtures/get_asset_route.php')]
@@ -20,8 +19,8 @@ final class TagAssetTest extends ConfigurableWebTestcase
 
     protected function setUp(): void
     {
-        $this->client = self::createClient();
         parent::setUp();
+        $this->client = self::createClient();
     }
 
     /**
@@ -37,10 +36,6 @@ final class TagAssetTest extends ConfigurableWebTestcase
     public function response_is_tagged_with_expected_tags_when_asset_is_loaded(): void
     {
         TestAssetFactory::simple()->save();
-
-        // Clear the runtime cache, as it prevents the object from being loaded and thus tagged.
-        // Note: in reality, objects are created and loaded/used in separate requests.
-        RuntimeCache::clear();
 
         $this->client->request('GET', '/get-asset?id=42');
 
@@ -65,10 +60,6 @@ final class TagAssetTest extends ConfigurableWebTestcase
     public function response_is_not_tagged_when_assets_is_not_enabled(): void
     {
         TestAssetFactory::simple()->save();
-
-        // Clear the runtime cache, as it prevents the object from being loaded and thus tagged.
-        // Note: in reality, objects are created and loaded/used in separate requests.
-        RuntimeCache::clear();
 
         $this->client->request('GET', '/get-asset?id=42');
 
@@ -95,10 +86,6 @@ final class TagAssetTest extends ConfigurableWebTestcase
         static::getContainer()->get(CacheActivator::class)->deactivateCaching();
 
         TestAssetFactory::simple()->save();
-
-        // Clear the runtime cache, as it prevents the object from being loaded and thus tagged.
-        // Note: in reality, objects are created and loaded/used in separate requests.
-        RuntimeCache::clear();
 
         $this->client->request('GET', '/get-asset?id=42');
 

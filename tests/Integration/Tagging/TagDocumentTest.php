@@ -8,7 +8,6 @@ use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureRoute;
 use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
-use Pimcore\Cache\RuntimeCache;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 #[ConfigureRoute(__DIR__ . '/../Fixtures/get_document_route.php')]
@@ -27,9 +26,6 @@ final class TagDocumentTest extends ConfigurableWebTestcase
         TestDocumentFactory::simpleEmail()->save();
         TestDocumentFactory::simpleHardLink()->save();
         TestDocumentFactory::simpleFolder()->save();
-        // Clear the runtime cache, as it prevents the object from being loaded and thus tagged.
-        // Note: in reality, objects are created and loaded/used in separate requests.
-        RuntimeCache::clear();
     }
 
     /**
