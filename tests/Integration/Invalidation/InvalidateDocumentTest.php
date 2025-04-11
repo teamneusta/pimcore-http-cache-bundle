@@ -6,12 +6,14 @@ use FOS\HttpCacheBundle\CacheManager;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestDocumentFactory;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
+use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureRoute;
 use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
 use Pimcore\Model\Document;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
+#[ConfigureRoute(__DIR__ . '/../Fixtures/get_document_route.php')]
 final class InvalidateDocumentTest extends ConfigurableWebTestcase
 {
     use ProphecyTrait;
