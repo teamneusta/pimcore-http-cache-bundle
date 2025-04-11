@@ -3,6 +3,7 @@
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use App\Service\ClearRuntimeListener;
+use App\Service\InvalidateAdditionalTagListener;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidatorInterface;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
 use Pimcore\Event\AssetEvents;
@@ -25,6 +26,9 @@ return function (ContainerConfigurator $container): void {
         ->tag('kernel.event_listener', ['event' => DataObjectEvents::POST_DELETE])
         ->tag('kernel.event_listener', ['event' => DocumentEvents::POST_UPDATE])
         ->tag('kernel.event_listener', ['event' => DocumentEvents::POST_DELETE]);
+
+    $services->set(InvalidateAdditionalTagListener::class)
+        ->public();
 
     // TODO: Remove!
     $services->set(InvalidateElementListener::class)
