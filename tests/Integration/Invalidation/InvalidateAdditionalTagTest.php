@@ -28,12 +28,9 @@ final class InvalidateAdditionalTagTest extends ConfigurableWebTestcase
     protected function setUp(): void
     {
         $this->client = self::createClient();
-
         $this->cacheManager = $this->prophesize(CacheManager::class);
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
-
         parent::setUp();
-
         $listener = new InvalidateAdditionalTagListener();
         self::getContainer()->set(InvalidateAdditionalTagListener::class, $listener);
         $dispatcher = self::getContainer()->get('event_dispatcher');
@@ -55,11 +52,11 @@ final class InvalidateAdditionalTagTest extends ConfigurableWebTestcase
         $this->cacheManager->invalidateTags(Argument::any())
             ->willReturn($this->cacheManager->reveal());
 
-        $element = TestObjectFactory::simple()->save();
+        $object = TestObjectFactory::simple()->save();
 
         $this->client->request('GET', '/get-object?id=42');
 
-        $element->setContent('Updated test content')->save();
+        $object->setContent('Updated test content')->save();
 
         $this->cacheManager->invalidateTags(['additional_tag'])->shouldHaveBeenCalled();
         $this->cacheManager->flush()->shouldHaveBeenCalled();
@@ -80,11 +77,11 @@ final class InvalidateAdditionalTagTest extends ConfigurableWebTestcase
         $this->cacheManager->invalidateTags(Argument::any())
             ->willReturn($this->cacheManager->reveal());
 
-        $element = TestDocumentFactory::simplePage()->save();
+        $document = TestDocumentFactory::simplePage()->save();
 
         $this->client->request('GET', '/test_document_page');
 
-        $element->setKey('updated_test_document_page')->save();
+        $document->setKey('updated_test_document_page')->save();
 
         $this->cacheManager->invalidateTags(['additional_tag'])->shouldHaveBeenCalled();
         $this->cacheManager->flush()->shouldHaveBeenCalled();
@@ -105,36 +102,11 @@ final class InvalidateAdditionalTagTest extends ConfigurableWebTestcase
         $this->cacheManager->invalidateTags(Argument::any())
             ->willReturn($this->cacheManager->reveal());
 
-        $element = TestAssetFactory::simple()->save();
+        $asset = TestAssetFactory::simple()->save();
 
         $this->client->request('GET', '/get-asset?id=42');
 
-        $element->setData('Updated test content')->save();
-
-        $this->cacheManager->invalidateTags(['additional_tag'])->shouldHaveBeenCalled();
-        $this->cacheManager->flush()->shouldHaveBeenCalled();
-    }
-
-    /**
-     * @test
-     */
-    #[ConfigureExtension('neusta_pimcore_http_cache', [
-        'elements' => [
-            'assets' => true,
-            'documents' => false,
-            'objects' => false,
-        ],
-    ])]
-    public function invalidate_additional_tag_on_asset_delete(): void
-    {
-        $this->cacheManager->invalidateTags(Argument::any())
-            ->willReturn($this->cacheManager->reveal());
-
-        $element = TestAssetFactory::simple()->save();
-
-        $this->client->request('GET', '/get-asset?id=42');
-
-        $element->delete();
+        $asset->setData('Updated test content')->save();
 
         $this->cacheManager->invalidateTags(['additional_tag'])->shouldHaveBeenCalled();
         $this->cacheManager->flush()->shouldHaveBeenCalled();
@@ -150,16 +122,41 @@ final class InvalidateAdditionalTagTest extends ConfigurableWebTestcase
             'objects' => true,
         ],
     ])]
-    public function invalidate_additional_tag_on_object_delete(): void
+    public function invalidate_additional_tag_on_object_deletion(): void
     {
         $this->cacheManager->invalidateTags(Argument::any())
             ->willReturn($this->cacheManager->reveal());
 
-        $element = TestObjectFactory::simple()->save();
+        $object = TestObjectFactory::simple()->save();
 
         $this->client->request('GET', '/get-object?id=42');
 
-        $element->delete();
+        $object->delete();
+
+        $this->cacheManager->invalidateTags(['additional_tag'])->shouldHaveBeenCalled();
+        $this->cacheManager->flush()->shouldHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'assets' => true,
+            'documents' => false,
+            'objects' => false,
+        ],
+    ])]
+    public function invalidate_additional_tag_on_asset_deletion(): void
+    {
+        $this->cacheManager->invalidateTags(Argument::any())
+            ->willReturn($this->cacheManager->reveal());
+
+        $asset = TestAssetFactory::simple()->save();
+
+        $this->client->request('GET', '/get-asset?id=42');
+
+        $asset->delete();
 
         $this->cacheManager->invalidateTags(['additional_tag'])->shouldHaveBeenCalled();
         $this->cacheManager->flush()->shouldHaveBeenCalled();
@@ -175,16 +172,16 @@ final class InvalidateAdditionalTagTest extends ConfigurableWebTestcase
             'objects' => false,
         ],
     ])]
-    public function invalidate_additional_tag_on_document_delete(): void
+    public function invalidate_additional_tag_on_document_deletion(): void
     {
         $this->cacheManager->invalidateTags(Argument::any())
             ->willReturn($this->cacheManager->reveal());
 
-        $element = TestDocumentFactory::simplePage()->save();
+        $document = TestDocumentFactory::simplePage()->save();
 
         $this->client->request('GET', '/test_document_page');
 
-        $element->delete();
+        $document->delete();
 
         $this->cacheManager->invalidateTags(['additional_tag'])->shouldHaveBeenCalled();
         $this->cacheManager->flush()->shouldHaveBeenCalled();
