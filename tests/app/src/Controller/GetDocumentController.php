@@ -12,7 +12,11 @@ final class GetDocumentController
     {
         $document = Document::getById($request->query->get('id'));
 
-        $message = \sprintf('Document with key: %s', $document?->getKey());
+        if (!$document) {
+            return new Response('Document not found', Response::HTTP_NOT_FOUND);
+        }
+        
+        $message = \sprintf('Document with key: %s', $document->getKey());
 
         return (new Response($message))
             ->setSharedMaxAge(3600)

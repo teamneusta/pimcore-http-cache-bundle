@@ -12,7 +12,11 @@ final class GetAssetController
     {
         $asset = Asset::getById($request->query->get('id'));
 
-        return (new Response($asset?->getData()))
+        if (!$asset) {
+            return new Response('Asset not found', Response::HTTP_NOT_FOUND);
+        }
+
+        return (new Response($asset->getData()))
             ->setSharedMaxAge(3600)
             ->setPublic();
     }
