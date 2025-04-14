@@ -16,7 +16,7 @@ return function (ContainerConfigurator $container): void {
         ->autoconfigure();
 
     $services->load('App\\', '../src/')
-        ->exclude('../src/TestKernel.php}');
+        ->exclude('../src/TestKernel.php');
 
     $services->set(ClearRuntimeListener::class)
         ->tag('kernel.event_listener', ['event' => AssetEvents::POST_UPDATE])
