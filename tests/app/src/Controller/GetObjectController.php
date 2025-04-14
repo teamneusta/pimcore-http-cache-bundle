@@ -10,9 +10,11 @@ final class GetObjectController
 {
     public function __invoke(Request $request): Response
     {
-        $object = TestDataObject::getById($request->query->get('id'));
+        if (!$object = TestDataObject::getById($request->query->get('id'))) {
+            return new Response('Object not found', Response::HTTP_NOT_FOUND);
+        }
 
-        return (new Response($object?->getContent()))
+        return (new Response($object->getContent()))
             ->setSharedMaxAge(3600)
             ->setPublic();
     }
