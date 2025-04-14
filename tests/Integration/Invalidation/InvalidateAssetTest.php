@@ -19,8 +19,7 @@ final class InvalidateAssetTest extends ConfigurableWebTestcase
     use ProphecyTrait;
     use ResetDatabase;
 
-    /** @var ObjectProphecy<KernelBrowser> */
-    private $client;
+    private KernelBrowser $client;
 
     /** @var ObjectProphecy<CacheManager> */
     private $cacheManager;
