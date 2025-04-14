@@ -3,8 +3,8 @@
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use App\Service\CancelInvalidationListener;
-use App\Service\ClearRuntimeListener;
 use App\Service\InvalidateAdditionalTagListener;
+use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ClearRuntimeCacheListener;
 use Pimcore\Event\AssetEvents;
 use Pimcore\Event\DataObjectEvents;
 use Pimcore\Event\DocumentEvents;
@@ -18,7 +18,7 @@ return function (ContainerConfigurator $container): void {
     $services->load('App\\', '../src/')
         ->exclude('../src/TestKernel.php');
 
-    $services->set(ClearRuntimeListener::class)
+    $services->set(ClearRuntimeCacheListener::class)
         ->tag('kernel.event_listener', ['event' => AssetEvents::POST_UPDATE])
         ->tag('kernel.event_listener', ['event' => AssetEvents::POST_DELETE])
         ->tag('kernel.event_listener', ['event' => DataObjectEvents::POST_UPDATE])
