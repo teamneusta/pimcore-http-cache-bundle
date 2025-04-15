@@ -2,8 +2,8 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Invalidation;
 
-use App\Service\InvalidateAdditionalTagListener;
 use FOS\HttpCacheBundle\CacheManager;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementInvalidationEvent;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestAssetFactory;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestDocumentFactory;
@@ -30,11 +30,12 @@ final class InvalidateAdditionalTagTest extends ConfigurableWebTestcase
         $this->client = self::createClient();
         $this->cacheManager = $this->prophesize(CacheManager::class);
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
-        parent::setUp();
-        $listener = new InvalidateAdditionalTagListener();
-        self::getContainer()->set(InvalidateAdditionalTagListener::class, $listener);
         $dispatcher = self::getContainer()->get('event_dispatcher');
-        $dispatcher->addListener(ElementInvalidationEvent::class, $listener);
+        $dispatcher->addListener(
+            ElementInvalidationEvent::class,
+            fn ($event) => $event->cacheTags->add(new CacheTag('additional_tag')),
+        );
+        parent::setUp();
     }
 
     /**
