@@ -27,9 +27,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
             'documents' => true,
-            'objects' => false,
         ],
     ])]
     public function response_is_tagged_with_expected_tags_when_page_is_loaded(): void
@@ -51,9 +49,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
             'documents' => true,
-            'objects' => false,
         ],
     ])]
     public function response_is_tagged_with_expected_tags_when_snippet_is_loaded(): void
@@ -75,9 +71,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
             'documents' => true,
-            'objects' => false,
         ],
     ])]
     public function response_is_not_tagged_when_document_type_is_email(): void
@@ -99,9 +93,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
             'documents' => true,
-            'objects' => false,
         ],
     ])]
     public function response_is_not_tagged_when_document_type_is_hard_link(): void
@@ -123,9 +115,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
             'documents' => true,
-            'objects' => false,
         ],
     ])]
     public function response_is_not_tagged_when_document_type_is_folder(): void
@@ -147,9 +137,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
             'documents' => false,
-            'objects' => false,
         ],
     ])]
     public function response_is_not_tagged_when_documents_is_not_enabled(): void
@@ -171,9 +159,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
             'documents' => true,
-            'objects' => false,
         ],
     ])]
     public function response_is_not_tagged_when_caching_is_deactivated(): void
@@ -197,9 +183,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
             'documents' => true,
-            'objects' => false,
         ],
     ])]
     public function request_is_tagged_with_root_document_tag_when_loaded(): void

@@ -1,0 +1,5 @@
+neusta_pimcore_http_cache:
+  elements:
+    assets: false
+    documents: false
+    objects: false

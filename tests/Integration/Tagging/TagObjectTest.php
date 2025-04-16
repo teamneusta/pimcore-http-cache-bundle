@@ -27,8 +27,6 @@ final class TagObjectTest extends ConfigurableWebTestcase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
-            'documents' => false,
             'objects' => true,
         ],
     ])]
@@ -51,8 +49,6 @@ final class TagObjectTest extends ConfigurableWebTestcase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
-            'documents' => false,
             'objects' => false,
         ],
     ])]
@@ -75,8 +71,6 @@ final class TagObjectTest extends ConfigurableWebTestcase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
-            'documents' => false,
             'objects' => true,
         ],
     ])]

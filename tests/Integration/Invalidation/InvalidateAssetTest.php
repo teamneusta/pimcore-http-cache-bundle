@@ -40,8 +40,6 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'assets' => true,
-            'documents' => false,
-            'objects' => false,
         ],
     ])]
     public function response_is_invalidated_when_asset_is_updated(): void
@@ -57,8 +55,6 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'assets' => true,
-            'documents' => false,
-            'objects' => false,
         ],
     ])]
     public function response_is_invalidated_when_asset_is_deleted(): void
