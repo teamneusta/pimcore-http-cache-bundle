@@ -46,8 +46,6 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
-            'documents' => false,
             'objects' => true,
         ],
     ])]
@@ -65,9 +63,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
             'documents' => true,
-            'objects' => false,
         ],
     ])]
     public function invalidate_additional_tag_on_document_update(): void
@@ -85,8 +81,6 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'assets' => true,
-            'documents' => false,
-            'objects' => false,
         ],
     ])]
     public function invalidate_additional_tag_on_asset_update(): void
@@ -103,8 +97,6 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
-            'documents' => false,
             'objects' => true,
         ],
     ])]
@@ -123,8 +115,6 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'assets' => true,
-            'documents' => false,
-            'objects' => false,
         ],
     ])]
     public function invalidate_additional_tag_on_asset_deletion(): void
@@ -141,9 +131,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
             'documents' => true,
-            'objects' => false,
         ],
     ])]
     public function invalidate_additional_tag_on_document_deletion(): void

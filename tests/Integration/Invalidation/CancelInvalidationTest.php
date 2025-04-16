@@ -44,8 +44,6 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
-            'documents' => false,
             'objects' => true,
         ],
     ])]
@@ -63,9 +61,7 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
             'documents' => true,
-            'objects' => false,
         ],
     ])]
     public function cancel_invalidation_on_document_update(): void
@@ -83,8 +79,6 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'assets' => true,
-            'documents' => false,
-            'objects' => false,
         ],
     ])]
     public function cancel_invalidation_on_asset_update(): void
@@ -101,8 +95,6 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
-            'documents' => false,
             'objects' => true,
         ],
     ])]
@@ -120,9 +112,7 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
             'documents' => true,
-            'objects' => false,
         ],
     ])]
     public function cancel_invalidation_on_document_delete(): void
@@ -140,8 +130,6 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'assets' => true,
-            'documents' => false,
-            'objects' => false,
         ],
     ])]
     public function cancel_invalidation_on_asset_delete(): void

@@ -38,8 +38,6 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
-            'documents' => false,
             'objects' => true,
         ],
     ])]
@@ -55,8 +53,6 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => false,
-            'documents' => false,
             'objects' => true,
         ],
     ])]

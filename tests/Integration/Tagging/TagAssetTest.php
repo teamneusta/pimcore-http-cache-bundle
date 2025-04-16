@@ -28,8 +28,6 @@ final class TagAssetTest extends ConfigurableWebTestcase
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'assets' => true,
-            'documents' => false,
-            'objects' => false,
         ],
     ])]
     public function response_is_tagged_with_expected_tags_when_asset_is_loaded(): void
@@ -52,8 +50,6 @@ final class TagAssetTest extends ConfigurableWebTestcase
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'assets' => false,
-            'documents' => false,
-            'objects' => true,
         ],
     ])]
     public function response_is_not_tagged_when_assets_is_not_enabled(): void
@@ -76,8 +72,6 @@ final class TagAssetTest extends ConfigurableWebTestcase
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'assets' => true,
-            'documents' => false,
-            'objects' => false,
         ],
     ])]
     public function response_is_not_tagged_when_caching_is_deactivated(): void
