@@ -4,6 +4,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Invalidation;
 
 use FOS\HttpCacheBundle\CacheManager;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementInvalidationEvent;
+use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestAssetFactory;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestDocumentFactory;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestObjectFactory;
@@ -22,6 +23,7 @@ use Prophecy\Prophecy\ObjectProphecy;
 ]
 final class CancelInvalidationTest extends ConfigurableKernelTestCase
 {
+    use ArrangeCacheTest;
     use ProphecyTrait;
     use ResetDatabase;
 
@@ -51,7 +53,7 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
     ])]
     public function cancel_invalidation_on_object_update(): void
     {
-        $object = TestObjectFactory::simple()->save();
+        $object = self::arrange(fn () => TestObjectFactory::simple()->save());
 
         $object->setContent('Updated test content')->save();
 
@@ -70,7 +72,7 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
     ])]
     public function cancel_invalidation_on_document_update(): void
     {
-        $document = TestDocumentFactory::simplePage()->save();
+        $document = self::arrange(fn () => TestDocumentFactory::simplePage()->save());
 
         $document->setKey('updated_test_document_page')->save();
 
@@ -89,7 +91,7 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
     ])]
     public function cancel_invalidation_on_asset_update(): void
     {
-        $asset = TestAssetFactory::simple()->save();
+        $asset = self::arrange(fn () => TestAssetFactory::simple()->save());
 
         $asset->setData('Updated test content')->save();
 
@@ -108,7 +110,7 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
     ])]
     public function cancel_invalidation_on_object_delete(): void
     {
-        $object = TestObjectFactory::simple()->save();
+        $object = self::arrange(fn () => TestObjectFactory::simple()->save());
 
         $object->delete();
 
@@ -127,7 +129,7 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
     ])]
     public function cancel_invalidation_on_document_delete(): void
     {
-        $document = TestDocumentFactory::simplePage()->save();
+        $document = self::arrange(fn () => TestDocumentFactory::simplePage()->save());
 
         $document->delete();
 
@@ -146,7 +148,7 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
     ])]
     public function cancel_invalidation_on_asset_delete(): void
     {
-        $asset = TestAssetFactory::simple()->save();
+        $asset = self::arrange(fn () => TestAssetFactory::simple()->save());
 
         $asset->delete();
 

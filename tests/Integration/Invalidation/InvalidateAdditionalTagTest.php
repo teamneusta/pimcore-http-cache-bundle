@@ -5,6 +5,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Invalidation;
 use FOS\HttpCacheBundle\CacheManager;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementInvalidationEvent;
+use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestAssetFactory;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestDocumentFactory;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestObjectFactory;
@@ -23,6 +24,7 @@ use Prophecy\Prophecy\ObjectProphecy;
 ]
 final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 {
+    use ArrangeCacheTest;
     use ProphecyTrait;
     use ResetDatabase;
 
@@ -53,11 +55,11 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function invalidate_additional_tag_on_object_update(): void
     {
-        $object = TestObjectFactory::simple()->save();
+        $object = self::arrange(fn () => TestObjectFactory::simple()->save());
 
         $object->setContent('Updated test content')->save();
 
-        $this->cacheManager->invalidateTags(['additional_tag'])->shouldHaveBeenCalled();
+        $this->cacheManager->invalidateTags(['additional_tag'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -72,11 +74,11 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function invalidate_additional_tag_on_document_update(): void
     {
-        $document = TestDocumentFactory::simplePage()->save();
+        $document = self::arrange(fn () => TestDocumentFactory::simplePage()->save());
 
         $document->setKey('updated_test_document_page')->save();
 
-        $this->cacheManager->invalidateTags(['additional_tag'])->shouldHaveBeenCalled();
+        $this->cacheManager->invalidateTags(['additional_tag'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -91,11 +93,11 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function invalidate_additional_tag_on_asset_update(): void
     {
-        $asset = TestAssetFactory::simple()->save();
+        $asset = self::arrange(fn () => TestAssetFactory::simple()->save());
 
         $asset->setData('Updated test content')->save();
 
-        $this->cacheManager->invalidateTags(['additional_tag'])->shouldHaveBeenCalled();
+        $this->cacheManager->invalidateTags(['additional_tag'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -110,11 +112,11 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function invalidate_additional_tag_on_object_deletion(): void
     {
-        $object = TestObjectFactory::simple()->save();
+        $object = self::arrange(fn () => TestObjectFactory::simple()->save());
 
         $object->delete();
 
-        $this->cacheManager->invalidateTags(['additional_tag'])->shouldHaveBeenCalled();
+        $this->cacheManager->invalidateTags(['additional_tag'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -129,11 +131,11 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function invalidate_additional_tag_on_asset_deletion(): void
     {
-        $asset = TestAssetFactory::simple()->save();
+        $asset = self::arrange(fn () => TestAssetFactory::simple()->save());
 
         $asset->delete();
 
-        $this->cacheManager->invalidateTags(['additional_tag'])->shouldHaveBeenCalled();
+        $this->cacheManager->invalidateTags(['additional_tag'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -148,10 +150,10 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function invalidate_additional_tag_on_document_deletion(): void
     {
-        $document = TestDocumentFactory::simplePage()->save();
+        $document = self::arrange(fn () => TestDocumentFactory::simplePage()->save());
 
         $document->delete();
 
-        $this->cacheManager->invalidateTags(['additional_tag'])->shouldHaveBeenCalled();
+        $this->cacheManager->invalidateTags(['additional_tag'])->shouldHaveBeenCalledTimes(1);
     }
 }

@@ -3,6 +3,7 @@
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Invalidation;
 
 use FOS\HttpCacheBundle\CacheManager;
+use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestDocumentFactory;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
@@ -16,6 +17,7 @@ use Prophecy\Prophecy\ObjectProphecy;
 #[ConfigureRoute(__DIR__ . '/../Fixtures/get_document_route.php')]
 final class InvalidateDocumentTest extends ConfigurableKernelTestCase
 {
+    use ArrangeCacheTest;
     use ProphecyTrait;
     use ResetDatabase;
 
@@ -30,7 +32,7 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
         $this->cacheManager->invalidateTags(Argument::any())->willReturn($this->cacheManager->reveal());
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
 
-        $this->document = TestDocumentFactory::simplePage()->save();
+        $this->document = self::arrange(fn () => TestDocumentFactory::simplePage()->save());
     }
 
     /**
@@ -47,7 +49,7 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
     {
         $this->document->setKey('updated_test_document_page')->save();
 
-        $this->cacheManager->invalidateTags(['d42'])->shouldHaveBeenCalled();
+        $this->cacheManager->invalidateTags(['d42'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -64,6 +66,6 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
     {
         $this->document->delete();
 
-        $this->cacheManager->invalidateTags(['d42'])->shouldHaveBeenCalled();
+        $this->cacheManager->invalidateTags(['d42'])->shouldHaveBeenCalledTimes(1);
     }
 }
