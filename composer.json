@@ -37,7 +37,8 @@
     "phpstan/phpstan-phpunit": "^1.4",
     "phpstan/phpstan-symfony": "^1.4",
     "phpunit/phpunit": "^9.6",
-    "teamneusta/pimcore-testing-framework": "^0.12.8"
+    "symfony/browser-kit": "^5.4 || ^6.4",
+    "teamneusta/pimcore-testing-framework": "^0.12.10"
   },
   "conflict": {
     "jms/serializer-bundle": "<4.2",
@@ -52,7 +53,9 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Neusta\\Pimcore\\HttpCacheBundle\\Tests\\": "tests/"
+      "Neusta\\Pimcore\\HttpCacheBundle\\Tests\\": "tests/",
+      "App\\": "tests/app/src",
+      "Pimcore\\Model\\DataObject\\": "tests/app/var/classes/DataObject"
     },
     "classmap": [
       "tests/app/TestKernel.php"

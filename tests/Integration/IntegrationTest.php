@@ -5,7 +5,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration;
 
 use Pimcore\Test\KernelTestCase;
 
-class IntegrationTest extends KernelTestCase
+final class IntegrationTest extends KernelTestCase
 {
     /**
      * @test
