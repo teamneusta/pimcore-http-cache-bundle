@@ -9,7 +9,7 @@ use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 final class ElementCacheType implements CacheType
 {
     public function __construct(
-        private readonly ElementType $type,
+        public readonly ElementType $type,
     ) {
     }
 
