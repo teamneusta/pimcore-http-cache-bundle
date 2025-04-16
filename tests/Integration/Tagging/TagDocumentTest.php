@@ -20,7 +20,6 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     protected function setUp(): void
     {
         $this->client = self::createClient();
-        parent::setUp();
     }
 
     /**

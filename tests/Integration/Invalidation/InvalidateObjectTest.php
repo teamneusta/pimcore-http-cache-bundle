@@ -9,6 +9,7 @@ use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureRoute;
 use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
 use Pimcore\Model\DataObject\TestDataObject;
+use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -22,17 +23,19 @@ final class InvalidateObjectTest extends ConfigurableWebTestcase
     private KernelBrowser $client;
 
     /** @var ObjectProphecy<CacheManager> */
-    private $cacheManager;
+    private ObjectProphecy $cacheManager;
 
     private TestDataObject $object;
 
     protected function setUp(): void
     {
         $this->client = self::createClient();
+
         $this->cacheManager = $this->prophesize(CacheManager::class);
+        $this->cacheManager->invalidateTags(Argument::any())->willReturn($this->cacheManager->reveal());
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
+
         $this->object = TestObjectFactory::simple()->save();
-        parent::setUp();
     }
 
     /**
@@ -47,9 +50,6 @@ final class InvalidateObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_is_invalidated_when_object_is_updated(): void
     {
-        $this->cacheManager->invalidateTags(['o42'])
-            ->willReturn($this->cacheManager->reveal());
-
         $this->client->request('GET', '/get-object?id=42');
 
         $this->object->setContent('Updated test content')->save();
@@ -70,9 +70,6 @@ final class InvalidateObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_is_invalidated_when_object_is_deleted(): void
     {
-        $this->cacheManager->invalidateTags(['o42'])
-            ->willReturn($this->cacheManager->reveal());
-
         $this->client->request('GET', '/get-object?id=42');
 
         $this->object->delete();

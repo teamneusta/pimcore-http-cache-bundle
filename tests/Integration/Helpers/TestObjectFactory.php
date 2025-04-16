@@ -15,6 +15,6 @@ final class TestObjectFactory
         $object->setPublished(true);
         $object->setParentId(1);
 
-        return $object->save();
+        return $object;
     }
 }

@@ -9,6 +9,7 @@ use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureRoute;
 use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
 use Pimcore\Model\Asset;
+use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -22,15 +23,18 @@ final class InvalidateAssetTest extends ConfigurableWebTestcase
     private KernelBrowser $client;
 
     /** @var ObjectProphecy<CacheManager> */
-    private $cacheManager;
+    private ObjectProphecy $cacheManager;
 
     private Asset $asset;
 
     protected function setUp(): void
     {
         $this->client = self::createClient();
+
         $this->cacheManager = $this->prophesize(CacheManager::class);
+        $this->cacheManager->invalidateTags(Argument::any())->willReturn($this->cacheManager->reveal());
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
+
         $this->asset = TestAssetFactory::simple()->save();
         parent::setUp();
     }
@@ -47,9 +51,6 @@ final class InvalidateAssetTest extends ConfigurableWebTestcase
     ])]
     public function response_is_invalidated_when_asset_is_updated(): void
     {
-        $this->cacheManager->invalidateTags(['a42'])
-            ->willReturn($this->cacheManager->reveal());
-
         $this->client->request('GET', '/get-asset?id=42');
 
         $this->asset->setData('Updated test content')->save();
@@ -70,9 +71,6 @@ final class InvalidateAssetTest extends ConfigurableWebTestcase
     ])]
     public function response_is_invalidated_when_asset_is_deleted(): void
     {
-        $this->cacheManager->invalidateTags(['a42'])
-            ->willReturn($this->cacheManager->reveal());
-
         $this->client->request('GET', '/get-asset?id=42');
 
         $this->asset->delete();

@@ -14,6 +14,8 @@ use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureRoute;
 use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
+use Prophecy\Prophecy\ObjectProphecy;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 #[
     ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php'),
@@ -25,17 +27,23 @@ final class InvalidateAdditionalTagTest extends ConfigurableWebTestcase
     use ProphecyTrait;
     use ResetDatabase;
 
+    private KernelBrowser $client;
+
+    /** @var ObjectProphecy<CacheManager> */
+    private ObjectProphecy $cacheManager;
+
     protected function setUp(): void
     {
         $this->client = self::createClient();
+
         $this->cacheManager = $this->prophesize(CacheManager::class);
+        $this->cacheManager->invalidateTags(Argument::any())->willReturn($this->cacheManager->reveal());
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
-        $dispatcher = self::getContainer()->get('event_dispatcher');
-        $dispatcher->addListener(
+
+        self::getContainer()->get('event_dispatcher')->addListener(
             ElementInvalidationEvent::class,
             fn ($event) => $event->cacheTags->add(new CacheTag('additional_tag')),
         );
-        parent::setUp();
     }
 
     /**
@@ -50,9 +58,6 @@ final class InvalidateAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function invalidate_additional_tag_on_object_update(): void
     {
-        $this->cacheManager->invalidateTags(Argument::any())
-            ->willReturn($this->cacheManager->reveal());
-
         $object = TestObjectFactory::simple()->save();
 
         $this->client->request('GET', '/get-object?id=42');
@@ -75,9 +80,6 @@ final class InvalidateAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function invalidate_additional_tag_on_document_update(): void
     {
-        $this->cacheManager->invalidateTags(Argument::any())
-            ->willReturn($this->cacheManager->reveal());
-
         $document = TestDocumentFactory::simplePage()->save();
 
         $this->client->request('GET', '/test_document_page');
@@ -100,9 +102,6 @@ final class InvalidateAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function invalidate_additional_tag_on_asset_update(): void
     {
-        $this->cacheManager->invalidateTags(Argument::any())
-            ->willReturn($this->cacheManager->reveal());
-
         $asset = TestAssetFactory::simple()->save();
 
         $this->client->request('GET', '/get-asset?id=42');
@@ -125,9 +124,6 @@ final class InvalidateAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function invalidate_additional_tag_on_object_deletion(): void
     {
-        $this->cacheManager->invalidateTags(Argument::any())
-            ->willReturn($this->cacheManager->reveal());
-
         $object = TestObjectFactory::simple()->save();
 
         $this->client->request('GET', '/get-object?id=42');
@@ -150,9 +146,6 @@ final class InvalidateAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function invalidate_additional_tag_on_asset_deletion(): void
     {
-        $this->cacheManager->invalidateTags(Argument::any())
-            ->willReturn($this->cacheManager->reveal());
-
         $asset = TestAssetFactory::simple()->save();
 
         $this->client->request('GET', '/get-asset?id=42');
@@ -175,9 +168,6 @@ final class InvalidateAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function invalidate_additional_tag_on_document_deletion(): void
     {
-        $this->cacheManager->invalidateTags(Argument::any())
-            ->willReturn($this->cacheManager->reveal());
-
         $document = TestDocumentFactory::simplePage()->save();
 
         $this->client->request('GET', '/test_document_page');

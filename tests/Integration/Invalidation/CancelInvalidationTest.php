@@ -13,6 +13,8 @@ use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureRoute;
 use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
+use Prophecy\Prophecy\ObjectProphecy;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 #[
     ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php'),
@@ -24,17 +26,22 @@ final class CancelInvalidationTest extends ConfigurableWebTestcase
     use ProphecyTrait;
     use ResetDatabase;
 
+    private KernelBrowser $client;
+
+    /** @var ObjectProphecy<CacheManager> */
+    private ObjectProphecy $cacheManager;
+
     protected function setUp(): void
     {
         $this->client = self::createClient();
+
         $this->cacheManager = $this->prophesize(CacheManager::class);
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
-        $dispatcher = self::getContainer()->get('event_dispatcher');
-        $dispatcher->addListener(
+
+        self::getContainer()->get('event_dispatcher')->addListener(
             ElementInvalidationEvent::class,
-            fn ($event) => $event->cancel = true
+            fn ($event) => $event->cancel = true,
         );
-        parent::setUp();
     }
 
     /**

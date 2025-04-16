@@ -19,7 +19,6 @@ final class TagObjectTest extends ConfigurableWebTestcase
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->client = self::createClient();
     }
 

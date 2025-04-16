@@ -9,6 +9,7 @@ use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureRoute;
 use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
 use Pimcore\Model\Document;
+use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -22,17 +23,19 @@ final class InvalidateDocumentTest extends ConfigurableWebTestcase
     private KernelBrowser $client;
 
     /** @var ObjectProphecy<CacheManager> */
-    private $cacheManager;
+    private ObjectProphecy $cacheManager;
 
     private Document $document;
 
     protected function setUp(): void
     {
         $this->client = self::createClient();
+
         $this->cacheManager = $this->prophesize(CacheManager::class);
+        $this->cacheManager->invalidateTags(Argument::any())->willReturn($this->cacheManager->reveal());
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
+
         $this->document = TestDocumentFactory::simplePage()->save();
-        parent::setUp();
     }
 
     /**
@@ -47,9 +50,6 @@ final class InvalidateDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_invalidated_when_document_is_updated(): void
     {
-        $this->cacheManager->invalidateTags(['d42'])
-            ->willReturn($this->cacheManager->reveal());
-
         $this->client->request('GET', '/test_document_page');
 
         $this->document->setKey('updated_test_document_page')->save();
@@ -70,9 +70,6 @@ final class InvalidateDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_invalidated_when_document_is_deleted(): void
     {
-        $this->cacheManager->invalidateTags(['d42'])
-            ->willReturn($this->cacheManager->reveal());
-
         $this->client->request('GET', '/test_document_page');
 
         $this->document->delete();
