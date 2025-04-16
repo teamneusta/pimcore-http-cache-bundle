@@ -2,6 +2,7 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ClearRuntimeCacheListener;
 use Pimcore\Event\AssetEvents;
 use Pimcore\Event\DataObjectEvents;
@@ -23,4 +24,7 @@ return function (ContainerConfigurator $container): void {
         ->tag('kernel.event_listener', ['event' => DataObjectEvents::POST_DELETE])
         ->tag('kernel.event_listener', ['event' => DocumentEvents::POST_UPDATE])
         ->tag('kernel.event_listener', ['event' => DocumentEvents::POST_DELETE]);
+
+    $services->set(CacheActivator::class)
+        ->public();
 };

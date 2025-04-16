@@ -2,11 +2,16 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\DependencyInjection;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\StaticCacheTypeChecker;
-use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\ElementCacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\StaticCacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
+use Neusta\Pimcore\HttpCacheBundle\Element\TagElementListener;
+use Pimcore\Event\AssetEvents;
+use Pimcore\Event\DataObjectEvents;
+use Pimcore\Event\DocumentEvents;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
 final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
@@ -16,24 +21,53 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
      */
     public function loadInternal(array $mergedConfig, ContainerBuilder $container): void
     {
-        $loader = new Loader\PhpFileLoader($container, new FileLocator(\dirname(__DIR__, 2) . '/config'));
+        $loader = new PhpFileLoader($container, new FileLocator(\dirname(__DIR__, 2) . '/config'));
 
         $loader->load('services.php');
 
-        if ($mergedConfig['elements']['documents']) {
-            $loader->load('document.php');
-        }
-        if ($mergedConfig['elements']['assets']) {
-            $loader->load('asset.php');
-        }
-        if ($mergedConfig['elements']['objects']) {
-            $loader->load('object.php');
+        $container->getDefinition(StaticCacheTagChecker::class)
+            ->setArgument('$types', $mergedConfig['cache_types']);
+
+        $this->registerElements($container, $mergedConfig['elements']);
+    }
+
+    /**
+     * @param array<mixed> $config
+     */
+    private function registerElements(ContainerBuilder $container, array $config): void
+    {
+        $tagChecker = $container->getDefinition(ElementCacheTagChecker::class);
+        $tagListener = $container->getDefinition(TagElementListener::class);
+        $invalidateListener = $container->getDefinition(InvalidateElementListener::class);
+
+        if ($config['assets']['enabled']) {
+            $tagChecker->setArgument('$assets', $config['assets']);
+
+            $tagListener->addTag('kernel.event_listener', ['event' => AssetEvents::POST_LOAD]);
+
+            $invalidateListener
+                ->addTag('kernel.event_listener', ['event' => AssetEvents::POST_UPDATE, 'method' => 'onUpdate'])
+                ->addTag('kernel.event_listener', ['event' => AssetEvents::PRE_DELETE, 'method' => 'onDelete']);
         }
 
-        $container->getDefinition(StaticCacheTypeChecker::class)->setArgument('$types', [
-            ElementType::Asset->value => $mergedConfig['elements']['assets'],
-            ElementType::Object->value => $mergedConfig['elements']['objects'],
-            ElementType::Document->value => $mergedConfig['elements']['documents'],
-        ]);
+        if ($config['documents']['enabled']) {
+            $tagChecker->setArgument('$documents', $config['documents']);
+
+            $tagListener->addTag('kernel.event_listener', ['event' => DocumentEvents::POST_LOAD]);
+
+            $invalidateListener
+                ->addTag('kernel.event_listener', ['event' => DocumentEvents::POST_UPDATE, 'method' => 'onUpdate'])
+                ->addTag('kernel.event_listener', ['event' => DocumentEvents::PRE_DELETE, 'method' => 'onDelete']);
+        }
+
+        if ($config['objects']['enabled']) {
+            $tagChecker->setArgument('$objects', $config['objects']);
+
+            $tagListener->addTag('kernel.event_listener', ['event' => DataObjectEvents::POST_LOAD]);
+
+            $invalidateListener
+                ->addTag('kernel.event_listener', ['event' => DataObjectEvents::POST_UPDATE, 'method' => 'onUpdate'])
+                ->addTag('kernel.event_listener', ['event' => DataObjectEvents::PRE_DELETE, 'method' => 'onDelete']);
+        }
     }
 }

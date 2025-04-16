@@ -15,7 +15,7 @@ final class InvalidateElementListener
     ) {
     }
 
-    public function onUpdated(ElementEventInterface $event): void
+    public function onUpdate(ElementEventInterface $event): void
     {
         if ($event->hasArgument('saveVersionOnly') || $event->hasArgument('autoSave')) {
             return;
@@ -24,7 +24,7 @@ final class InvalidateElementListener
         $this->invalidateElement($event->getElement());
     }
 
-    public function onDeleted(ElementEventInterface $event): void
+    public function onDelete(ElementEventInterface $event): void
     {
         $this->invalidateElement($event->getElement());
     }
@@ -38,7 +38,7 @@ final class InvalidateElementListener
             return;
         }
 
-        $this->cacheInvalidator->invalidateElement($invalidationEvent->element, $invalidationEvent->elementType);
-        $this->cacheInvalidator->invalidateElementTags($invalidationEvent->cacheTags, $invalidationEvent->elementType);
+        $this->cacheInvalidator->invalidateElement($invalidationEvent->element);
+        $this->cacheInvalidator->invalidateTags($invalidationEvent->cacheTags);
     }
 }
