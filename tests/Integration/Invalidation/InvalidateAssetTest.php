@@ -3,6 +3,7 @@
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Invalidation;
 
 use FOS\HttpCacheBundle\CacheManager;
+use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestAssetFactory;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
@@ -16,6 +17,7 @@ use Prophecy\Prophecy\ObjectProphecy;
 #[ConfigureRoute(__DIR__ . '/../Fixtures/get_asset_route.php')]
 final class InvalidateAssetTest extends ConfigurableKernelTestCase
 {
+    use ArrangeCacheTest;
     use ProphecyTrait;
     use ResetDatabase;
 
@@ -30,8 +32,7 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
         $this->cacheManager->invalidateTags(Argument::any())->willReturn($this->cacheManager->reveal());
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
 
-        $this->asset = TestAssetFactory::simple()->save();
-        parent::setUp();
+        $this->asset = self::arrange(fn () => TestAssetFactory::simple()->save());
     }
 
     /**
@@ -46,7 +47,7 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
     {
         $this->asset->setData('Updated test content')->save();
 
-        $this->cacheManager->invalidateTags(['a42'])->shouldHaveBeenCalledTimes(2);
+        $this->cacheManager->invalidateTags(['a42'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -61,6 +62,6 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
     {
         $this->asset->delete();
 
-        $this->cacheManager->invalidateTags(['a42'])->shouldHaveBeenCalledTimes(2);
+        $this->cacheManager->invalidateTags(['a42'])->shouldHaveBeenCalledTimes(1);
     }
 }
