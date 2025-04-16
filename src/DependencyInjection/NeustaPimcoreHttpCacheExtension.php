@@ -46,8 +46,8 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
             $tagListener->addTag('kernel.event_listener', ['event' => AssetEvents::POST_LOAD]);
 
             $invalidateListener
-                ->addTag('kernel.event_listener', ['event' => AssetEvents::POST_UPDATE, 'method' => 'onUpdated'])
-                ->addTag('kernel.event_listener', ['event' => AssetEvents::POST_DELETE, 'method' => 'onDeleted']);
+                ->addTag('kernel.event_listener', ['event' => AssetEvents::POST_UPDATE, 'method' => 'onUpdate'])
+                ->addTag('kernel.event_listener', ['event' => AssetEvents::PRE_DELETE, 'method' => 'onDelete']);
         }
 
         if ($config['documents']['enabled']) {
@@ -56,8 +56,8 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
             $tagListener->addTag('kernel.event_listener', ['event' => DocumentEvents::POST_LOAD]);
 
             $invalidateListener
-                ->addTag('kernel.event_listener', ['event' => DocumentEvents::POST_UPDATE, 'method' => 'onUpdated'])
-                ->addTag('kernel.event_listener', ['event' => DocumentEvents::POST_DELETE, 'method' => 'onDeleted']);
+                ->addTag('kernel.event_listener', ['event' => DocumentEvents::POST_UPDATE, 'method' => 'onUpdate'])
+                ->addTag('kernel.event_listener', ['event' => DocumentEvents::PRE_DELETE, 'method' => 'onDelete']);
         }
 
         if ($config['objects']['enabled']) {
@@ -66,8 +66,8 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
             $tagListener->addTag('kernel.event_listener', ['event' => DataObjectEvents::POST_LOAD]);
 
             $invalidateListener
-                ->addTag('kernel.event_listener', ['event' => DataObjectEvents::POST_UPDATE, 'method' => 'onUpdated'])
-                ->addTag('kernel.event_listener', ['event' => DataObjectEvents::POST_DELETE, 'method' => 'onDeleted']);
+                ->addTag('kernel.event_listener', ['event' => DataObjectEvents::POST_UPDATE, 'method' => 'onUpdate'])
+                ->addTag('kernel.event_listener', ['event' => DataObjectEvents::PRE_DELETE, 'method' => 'onDelete']);
         }
     }
 }

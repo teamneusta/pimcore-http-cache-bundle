@@ -51,12 +51,12 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function onUpdated_should_not_dispatch_element_invalidation_event_if_save_version_only_argument_is_set(
+    public function onUpdate_should_not_dispatch_element_invalidation_event_if_save_version_only_argument_is_set(
         ElementEventInterface $event,
     ): void {
         $event->setArgument('saveVersionOnly', true);
 
-        $this->invalidateElementListener->onUpdated($event);
+        $this->invalidateElementListener->onUpdate($event);
 
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
             ->shouldNotHaveBeenCalled();
@@ -67,12 +67,12 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function onUpdated_should_not_dispatch_element_invalidation_event_if_auto_save_argument_is_set(
+    public function onUpdate_should_not_dispatch_element_invalidation_event_if_auto_save_argument_is_set(
         ElementEventInterface $event,
     ): void {
         $event->setArgument('autoSave', true);
 
-        $this->invalidateElementListener->onUpdated($event);
+        $this->invalidateElementListener->onUpdate($event);
 
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
             ->shouldNotHaveBeenCalled();
@@ -83,9 +83,9 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function onUpdated_should_dispatch_element_invalidation_event(ElementEventInterface $event): void
+    public function onUpdate_should_dispatch_element_invalidation_event(ElementEventInterface $event): void
     {
-        $this->invalidateElementListener->onUpdated($event);
+        $this->invalidateElementListener->onUpdate($event);
 
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
             ->shouldHaveBeenCalledOnce();
@@ -96,11 +96,11 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function onUpdated_should_invalidate_elements(ElementEventInterface $event): void
+    public function onUpdate_should_invalidate_elements(ElementEventInterface $event): void
     {
         $element = $event->getElement();
 
-        $this->invalidateElementListener->onUpdated($event);
+        $this->invalidateElementListener->onUpdate($event);
 
         $this->cacheInvalidator->invalidateElement($element)
             ->shouldHaveBeenCalledOnce();
@@ -113,7 +113,7 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function onUpdated_should_not_invalidate_when_event_was_canceled(ElementEventInterface $event): void
+    public function onUpdate_should_not_invalidate_when_event_was_canceled(ElementEventInterface $event): void
     {
         $element = $event->getElement();
         $invalidationEvent = ElementInvalidationEvent::fromElement($element);
@@ -122,7 +122,7 @@ final class InvalidateElementListenerTest extends TestCase
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
             ->willReturn($invalidationEvent);
 
-        $this->invalidateElementListener->onUpdated($event);
+        $this->invalidateElementListener->onUpdate($event);
 
         $this->cacheInvalidator->invalidateElement($element)
             ->shouldNotHaveBeenCalled();
@@ -135,7 +135,7 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function onUpdated_should_invalidate_additional_tags_when_requested(ElementEventInterface $event): void
+    public function onUpdate_should_invalidate_additional_tags_when_requested(ElementEventInterface $event): void
     {
         $element = $event->getElement();
         $invalidationEvent = ElementInvalidationEvent::fromElement($element);
@@ -145,7 +145,7 @@ final class InvalidateElementListenerTest extends TestCase
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
             ->willReturn($invalidationEvent);
 
-        $this->invalidateElementListener->onUpdated($event);
+        $this->invalidateElementListener->onUpdate($event);
 
         $this->cacheInvalidator->invalidateElement($element)
             ->shouldHaveBeenCalledOnce();
@@ -158,9 +158,9 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function onDeleted_should_dispatch_element_invalidation_event(ElementEventInterface $event): void
+    public function onDelete_should_dispatch_element_invalidation_event(ElementEventInterface $event): void
     {
-        $this->invalidateElementListener->onDeleted($event);
+        $this->invalidateElementListener->onDelete($event);
 
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
             ->shouldHaveBeenCalledOnce();
@@ -171,11 +171,11 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function onDeleted_should_invalidate_elements(ElementEventInterface $event): void
+    public function onDelete_should_invalidate_elements(ElementEventInterface $event): void
     {
         $element = $event->getElement();
 
-        $this->invalidateElementListener->onDeleted($event);
+        $this->invalidateElementListener->onDelete($event);
 
         $this->cacheInvalidator->invalidateElement($element)
             ->shouldHaveBeenCalledOnce();
@@ -188,7 +188,7 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function onDeleted_should_not_invalidate_when_event_was_canceled(ElementEventInterface $event): void
+    public function onDelete_should_not_invalidate_when_event_was_canceled(ElementEventInterface $event): void
     {
         $element = $event->getElement();
         $invalidationEvent = ElementInvalidationEvent::fromElement($element);
@@ -197,7 +197,7 @@ final class InvalidateElementListenerTest extends TestCase
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
             ->willReturn($invalidationEvent);
 
-        $this->invalidateElementListener->onDeleted($event);
+        $this->invalidateElementListener->onDelete($event);
 
         $this->cacheInvalidator->invalidateElement($element)
             ->shouldNotHaveBeenCalled();
@@ -210,7 +210,7 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function onDeleted_should_invalidate_additional_tags_when_requested(ElementEventInterface $event): void
+    public function onDelete_should_invalidate_additional_tags_when_requested(ElementEventInterface $event): void
     {
         $element = $event->getElement();
         $invalidationEvent = ElementInvalidationEvent::fromElement($element);
@@ -220,7 +220,7 @@ final class InvalidateElementListenerTest extends TestCase
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
             ->willReturn($invalidationEvent);
 
-        $this->invalidateElementListener->onDeleted($event);
+        $this->invalidateElementListener->onDelete($event);
 
         $this->cacheInvalidator->invalidateElement($element)
             ->shouldHaveBeenCalledOnce();

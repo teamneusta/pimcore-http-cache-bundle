@@ -15,7 +15,7 @@ final class InvalidateElementListener
     ) {
     }
 
-    public function onUpdated(ElementEventInterface $event): void
+    public function onUpdate(ElementEventInterface $event): void
     {
         if ($event->hasArgument('saveVersionOnly') || $event->hasArgument('autoSave')) {
             return;
@@ -24,7 +24,7 @@ final class InvalidateElementListener
         $this->invalidateElement($event->getElement());
     }
 
-    public function onDeleted(ElementEventInterface $event): void
+    public function onDelete(ElementEventInterface $event): void
     {
         $this->invalidateElement($event->getElement());
     }
