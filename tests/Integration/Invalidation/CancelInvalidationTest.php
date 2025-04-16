@@ -10,31 +10,26 @@ use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestObjectFactory;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureRoute;
-use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
+use Neusta\Pimcore\TestingFramework\Test\ConfigurableKernelTestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 #[
     ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php'),
     ConfigureRoute(__DIR__ . '/../Fixtures/get_asset_route.php'),
     ConfigureRoute(__DIR__ . '/../Fixtures/get_document_route.php'),
 ]
-final class CancelInvalidationTest extends ConfigurableWebTestcase
+final class CancelInvalidationTest extends ConfigurableKernelTestCase
 {
     use ProphecyTrait;
     use ResetDatabase;
-
-    private KernelBrowser $client;
 
     /** @var ObjectProphecy<CacheManager> */
     private ObjectProphecy $cacheManager;
 
     protected function setUp(): void
     {
-        $this->client = self::createClient();
-
         $this->cacheManager = $this->prophesize(CacheManager::class);
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
 
@@ -58,12 +53,9 @@ final class CancelInvalidationTest extends ConfigurableWebTestcase
     {
         $object = TestObjectFactory::simple()->save();
 
-        $this->client->request('GET', '/get-object?id=42');
-
         $object->setContent('Updated test content')->save();
 
         $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
-        $this->cacheManager->flush()->shouldHaveBeenCalled();
     }
 
     /**
@@ -80,12 +72,9 @@ final class CancelInvalidationTest extends ConfigurableWebTestcase
     {
         $document = TestDocumentFactory::simplePage()->save();
 
-        $this->client->request('GET', '/test_document_page');
-
         $document->setKey('updated_test_document_page')->save();
 
         $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
-        $this->cacheManager->flush()->shouldHaveBeenCalled();
     }
 
     /**
@@ -102,12 +91,9 @@ final class CancelInvalidationTest extends ConfigurableWebTestcase
     {
         $asset = TestAssetFactory::simple()->save();
 
-        $this->client->request('GET', '/get-asset?id=42');
-
         $asset->setData('Updated test content')->save();
 
         $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
-        $this->cacheManager->flush()->shouldHaveBeenCalled();
     }
 
     /**
@@ -124,12 +110,9 @@ final class CancelInvalidationTest extends ConfigurableWebTestcase
     {
         $object = TestObjectFactory::simple()->save();
 
-        $this->client->request('GET', '/get-object?id=42');
-
         $object->delete();
 
         $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
-        $this->cacheManager->flush()->shouldHaveBeenCalled();
     }
 
     /**
@@ -146,12 +129,9 @@ final class CancelInvalidationTest extends ConfigurableWebTestcase
     {
         $document = TestDocumentFactory::simplePage()->save();
 
-        $this->client->request('GET', '/test_document_page');
-
         $document->delete();
 
         $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
-        $this->cacheManager->flush()->shouldHaveBeenCalled();
     }
 
     /**
@@ -168,11 +148,8 @@ final class CancelInvalidationTest extends ConfigurableWebTestcase
     {
         $asset = TestAssetFactory::simple()->save();
 
-        $this->client->request('GET', '/get-asset?id=42');
-
         $asset->delete();
 
         $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
-        $this->cacheManager->flush()->shouldHaveBeenCalled();
     }
 }

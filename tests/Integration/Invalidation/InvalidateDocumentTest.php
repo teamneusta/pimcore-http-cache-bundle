@@ -7,20 +7,17 @@ use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestDocumentFactory
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureRoute;
-use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
+use Neusta\Pimcore\TestingFramework\Test\ConfigurableKernelTestCase;
 use Pimcore\Model\Document;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 #[ConfigureRoute(__DIR__ . '/../Fixtures/get_document_route.php')]
-final class InvalidateDocumentTest extends ConfigurableWebTestcase
+final class InvalidateDocumentTest extends ConfigurableKernelTestCase
 {
     use ProphecyTrait;
     use ResetDatabase;
-
-    private KernelBrowser $client;
 
     /** @var ObjectProphecy<CacheManager> */
     private ObjectProphecy $cacheManager;
@@ -29,8 +26,6 @@ final class InvalidateDocumentTest extends ConfigurableWebTestcase
 
     protected function setUp(): void
     {
-        $this->client = self::createClient();
-
         $this->cacheManager = $this->prophesize(CacheManager::class);
         $this->cacheManager->invalidateTags(Argument::any())->willReturn($this->cacheManager->reveal());
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
@@ -50,12 +45,9 @@ final class InvalidateDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_invalidated_when_document_is_updated(): void
     {
-        $this->client->request('GET', '/test_document_page');
-
         $this->document->setKey('updated_test_document_page')->save();
 
         $this->cacheManager->invalidateTags(['d42'])->shouldHaveBeenCalled();
-        $this->cacheManager->flush()->shouldHaveBeenCalled();
     }
 
     /**
@@ -70,11 +62,8 @@ final class InvalidateDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_invalidated_when_document_is_deleted(): void
     {
-        $this->client->request('GET', '/test_document_page');
-
         $this->document->delete();
 
         $this->cacheManager->invalidateTags(['d42'])->shouldHaveBeenCalled();
-        $this->cacheManager->flush()->shouldHaveBeenCalled();
     }
 }

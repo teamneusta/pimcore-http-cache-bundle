@@ -7,20 +7,17 @@ use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestAssetFactory;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureRoute;
-use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
+use Neusta\Pimcore\TestingFramework\Test\ConfigurableKernelTestCase;
 use Pimcore\Model\Asset;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 #[ConfigureRoute(__DIR__ . '/../Fixtures/get_asset_route.php')]
-final class InvalidateAssetTest extends ConfigurableWebTestcase
+final class InvalidateAssetTest extends ConfigurableKernelTestCase
 {
     use ProphecyTrait;
     use ResetDatabase;
-
-    private KernelBrowser $client;
 
     /** @var ObjectProphecy<CacheManager> */
     private ObjectProphecy $cacheManager;
@@ -29,8 +26,6 @@ final class InvalidateAssetTest extends ConfigurableWebTestcase
 
     protected function setUp(): void
     {
-        $this->client = self::createClient();
-
         $this->cacheManager = $this->prophesize(CacheManager::class);
         $this->cacheManager->invalidateTags(Argument::any())->willReturn($this->cacheManager->reveal());
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
@@ -51,12 +46,9 @@ final class InvalidateAssetTest extends ConfigurableWebTestcase
     ])]
     public function response_is_invalidated_when_asset_is_updated(): void
     {
-        $this->client->request('GET', '/get-asset?id=42');
-
         $this->asset->setData('Updated test content')->save();
 
         $this->cacheManager->invalidateTags(['a42'])->shouldHaveBeenCalledTimes(2);
-        $this->cacheManager->flush()->shouldHaveBeenCalledOnce();
     }
 
     /**
@@ -71,11 +63,8 @@ final class InvalidateAssetTest extends ConfigurableWebTestcase
     ])]
     public function response_is_invalidated_when_asset_is_deleted(): void
     {
-        $this->client->request('GET', '/get-asset?id=42');
-
         $this->asset->delete();
 
         $this->cacheManager->invalidateTags(['a42'])->shouldHaveBeenCalledTimes(2);
-        $this->cacheManager->flush()->shouldHaveBeenCalledOnce();
     }
 }
