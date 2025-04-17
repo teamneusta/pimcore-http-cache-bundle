@@ -13,11 +13,11 @@ final class CacheTag
         public readonly CacheType $type,
     ) {
         if ('' === trim($tag)) {
-            throw InvalidArgumentException::becauseEmptyCacheTypeIsNotAllowed();
+            throw InvalidArgumentException::becauseEmptyCacheTagIsNotAllowed();
         }
 
         if (!$type instanceof ElementCacheType && ElementCacheType::isReserved($type->toString())) {
-            throw InvalidArgumentException::becauseCacheTypeIsReserved($type->toString());
+            throw InvalidArgumentException::becauseCacheTypeIsReserved($type);
         }
     }
 
