@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 use App\Controller\GetObjectController;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
