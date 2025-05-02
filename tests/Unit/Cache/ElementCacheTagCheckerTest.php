@@ -39,9 +39,9 @@ final class ElementCacheTagCheckerTest extends TestCase
         $elementCacheTagChecker = new ElementCacheTagChecker(
             $this->innerCacheTagChecker->reveal(),
             $this->elementRepository->reveal(),
-            ['enabled' => true, 'types' => ['foo' => true]],
-            ['enabled' => false],
-            ['enabled' => false],
+            assets: ['enabled' => true, 'types' => ['foo' => true]],
+            documents: ['enabled' => false],
+            objects: ['enabled' => false],
         );
 
         $this->innerCacheTagChecker->isEnabled($tag)->willReturn(true);
@@ -59,9 +59,9 @@ final class ElementCacheTagCheckerTest extends TestCase
         $elementCacheTagChecker = new ElementCacheTagChecker(
             $this->innerCacheTagChecker->reveal(),
             $this->elementRepository->reveal(),
-            ['enabled' => false],
-            ['enabled' => false],
-            ['enabled' => false],
+            assets: ['enabled' => false],
+            documents: ['enabled' => false],
+            objects: ['enabled' => false],
         );
 
         $asset->getId()->willReturn(42);
@@ -80,9 +80,9 @@ final class ElementCacheTagCheckerTest extends TestCase
         $elementCacheTagChecker = new ElementCacheTagChecker(
             $this->innerCacheTagChecker->reveal(),
             $this->elementRepository->reveal(),
-            ['enabled' => true, 'types' => ['foo' => true]],
-            ['enabled' => false],
-            ['enabled' => false],
+            assets: ['enabled' => true, 'types' => ['foo' => true]],
+            documents: ['enabled' => false],
+            objects: ['enabled' => false],
         );
 
         $asset->getId()->willReturn(42);
@@ -102,9 +102,9 @@ final class ElementCacheTagCheckerTest extends TestCase
         $elementCacheTagChecker = new ElementCacheTagChecker(
             $this->innerCacheTagChecker->reveal(),
             $this->elementRepository->reveal(),
-            ['enabled' => true, 'types' => ['foo' => false]],
-            ['enabled' => false],
-            ['enabled' => false],
+            assets: ['enabled' => true, 'types' => ['foo' => false]],
+            documents: ['enabled' => false],
+            objects: ['enabled' => false],
         );
 
         $asset->getId()->willReturn(42);
@@ -126,9 +126,9 @@ final class ElementCacheTagCheckerTest extends TestCase
         $elementCacheTagChecker = new ElementCacheTagChecker(
             $this->innerCacheTagChecker->reveal(),
             $this->elementRepository->reveal(),
-            ['enabled' => true, 'types' => ['foo' => true]],
-            ['enabled' => false],
-            ['enabled' => false],
+            assets: ['enabled' => true, 'types' => ['foo' => true]],
+            documents: ['enabled' => false],
+            objects: ['enabled' => false],
         );
 
         $asset->getId()->willReturn(42);
@@ -150,9 +150,9 @@ final class ElementCacheTagCheckerTest extends TestCase
         $elementCacheTagChecker = new ElementCacheTagChecker(
             $this->innerCacheTagChecker->reveal(),
             $this->elementRepository->reveal(),
-            ['enabled' => true, 'types' => ['foo' => false]],
-            ['enabled' => false],
-            ['enabled' => false],
+            assets: ['enabled' => true, 'types' => ['foo' => false]],
+            documents: ['enabled' => false],
+            objects: ['enabled' => false],
         );
 
         $asset->getId()->willReturn(42);
@@ -174,9 +174,9 @@ final class ElementCacheTagCheckerTest extends TestCase
         $elementCacheTagChecker = new ElementCacheTagChecker(
             $this->innerCacheTagChecker->reveal(),
             $this->elementRepository->reveal(),
-            ['enabled' => false],
-            ['enabled' => false],
-            ['enabled' => false],
+            assets: ['enabled' => false],
+            documents: ['enabled' => false],
+            objects: ['enabled' => false],
         );
 
         $document->getId()->willReturn(42);
@@ -195,9 +195,9 @@ final class ElementCacheTagCheckerTest extends TestCase
         $elementCacheTagChecker = new ElementCacheTagChecker(
             $this->innerCacheTagChecker->reveal(),
             $this->elementRepository->reveal(),
-            ['enabled' => false],
-            ['enabled' => false],
-            ['enabled' => false],
+            assets: ['enabled' => false],
+            documents: ['enabled' => false],
+            objects: ['enabled' => false],
         );
 
         $document->getId()->willReturn(42);
@@ -217,9 +217,9 @@ final class ElementCacheTagCheckerTest extends TestCase
         $elementCacheTagChecker = new ElementCacheTagChecker(
             $this->innerCacheTagChecker->reveal(),
             $this->elementRepository->reveal(),
-            ['enabled' => false],
-            ['enabled' => true, 'types' => ['foo' => false]],
-            ['enabled' => false],
+            assets: ['enabled' => false],
+            documents: ['enabled' => true, 'types' => ['foo' => false]],
+            objects: ['enabled' => false],
         );
 
         $document->getId()->willReturn(42);
@@ -241,9 +241,9 @@ final class ElementCacheTagCheckerTest extends TestCase
         $elementCacheTagChecker = new ElementCacheTagChecker(
             $this->innerCacheTagChecker->reveal(),
             $this->elementRepository->reveal(),
-            ['enabled' => false],
-            ['enabled' => true, 'types' => ['foo' => true]],
-            ['enabled' => false],
+            assets: ['enabled' => false],
+            documents: ['enabled' => true, 'types' => ['foo' => true]],
+            objects: ['enabled' => false],
         );
 
         $document->getId()->willReturn(42);
@@ -265,9 +265,9 @@ final class ElementCacheTagCheckerTest extends TestCase
         $elementCacheTagChecker = new ElementCacheTagChecker(
             $this->innerCacheTagChecker->reveal(),
             $this->elementRepository->reveal(),
-            ['enabled' => false],
-            ['enabled' => true, 'types' => ['foo' => false]],
-            ['enabled' => false],
+            assets: ['enabled' => false],
+            documents: ['enabled' => true, 'types' => ['foo' => false]],
+            objects: ['enabled' => false],
         );
 
         $document->getId()->willReturn(42);
@@ -289,9 +289,9 @@ final class ElementCacheTagCheckerTest extends TestCase
         $elementCacheTagChecker = new ElementCacheTagChecker(
             $this->innerCacheTagChecker->reveal(),
             $this->elementRepository->reveal(),
-            ['enabled' => false],
-            ['enabled' => false],
-            ['enabled' => false],
+            assets: ['enabled' => false],
+            documents: ['enabled' => false],
+            objects: ['enabled' => false],
         );
 
         $object->getId()->willReturn(42);
@@ -310,9 +310,9 @@ final class ElementCacheTagCheckerTest extends TestCase
         $elementCacheTagChecker = new ElementCacheTagChecker(
             $this->innerCacheTagChecker->reveal(),
             $this->elementRepository->reveal(),
-            ['enabled' => false],
-            ['enabled' => false],
-            ['enabled' => false],
+            assets: ['enabled' => false],
+            documents: ['enabled' => false],
+            objects: ['enabled' => false],
         );
 
         $object->getId()->willReturn(42);
@@ -332,9 +332,9 @@ final class ElementCacheTagCheckerTest extends TestCase
         $elementCacheTagChecker = new ElementCacheTagChecker(
             $this->innerCacheTagChecker->reveal(),
             $this->elementRepository->reveal(),
-            ['enabled' => false],
-            ['enabled' => false],
-            ['enabled' => true, 'types' => ['foo' => false]],
+            assets: ['enabled' => false],
+            documents: ['enabled' => false],
+            objects: ['enabled' => true, 'types' => ['foo' => false]],
         );
 
         $object->getId()->willReturn(42);
@@ -356,9 +356,9 @@ final class ElementCacheTagCheckerTest extends TestCase
         $elementCacheTagChecker = new ElementCacheTagChecker(
             $this->innerCacheTagChecker->reveal(),
             $this->elementRepository->reveal(),
-            ['enabled' => false],
-            ['enabled' => false],
-            ['enabled' => true, 'types' => ['foo' => true]],
+            assets: ['enabled' => false],
+            documents: ['enabled' => false],
+            objects: ['enabled' => true, 'types' => ['foo' => true]],
         );
 
         $object->getId()->willReturn(42);
@@ -380,9 +380,9 @@ final class ElementCacheTagCheckerTest extends TestCase
         $elementCacheTagChecker = new ElementCacheTagChecker(
             $this->innerCacheTagChecker->reveal(),
             $this->elementRepository->reveal(),
-            ['enabled' => false],
-            ['enabled' => false],
-            ['enabled' => true, 'types' => ['foo' => false]],
+            assets: ['enabled' => false],
+            documents: ['enabled' => false],
+            objects: ['enabled' => true, 'types' => ['foo' => false]],
         );
 
         $object->getId()->willReturn(42);
