@@ -26,6 +26,11 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
 
     private Document $document;
 
+    private Document\Hardlink $hardlink;
+
+    private Document\Email $email;
+    private Document\Folder $folder;
+
     protected function setUp(): void
     {
         $this->cacheManager = $this->prophesize(CacheManager::class);
@@ -33,6 +38,9 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
 
         $this->document = self::arrange(fn () => TestDocumentFactory::simplePage()->save());
+        $this->hardlink = self::arrange(fn () => TestDocumentFactory::simpleHardLink()->save());
+        $this->email = self::arrange(fn () => TestDocumentFactory::simpleEmail()->save());
+        $this->folder = self::arrange(fn () => TestDocumentFactory::simpleFolder()->save());
     }
 
     /**
@@ -63,5 +71,133 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
         $this->document->delete();
 
         $this->cacheManager->invalidateTags(['d42'])->shouldHaveBeenCalledTimes(1);
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'documents' => true,
+        ],
+    ])]
+    public function response_is_not_invalidated_when_document_is_from_type_hardlink_on_update(): void
+    {
+        $this->hardlink->setKey('updated_test_document_page')->save();
+
+        $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'documents' => true,
+        ],
+    ])]
+    public function response_is_not_invalidated_when_document_is_from_type_hardlink_on_delete(): void
+    {
+        $this->hardlink->delete();
+
+        $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'documents' => true,
+        ],
+    ])]
+    public function response_is_not_invalidated_when_document_is_from_type_email(): void
+    {
+        $this->email->setKey('updated_test_document_page')->save();
+
+        $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'documents' => true,
+        ],
+    ])]
+    public function response_is_not_invalidated_when_document_is_from_type_email_on_delete(): void
+    {
+        $this->email->delete();
+
+        $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'documents' => true,
+        ],
+    ])]
+    public function response_is_not_invalidated_when_document_is_from_type_folder_on_update(): void
+    {
+        $this->folder->setKey('updated_test_document_page')->save();
+
+        $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'documents' => true,
+        ],
+    ])]
+    public function response_is_not_invalidated_when_document_is_from_type_folder_on_delete(): void
+    {
+        $this->folder->delete();
+
+        $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'documents' => [
+                'types' => [
+                    'page' => false,
+                ],
+            ],
+        ],
+    ])]
+    public function response_is_not_invalidated_when_document_type_is_disabled_on_update(): void
+    {
+        $this->document->setKey('updated_test_document_page')->save();
+
+        $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'documents' => [
+                'types' => [
+                    'page' => false,
+                ],
+            ],
+        ],
+    ])]
+    public function response_is_not_invalidated_when_document_type_is_disabled_on_delete(): void
+    {
+        $this->document->setKey('updated_test_document_page')->save();
+
+        $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
     }
 }

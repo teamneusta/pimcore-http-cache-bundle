@@ -17,4 +17,25 @@ final class TestAssetFactory
 
         return $asset;
     }
+
+    public static function simpleImage(): Asset\Image
+    {
+        $image = new Asset\Image();
+        $image->setId(42);
+        $image->setFilename('test-asset.jpg');
+        $image->setParentId(1);
+        $image->setMimetype('image/jpeg');
+
+        return $image;
+    }
+
+    public static function simpleFolder(): Asset\Folder
+    {
+        $folder = new Asset\Folder();
+        $folder->setKey('test-asset-folder');
+        $folder->setId(23);
+        $folder->setParentId(1);
+
+        return $folder;
+    }
 }
