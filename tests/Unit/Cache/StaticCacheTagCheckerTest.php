@@ -12,7 +12,7 @@ final class StaticCacheTagCheckerTest extends TestCase
     /**
      * @test
      */
-    public function it_returns_true_when_when_cache_type_is_empty(): void
+    public function it_returns_true_when_cache_type_is_empty(): void
     {
         self::assertTrue(
             (new StaticCacheTagChecker([]))->isEnabled(
