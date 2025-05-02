@@ -3,6 +3,7 @@
 namespace Neusta\Pimcore\HttpCacheBundle\Cache\CacheType;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType;
+use Neusta\Pimcore\HttpCacheBundle\Exception\InvalidArgumentException;
 
 final class CustomCacheType implements CacheType
 {
@@ -10,7 +11,7 @@ final class CustomCacheType implements CacheType
         private readonly string $type,
     ) {
         if ('' === $this->type) {
-            throw new \InvalidArgumentException('The cache type must not be empty.');
+            throw InvalidArgumentException::becauseCacheTypeIsEmpty();
         }
     }
 
