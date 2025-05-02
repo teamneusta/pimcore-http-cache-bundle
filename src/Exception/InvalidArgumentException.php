@@ -6,7 +6,7 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType;
 
 final class InvalidArgumentException extends \InvalidArgumentException implements PimcoreHttpCacheException
 {
-    public static function becauseEmptyCacheTagIsNotAllowed(): self
+    public static function becauseCacheTagIsEmpty(): self
     {
         return new self('Cache tag must not be empty.');
     }
