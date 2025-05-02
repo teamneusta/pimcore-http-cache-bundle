@@ -109,7 +109,6 @@ final class ElementCacheTagCheckerTest extends TestCase
 
         $asset->getId()->willReturn(42);
         $asset->getType()->willReturn('foo');
-
         $this->elementRepository->findAsset(42)->willReturn($asset);
 
         self::assertFalse($elementCacheTagChecker->isEnabled(
@@ -133,7 +132,6 @@ final class ElementCacheTagCheckerTest extends TestCase
 
         $asset->getId()->willReturn(42);
         $asset->getType()->willReturn('foo');
-
         $this->elementRepository->findAsset(42)->willReturn($asset);
 
         self::assertTrue($elementCacheTagChecker->isEnabled(
@@ -157,7 +155,6 @@ final class ElementCacheTagCheckerTest extends TestCase
 
         $asset->getId()->willReturn(42);
         $asset->getType()->willReturn('bar');
-
         $this->elementRepository->findAsset(42)->willReturn($asset);
 
         self::assertTrue($elementCacheTagChecker->isEnabled(
@@ -272,7 +269,6 @@ final class ElementCacheTagCheckerTest extends TestCase
 
         $document->getId()->willReturn(42);
         $document->getType()->willReturn('bar');
-
         $this->elementRepository->findDocument(42)->willReturn($document);
 
         self::assertTrue($elementCacheTagChecker->isEnabled(
@@ -339,7 +335,6 @@ final class ElementCacheTagCheckerTest extends TestCase
 
         $object->getId()->willReturn(42);
         $object->getType()->willReturn('foo');
-
         $this->elementRepository->findObject(42)->willReturn($object);
 
         self::assertFalse($elementCacheTagChecker->isEnabled(
@@ -363,7 +358,6 @@ final class ElementCacheTagCheckerTest extends TestCase
 
         $object->getId()->willReturn(42);
         $object->getType()->willReturn('foo');
-
         $this->elementRepository->findObject(42)->willReturn($object);
 
         self::assertTrue($elementCacheTagChecker->isEnabled(
@@ -387,7 +381,6 @@ final class ElementCacheTagCheckerTest extends TestCase
 
         $object->getId()->willReturn(42);
         $object->getType()->willReturn('bar');
-
         $this->elementRepository->findObject(42)->willReturn($object);
 
         self::assertTrue($elementCacheTagChecker->isEnabled(
