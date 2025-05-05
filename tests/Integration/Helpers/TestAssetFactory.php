@@ -6,7 +6,7 @@ use Pimcore\Model\Asset;
 
 final class TestAssetFactory
 {
-    public static function simple(): Asset
+    public static function simpleAsset(): Asset
     {
         $asset = new Asset();
         $asset->setId(42);
@@ -21,7 +21,7 @@ final class TestAssetFactory
     public static function simpleImage(): Asset\Image
     {
         $image = new Asset\Image();
-        $image->setId(42);
+        $image->setId(17);
         $image->setFilename('test-asset.jpg');
         $image->setParentId(1);
         $image->setMimetype('image/jpeg');

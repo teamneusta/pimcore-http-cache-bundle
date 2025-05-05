@@ -85,7 +85,7 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
     ])]
     public function cancel_invalidation_on_asset_update(): void
     {
-        $asset = self::arrange(fn () => TestAssetFactory::simple()->save());
+        $asset = self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
 
         $asset->setData('Updated test content')->save();
 
@@ -136,7 +136,7 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
     ])]
     public function cancel_invalidation_on_asset_delete(): void
     {
-        $asset = self::arrange(fn () => TestAssetFactory::simple()->save());
+        $asset = self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
 
         $asset->delete();
 

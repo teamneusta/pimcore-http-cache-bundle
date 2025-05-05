@@ -90,4 +90,112 @@ final class TagObjectTest extends ConfigurableWebTestcase
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
         self::assertNull($response->headers->get('X-Cache-Tags'));
     }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'objects' => [
+                'enabled' => true,
+                'types' => [
+                    'variant' => false,
+                ],
+            ],
+        ],
+    ])]
+    public function response_is_not_tagged_when_object_type_is_disabled(): void
+    {
+        self::arrange(fn () => TestObjectFactory::simpleVariant()->save());
+
+        $this->client->request('GET', '/get-object?id=17');
+
+        $response = $this->client->getResponse();
+        self::assertSame('Test content', $response->getContent());
+        self::assertSame(200, $response->getStatusCode());
+        self::assertTrue($response->headers->getCacheControlDirective('public'));
+        self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
+        self::assertNull($response->headers->get('X-Cache-Tags'));
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'objects' => [
+                'enabled' => true,
+                'types' => [
+                    'variant' => true,
+                ],
+            ],
+        ],
+    ])]
+    public function response_ist_tagged_when_object_type_is_enabled(): void
+    {
+        self::arrange(fn () => TestObjectFactory::simpleVariant()->save());
+
+        $this->client->request('GET', '/get-object?id=17');
+
+        $response = $this->client->getResponse();
+        self::assertSame('Test content', $response->getContent());
+        self::assertSame(200, $response->getStatusCode());
+        self::assertTrue($response->headers->getCacheControlDirective('public'));
+        self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
+        self::assertSame('o17', $response->headers->get('X-Cache-Tags'));
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'objects' => [
+                'classes' => [
+                    'TestDataObject' => false,
+                ],
+                'enabled' => true,
+            ],
+        ],
+    ])]
+    public function response_is_not_tagged_when_object_class_is_enabled(): void
+    {
+        self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+
+        $this->client->request('GET', '/get-object?id=42');
+
+        $response = $this->client->getResponse();
+        self::assertSame('Test content', $response->getContent());
+        self::assertSame(200, $response->getStatusCode());
+        self::assertTrue($response->headers->getCacheControlDirective('public'));
+        self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
+        self::assertNull($response->headers->get('X-Cache-Tags'));
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'objects' => [
+                'classes' => [
+                    'TestDataObject' => true,
+                ],
+                'enabled' => true,
+            ],
+        ],
+    ])]
+    public function response_is_tagged_when_object_class_is_enabled(): void
+    {
+        self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+
+        $this->client->request('GET', '/get-object?id=42');
+
+        $response = $this->client->getResponse();
+        self::assertSame('Test content', $response->getContent());
+        self::assertSame(200, $response->getStatusCode());
+        self::assertTrue($response->headers->getCacheControlDirective('public'));
+        self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
+        self::assertSame('o42', $response->headers->get('X-Cache-Tags'));
+    }
 }
