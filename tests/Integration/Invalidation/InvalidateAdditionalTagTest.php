@@ -87,7 +87,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function invalidate_additional_tag_on_asset_update(): void
     {
-        $asset = self::arrange(fn () => TestAssetFactory::simple()->save());
+        $asset = self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
 
         $asset->setData('Updated test content')->save();
 
@@ -121,7 +121,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function invalidate_additional_tag_on_asset_deletion(): void
     {
-        $asset = self::arrange(fn () => TestAssetFactory::simple()->save());
+        $asset = self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
 
         $asset->delete();
 
