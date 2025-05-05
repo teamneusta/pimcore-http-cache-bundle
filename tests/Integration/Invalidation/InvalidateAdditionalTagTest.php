@@ -17,11 +17,6 @@ use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 
-#[
-    ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php'),
-    ConfigureRoute(__DIR__ . '/../Fixtures/get_asset_route.php'),
-    ConfigureRoute(__DIR__ . '/../Fixtures/get_document_route.php'),
-]
 final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 {
     use ArrangeCacheTest;
