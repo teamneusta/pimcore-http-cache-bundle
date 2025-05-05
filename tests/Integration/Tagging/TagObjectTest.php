@@ -34,7 +34,7 @@ final class TagObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_expected_tags_when_object_is_loaded(): void
     {
-        self::arrange(fn () => TestObjectFactory::simple()->save());
+        self::arrange(fn () => TestObjectFactory::simpleObject()->save());
 
         $this->client->request('GET', '/get-object?id=42');
 
@@ -56,7 +56,7 @@ final class TagObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_objects_is_not_enabled(): void
     {
-        self::arrange(fn () => TestObjectFactory::simple()->save());
+        self::arrange(fn () => TestObjectFactory::simpleObject()->save());
 
         $this->client->request('GET', '/get-object?id=42');
 
@@ -78,7 +78,7 @@ final class TagObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_caching_is_deactivated(): void
     {
-        self::arrange(fn () => TestObjectFactory::simple()->save());
+        self::arrange(fn () => TestObjectFactory::simpleObject()->save());
         self::getContainer()->get(CacheActivator::class)->deactivateCaching();
 
         $this->client->request('GET', '/get-object?id=42');

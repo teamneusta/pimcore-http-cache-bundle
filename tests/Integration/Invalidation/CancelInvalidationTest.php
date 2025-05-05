@@ -51,7 +51,7 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
     ])]
     public function cancel_invalidation_on_object_update(): void
     {
-        $object = self::arrange(fn () => TestObjectFactory::simple()->save());
+        $object = self::arrange(fn () => TestObjectFactory::simpleObject()->save());
 
         $object->setContent('Updated test content')->save();
 
@@ -102,7 +102,7 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
     ])]
     public function cancel_invalidation_on_object_delete(): void
     {
-        $object = self::arrange(fn () => TestObjectFactory::simple()->save());
+        $object = self::arrange(fn () => TestObjectFactory::simpleObject()->save());
 
         $object->delete();
 
