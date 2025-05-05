@@ -7,14 +7,12 @@ use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestAssetFactory;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
-use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureRoute;
 use Neusta\Pimcore\TestingFramework\Test\ConfigurableKernelTestCase;
 use Pimcore\Model\Asset;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 
-#[ConfigureRoute(__DIR__ . '/../Fixtures/get_asset_route.php')]
 final class InvalidateAssetTest extends ConfigurableKernelTestCase
 {
     use ArrangeCacheTest;
