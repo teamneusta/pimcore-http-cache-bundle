@@ -29,6 +29,7 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
     private Document\Hardlink $hardlink;
 
     private Document\Email $email;
+
     private Document\Folder $folder;
 
     protected function setUp(): void
@@ -195,6 +196,26 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
         ],
     ])]
     public function response_is_not_invalidated_when_document_type_is_disabled_on_delete(): void
+    {
+        $this->document->setKey('updated_test_document_page')->save();
+
+        $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     */
+    public function response_is_not_invalidated_when_documents_are_disabled_on_update(): void
+    {
+        $this->document->setKey('updated_test_document_page')->save();
+
+        $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     */
+    public function response_is_not_invalidated_when_documents_are_disabled_on_delete(): void
     {
         $this->document->setKey('updated_test_document_page')->save();
 

@@ -138,4 +138,18 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
 
         $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
     }
+
+    public function response_is_not_invalidated_when_assets_are_disabled_on_update(): void
+    {
+        $this->asset->setData('Updated test content')->save();
+
+        $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    public function response_is_not_invalidated_when_assets_are_disabled_on_delete(): void
+    {
+        $this->asset->delete();
+
+        $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
+    }
 }

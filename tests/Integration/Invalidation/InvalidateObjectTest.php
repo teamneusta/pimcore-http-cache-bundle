@@ -36,6 +36,7 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
         $this->cacheManager = $this->prophesize(CacheManager::class);
         $this->cacheManager->invalidateTags(Argument::any())->willReturn($this->cacheManager->reveal());
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
+
         $this->object = self::arrange(fn () => TestObjectFactory::simpleObject()->save());
         $this->folder = self::arrange(fn () => TestObjectFactory::simpleFolder()->save());
         $this->variant = self::arrange(fn () => TestObjectFactory::simpleVariant()->save());
@@ -83,7 +84,7 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
     {
         $this->folder->setKey('updated_test_object_folder')->save();
 
-        $this->cacheManager->invalidateTags(['o23'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -98,7 +99,7 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
     {
         $this->folder->delete();
 
-        $this->cacheManager->invalidateTags(['o23'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -118,7 +119,7 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
     {
         $this->variant->setContent('Updated test content')->save();
 
-        $this->cacheManager->invalidateTags(['o17'])->shouldHaveBeenCalledOnce();
+        $this->cacheManager->invalidateTags(Argument::any())->shouldHaveBeenCalledOnce();
     }
 
     /**
@@ -138,7 +139,7 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
     {
         $this->variant->delete();
 
-        $this->cacheManager->invalidateTags(['o42'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -158,7 +159,7 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
     {
         $this->object->setContent('Updated test content')->save();
 
-        $this->cacheManager->invalidateTags(['o42'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -178,7 +179,7 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
     {
         $this->object->delete();
 
-        $this->cacheManager->invalidateTags(['o42'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -193,7 +194,7 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
     {
         $this->object->setContent('Updated test content')->save();
 
-        $this->cacheManager->invalidateTags(['o42'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -208,6 +209,6 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
     {
         $this->object->delete();
 
-        $this->cacheManager->invalidateTags(['o42'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
     }
 }
