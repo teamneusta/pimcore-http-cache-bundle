@@ -74,7 +74,7 @@ final class ElementCacheTagCheckerTest extends TestCase
     /**
      * @test
      */
-    public function it_returns_false_when_asset_is_does_not_exist(): void
+    public function it_returns_false_when_asset_does_not_exist(): void
     {
         $asset = $this->prophesize(Asset::class);
         $elementCacheTagChecker = new ElementCacheTagChecker(
@@ -186,7 +186,7 @@ final class ElementCacheTagCheckerTest extends TestCase
     /**
      * @test
      */
-    public function it_returns_false_when_document_is_does_not_exist(): void
+    public function it_returns_false_when_document_does_not_exist(): void
     {
         $document = $this->prophesize(Document::class);
         $elementCacheTagChecker = new ElementCacheTagChecker(
@@ -300,7 +300,7 @@ final class ElementCacheTagCheckerTest extends TestCase
     /**
      * @test
      */
-    public function it_returns_false_when_object_is_does_not_exist(): void
+    public function it_returns_false_when_object_does_not_exist(): void
     {
         $object = $this->prophesize(DataObject::class);
         $elementCacheTagChecker = new ElementCacheTagChecker(
