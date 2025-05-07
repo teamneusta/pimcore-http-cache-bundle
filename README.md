@@ -1,66 +1,18 @@
 # Pimcore HTTP Cache Bundle
 
-## Installation
+This bundle provides a simple way to handle cache invalidation for Pimcore elements.
 
-1.  **Require the bundle**
+## Documentation
 
-    ```shell
-    composer require teamneusta/pimcore-http-cache-bundle
-    ```
+You will find the detailed documentation in the following links:
 
-2.  **Enable the bundle**
-
-    Add the Bundle to your `config/bundles.php`:
-
-    ```php
-    Neusta\Pimcore\HttpCacheBundle\NeustaPimcoreHttpCacheBundle::class => ['all' => true],
-    ```
-
-## Usage
-
-TODO
-
-## Configuration
-
-```yaml
-neusta_pimcore_http_cache:
-    # Enable/disable cache handling for certain element types
-    elements:
-        assets:
-            # By default, every type except "folder" is enabled
-            types:
-                archive: false
-                unknown: false
-                
-            # Unless you disable assets completely
-            enabled: false
-            
-        documents:
-            # By default, every type except "email", "folder" and "hardlink" is enabled
-            types:
-                link: false
-                
-            # Unless you disable documents completely
-            enabled: false
-            
-        objects:
-            # By default, every type except "folder" is enabled
-            types:
-                variant: false
-            
-            # By default, every data object class is enabled
-            classes:
-                MyDataObjectClass: false
-
-            # Unless you disable data objects completely
-            enabled: false
-
-    # Enable/disable cache handling for custom cache types
-    # Note that custom types MUST be defined (and enabled) here to be tagged/invalidated!
-    cache_types:
-        someType: true
-        otherType: false
-```
+* [Installation](doc/1-installation.md)
+* [Configuration](doc/2-configuration.md)
+* [Pimcore elements](doc/3-pimcore-elements.md)
+* [Additional tags](doc/4-additional-tags.md)
+* [Cancel caching behavior](doc/5-cancel-caching-behavior.md)
+* [Custom cache types](doc/6-custom-cache-types.md)
+* [Disabling caching behavior](doc/7-disable-caching-behavior.md)
 
 ## Contribution
 
