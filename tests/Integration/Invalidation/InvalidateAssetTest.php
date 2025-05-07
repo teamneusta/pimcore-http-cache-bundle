@@ -92,7 +92,7 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
             'assets' => true,
         ],
     ])]
-    public function response_is_not_invalidated_when_folder_is_deleted(): void
+    public function response_is_not_invalidated_when_asset_folder_is_deleted(): void
     {
         $this->folder->delete();
 
