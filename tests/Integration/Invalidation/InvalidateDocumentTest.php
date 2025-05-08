@@ -125,7 +125,7 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
             'documents' => true,
         ],
     ])]
-    public function response_is_not_invalidated_when_document_is_from_type_email_on_delete(): void
+    public function response_is_not_invalidated_when_document_is_of_type_email_on_delete(): void
     {
         $this->email->delete();
 
@@ -140,7 +140,7 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
             'documents' => true,
         ],
     ])]
-    public function response_is_not_invalidated_when_document_is_from_type_folder_on_update(): void
+    public function response_is_not_invalidated_when_document_is_of_type_folder_on_update(): void
     {
         $this->folder->setKey('updated_test_document_page')->save();
 
@@ -155,7 +155,7 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
             'documents' => true,
         ],
     ])]
-    public function response_is_not_invalidated_when_document_is_from_type_folder_on_delete(): void
+    public function response_is_not_invalidated_when_document_is_of_type_folder_on_delete(): void
     {
         $this->folder->delete();
 
