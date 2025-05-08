@@ -206,9 +206,9 @@ final class TagDocumentTest extends ConfigurableWebTestcase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'assets' => [
+            'documents' => [
                 'types' => [
-                    'image' => false,
+                    'page' => false,
                 ],
             ],
         ],
