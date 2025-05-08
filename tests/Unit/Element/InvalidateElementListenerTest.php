@@ -50,7 +50,7 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function onUpdate_should_not_dispatch_element_invalidation_event_if_save_version_only_argument_is_set(
+    public function onUpdate_does_not_dispatch_element_invalidation_event_if_save_version_only_argument_is_set(
         ElementEventInterface $event,
     ): void {
         $event->setArgument('saveVersionOnly', true);
@@ -66,7 +66,7 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function onUpdate_should_not_dispatch_element_invalidation_event_if_auto_save_argument_is_set(
+    public function onUpdate_does_not_dispatch_element_invalidation_event_if_auto_save_argument_is_set(
         ElementEventInterface $event,
     ): void {
         $event->setArgument('autoSave', true);
@@ -112,7 +112,7 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function onUpdate_should_not_invalidate_when_event_was_canceled(ElementEventInterface $event): void
+    public function onUpdate_does_not_invalidate_when_event_was_canceled(ElementEventInterface $event): void
     {
         $element = $event->getElement();
         $invalidationEvent = ElementInvalidationEvent::fromElement($element);
@@ -187,7 +187,7 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function onDelete_should_not_invalidate_when_event_was_canceled(ElementEventInterface $event): void
+    public function onDelete_does_not_invalidate_when_event_was_canceled(ElementEventInterface $event): void
     {
         $element = $event->getElement();
         $invalidationEvent = ElementInvalidationEvent::fromElement($element);
@@ -231,6 +231,6 @@ final class InvalidateElementListenerTest extends TestCase
     {
         yield 'Asset' => ['event' => new AssetEvent($this->prophesize(Asset::class)->reveal())];
         yield 'Document' => ['event' => new DocumentEvent($this->prophesize(Document::class)->reveal())];
-        yield 'DataObject' => ['event' => new DataObjectEvent($this->prophesize(DataObject::class)->reveal())];
+        yield 'Object' => ['event' => new DataObjectEvent($this->prophesize(DataObject::class)->reveal())];
     }
 }
