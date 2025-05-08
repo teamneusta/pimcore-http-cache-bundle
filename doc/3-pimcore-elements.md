@@ -1,6 +1,6 @@
 ## Pimcore Elements
 
-By default, the bundle handles cache invalidation for all Pimcore elements (assets, documents, objects) and custom cache
+By default, the bundle handles cache tagging & invalidation for all Pimcore elements (assets, documents, objects) and custom cache
 types. You can enable or disable cache handling for specific element types and classes in the configuration file.
 
 ### Assets
@@ -18,7 +18,6 @@ neusta_pimcore_http_cache:
             types:
                 archive: false
                 unknown: false
-            enabled: true
 ```
 #### Disable assets completely
 Example configuration to disable assets completely:
@@ -39,7 +38,6 @@ neusta_pimcore_http_cache:
         documents:
             types:
                 link: false
-            enabled: true
 ```
 
 #### Disable documents completely
@@ -62,7 +60,6 @@ neusta_pimcore_http_cache:
         objects:
             types:
                 variant: false
-            enabled: true
 ```
 
 #### Disable objects completely
@@ -83,5 +80,4 @@ neusta_pimcore_http_cache:
         objects:
             classes:
                 MyDataObjectClass: false
-            enabled: true
 ```

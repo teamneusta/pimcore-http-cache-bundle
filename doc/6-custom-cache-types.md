@@ -18,20 +18,20 @@ final class TagElementListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            ElementTaggingEvent ::class => 'onTagging',
+            ElementTaggingEvent::class => 'onTagging',
         ];
     }
 
     public function onTagging(ElementTaggingEvent $event): void
     {
-        if ($event->elementType !== ElementType::OBJECT) {
+        if ($event->elementType !== ElementType::Object) {
             return;
         }
         
-        if ($event->element instanceof MyCuistomObjectClass) {{
-            $event->addTag(
+        if ($event->element instanceof MyCustomObjectClass) {{
+            $event->cacheTags->add(
                 CacheTag::fromString('my_custom_tag'),
-                new CustomCacheType('my_custom_cache_type')
+                CacheTypeFactory::createFromString('my_custom_cache_type')
             );
         }
     }
@@ -46,20 +46,20 @@ final class InvalidateElementListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            ElementInvalidationEvent ::class => 'onInvalidation',
+            ElementInvalidationEvent::class => 'onInvalidation',
         ];
     }
 
     public function onInvalidation(ElementInvalidationEventt $event): void
     {
-        if ($event->elementType !== ElementType::OBJECT) {
+        if ($event->elementType !== ElementType::Object) {
             return;
         }
         
-        if ($event->element instanceof MyCuistomObjectClass) {{
+        if ($event->element instanceof MyCustomObjectClass) {{
             $event->addTag(
                 CacheTag::fromString('my_custom_tag'),
-                new CustomCacheType('my_custom_cache_type')
+                CacheTypeFactory::createFromString('my_custom_cache_type')
             );
         }
     }

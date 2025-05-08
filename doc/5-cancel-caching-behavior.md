@@ -10,13 +10,13 @@ final class CancelTaggingListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            ElementTaggingEvent ::class => 'onTagging',
+            ElementTaggingEvent::class => 'onTagging',
         ];
     }
 
     public function onTagging(ElementTaggingEvent $event): void
     {
-        if ($event->elementType !== ElementType::OBJECT) {
+        if ($event->elementType !== ElementType::Object) {
             return;
         }
         
@@ -29,12 +29,12 @@ final class CancelTaggingListener implements EventSubscriberInterface
 
 ### Example for canceling the invalidation behavior
 ```php
-final class CacheInvalidationListener implements EventSubscriberInterface
+final class CancelInvalidationListener implements EventSubscriberInterface
 {
     public static function getSubscribedEvents()
     {
         return [
-            ElementInvalidationEvent ::class => 'onInvalidation',
+            ElementInvalidationEvent::class => 'onInvalidation',
         ];
     }
 
