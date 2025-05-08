@@ -12,19 +12,15 @@ neusta_pimcore_http_cache:
 ```
 
 #### Example for tagging a custom cache type
-```php
-final class TagElementListener implements EventSubscriberInterface
-{
-    public static function getSubscribedEvents()
-    {
-        return [
-            ElementTaggingEvent::class => 'onTagging',
-        ];
-    }
 
-    public function onTagging(ElementTaggingEvent $event): void
+```php
+
+#[AsEventListener]
+final class TagElementListener
+{
+    public function __invoke(ElementTaggingEvent $event): void
     {
-        if ($event->elementType !== ElementType::Object) {
+        if (ElementType::Object !== $event->elementType) {
             return;
         }
         
@@ -39,20 +35,15 @@ final class TagElementListener implements EventSubscriberInterface
 ```
 
 #### Example for invalidating a custom cache type
+
 ```php
 
-final class InvalidateElementListener implements EventSubscriberInterface
+#[AsEventListener]
+final class InvalidateElementListener
 {
-    public static function getSubscribedEvents()
+    public function __invoke(ElementInvalidationEventt $event): void
     {
-        return [
-            ElementInvalidationEvent::class => 'onInvalidation',
-        ];
-    }
-
-    public function onInvalidation(ElementInvalidationEventt $event): void
-    {
-        if ($event->elementType !== ElementType::Object) {
+        if (ElementType::Object !== $event->elementType) {
             return;
         }
         
@@ -65,5 +56,3 @@ final class InvalidateElementListener implements EventSubscriberInterface
     }
 }
 ```
-
-

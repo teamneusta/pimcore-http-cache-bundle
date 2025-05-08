@@ -5,20 +5,15 @@ This often occurs when elements are related to one another, or when you want to 
 To handle such cases, you can listen to the relevant events and add or invalidate tags as needed.
 
 #### Example for adding additional tags
+
 ```php
 
-final class TagElementListener implements EventSubscriberInterface
+#[AsEventListener]
+final class TagElementListener
 {
-    public static function getSubscribedEvents()
+    public function __invoke(ElementTaggingEvent $event): void
     {
-        return [
-            ElementTaggingEvent::class => 'onTagging',
-        ];
-    }
-
-    public function onTagging(ElementTaggingEvent $event): void
-    {
-        if ($event->elementType !== ElementType::Object) {
+        if (ElementType::Object !== $event->elementType) {
             return;
         }
         
@@ -30,23 +25,19 @@ final class TagElementListener implements EventSubscriberInterface
 ```
 
 ##### Example for invalidating additional tags
-```php
-final class InvalidateElementListener implements EventSubscriberInterface
-{
-    public static function getSubscribedEvents()
-    {
-        return [
-            ElementInvalidationEvent::class => 'onInvalidation',
-        ];
-    }
 
-    public function onInvalidation(ElementInvalidationEventt $event): void
+```php
+
+#[AsEventListener]
+final class InvalidateElementListener
+{
+    public function __invoke(ElementInvalidationEventt $event): void
     {
-        if ($event->elementType !== ElementType::Object) {
+        if (ElementType::Object !== $event->elementType) {
             return;
         }
         
-        if ($event->element instanceof MyCustomObjectClass) {{
+        if (MyCustomObjectClass instanceof $event->element) {{
             $event->cacheTags->add(CacheTag::fromString('my_custom_tag'));
         }
     }

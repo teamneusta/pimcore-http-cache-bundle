@@ -4,23 +4,19 @@ You may encounter situations where you need to bypass the default caching behavi
 To achieve this, you can listen to specific events and cancel the normal caching process by setting the cancel property to true.
 
 ### Example for canceling the tagging behavior
-```php
-final class CancelTaggingListener implements EventSubscriberInterface
-{
-    public static function getSubscribedEvents()
-    {
-        return [
-            ElementTaggingEvent::class => 'onTagging',
-        ];
-    }
 
-    public function onTagging(ElementTaggingEvent $event): void
+```php
+
+#[AsEventListener]
+final class CancelTaggingListener
+{
+    public function __invoke(ElementTaggingEvent $event): void
     {
-        if ($event->elementType !== ElementType::Object) {
+        if (ElementType::Object !== $event->elementType) {
             return;
         }
         
-        if ($event->element->getId() === 123) {
+        if (123 === $event->element->getId()) {
             $event->cancel = true;
         }
     }
@@ -28,23 +24,19 @@ final class CancelTaggingListener implements EventSubscriberInterface
 ```
 
 ### Example for canceling the invalidation behavior
-```php
-final class CancelInvalidationListener implements EventSubscriberInterface
-{
-    public static function getSubscribedEvents()
-    {
-        return [
-            ElementInvalidationEvent::class => 'onInvalidation',
-        ];
-    }
 
-    public function onInvalidation(ElementInvalidationEvent $event): void
+```php
+
+#[AsEventListener]
+final class CancelInvalidationListener
+{
+    public function __invoke(ElementInvalidationEvent $event): void
     {
-        if ($event->elementType !== ElementType::OBJECT) {
+        if (ElementType::Object !== $event->elementType) {
             return;
         }
         
-        if ($event->element->getId() === 123) {
+        if (123 === $event->element->getId()) {
             $event->cancel = true;
         }
     }
