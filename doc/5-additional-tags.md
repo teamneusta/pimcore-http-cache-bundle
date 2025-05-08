@@ -17,7 +17,7 @@ final class TagElementListener
             return;
         }
         
-        if ($event->element instanceof MyCustomObjectClass) {{
+        if ($event->element instanceof MyCustomObjectClass) {
             $event->addTag(CacheTag::fromString('my_custom_tag'));
         }
     }
@@ -37,7 +37,7 @@ final class InvalidateElementListener
             return;
         }
         
-        if (MyCustomObjectClass instanceof $event->element) {{
+        if (MyCustomObjectClass instanceof $event->element) {
             $event->cacheTags->add(CacheTag::fromString('my_custom_tag'));
         }
     }

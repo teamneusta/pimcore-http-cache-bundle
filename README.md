@@ -1,7 +1,7 @@
 # Pimcore HTTP Cache Bundle
 
 This bundle provides a simple way to handle cache invalidation for Pimcore elements. 
-The Bundle relies on the Symfony Http Cache Bundle used to manage a reverse proxy http cache.
+The Bundle relies on the Symfony  [Http Cache Bundle](https://github.com/FriendsOfSymfony/FOSHttpCacheBundle/) used to manage a reverse proxy http cache.
 
 ## Documentation
 
@@ -18,10 +18,12 @@ You will find the detailed documentation in the following links:
 * [Error handling](doc/9-error-handling.md)
 * [Contributing](doc/10-contributing.md)
 
+
 We hope you will enjoy this bundle as much as we do. If you have any questions or suggestions, please feel free to open an issue on GitHub.
 This repository is maintained by [neusta](https://www.team-neusta.de//).
 
 Happy caching!
+
 
 ![Logo](https://www.team-neusta.de/img/team-neusta_RGB2_RZ.svg)
 

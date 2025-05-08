@@ -47,7 +47,7 @@ final class InvalidateElementListener
             return;
         }
         
-        if ($event->element instanceof MyCustomObjectClass) {{
+        if ($event->element instanceof MyCustomObjectClass) {
             $event->addTag(
                 CacheTag::fromString('my_custom_tag'),
                 CacheTypeFactory::createFromString('my_custom_cache_type')
