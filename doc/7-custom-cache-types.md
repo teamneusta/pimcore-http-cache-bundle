@@ -41,7 +41,7 @@ final class TagElementListener
 #[AsEventListener]
 final class InvalidateElementListener
 {
-    public function __invoke(ElementInvalidationEventt $event): void
+    public function __invoke(ElementInvalidationEvent $event): void
     {
         if (ElementType::Object !== $event->elementType) {
             return;
