@@ -25,5 +25,5 @@ This repository is maintained by [neusta](https://www.team-neusta.de/).
 Happy caching!
 
 
-![Logo](https://www.team-neusta.de/img/team-neusta_RGB2_RZ.svg)
+![Logo](./pimcore-http-cache-bundle-logo.png)
 
