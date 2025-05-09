@@ -24,7 +24,7 @@ final class TagElementListener
 }
 ```
 
-##### Example for invalidating additional tags
+#### Example for invalidating additional tags
 
 ```php
 
@@ -37,7 +37,7 @@ final class InvalidateElementListener
             return;
         }
         
-        if (MyCustomObjectClass instanceof $event->element) {
+        if ($event->element instanceof MyCustomObjectClass) {
             $event->cacheTags->add(CacheTag::fromString('my_custom_tag'));
         }
     }
