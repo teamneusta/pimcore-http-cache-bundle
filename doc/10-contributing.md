@@ -2,7 +2,7 @@
 
 Feel free to open issues for any bug, feature request, or other ideas.
 
-Please remember to create an issue before creating large pull requests.
+Please remember to create an issue before creating large pull requests, so we can ensure it goes in the right direction and can be merged.
 
 ### Local Development
 
