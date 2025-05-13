@@ -195,7 +195,7 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
     ])]
     public function response_is_not_invalidated_when_document_type_is_disabled_on_delete(): void
     {
-        $this->document->setKey('updated_test_document_page')->save();
+        $this->document->delete();
 
         $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
     }
@@ -215,7 +215,7 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
      */
     public function response_is_not_invalidated_when_documents_are_disabled_on_delete(): void
     {
-        $this->document->setKey('updated_test_document_page')->save();
+        $this->document->delete();
 
         $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
     }
