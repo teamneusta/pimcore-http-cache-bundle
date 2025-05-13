@@ -187,7 +187,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
             'documents' => true,
         ],
     ])]
-    public function request_is_tagged_with_root_document_tag_when_loaded(): void
+    public function response_is_tagged_with_root_document_tag_when_loaded(): void
     {
         self::arrange(fn () => TestDocumentFactory::simplePage()->save());
 
@@ -199,5 +199,31 @@ final class TagDocumentTest extends ConfigurableWebTestcase
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
         self::assertStringContainsString('d1', $response->headers->get('X-Cache-Tags'));
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'documents' => [
+                'types' => [
+                    'page' => false,
+                ],
+            ],
+        ],
+    ])]
+    public function response_is_not_tagged_when_type_is_disabled(): void
+    {
+        self::arrange(fn () => TestDocumentFactory::simplePage()->save());
+
+        $this->client->request('GET', '/test_document_page');
+
+        $response = $this->client->getResponse();
+        self::assertSame('Document with key: test_document_page', $response->getContent());
+        self::assertSame(200, $response->getStatusCode());
+        self::assertTrue($response->headers->getCacheControlDirective('public'));
+        self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
+        self::assertNull($response->headers->get('X-Cache-Tags'));
     }
 }

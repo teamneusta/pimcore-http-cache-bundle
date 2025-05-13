@@ -34,7 +34,7 @@ final class TagAssetTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_expected_tags_when_asset_is_loaded(): void
     {
-        self::arrange(fn () => TestAssetFactory::simple()->save());
+        self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
 
         $this->client->request('GET', '/get-asset?id=42');
 
@@ -56,7 +56,7 @@ final class TagAssetTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_assets_is_not_enabled(): void
     {
-        self::arrange(fn () => TestAssetFactory::simple()->save());
+        self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
 
         $this->client->request('GET', '/get-asset?id=42');
 
@@ -78,13 +78,62 @@ final class TagAssetTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_caching_is_deactivated(): void
     {
-        self::arrange(fn () => TestAssetFactory::simple()->save());
+        self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
         self::getContainer()->get(CacheActivator::class)->deactivateCaching();
 
         $this->client->request('GET', '/get-asset?id=42');
 
         $response = $this->client->getResponse();
         self::assertSame('This is the content of the test asset.', $response->getContent());
+        self::assertSame(200, $response->getStatusCode());
+        self::assertTrue($response->headers->getCacheControlDirective('public'));
+        self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
+        self::assertNull($response->headers->get('X-Cache-Tags'));
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'assets' => true,
+        ],
+    ])]
+    public function response_is_not_tagged_when_asset_is_of_type_folder(): void
+    {
+        self::arrange(fn () => TestAssetFactory::simpleFolder()->save());
+
+        $this->client->request('GET', '/get-asset?id=23');
+
+        $response = $this->client->getResponse();
+        self::assertSame('', $response->getContent());
+        self::assertSame(200, $response->getStatusCode());
+        self::assertTrue($response->headers->getCacheControlDirective('public'));
+        self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
+        self::assertNull($response->headers->get('X-Cache-Tags'));
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'assets' => [
+                'types' => [
+                    'image' => false,
+                ],
+                'enabled' => true,
+            ],
+        ],
+    ])]
+    public function response_is_not_tagged_for_specified_asset_type(): void
+    {
+        self::arrange(fn () => TestAssetFactory::simpleImage()->save());
+
+        $this->client->request('GET', '/get-asset?id=17');
+
+        $response = $this->client->getResponse();
+        self::assertSame('', $response->getContent());
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
