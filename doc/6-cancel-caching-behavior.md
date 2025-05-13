@@ -2,6 +2,7 @@
 
 You may encounter situations where you need to bypass the default caching behavior under certain conditions.
 To achieve this, you can listen to specific events and cancel the normal caching process by setting the cancel property to true.
+Notice that the propagation of the event will be stopped, after setting cancel to true.
 
 ### Example for canceling the tagging behavior
 
