@@ -4,7 +4,7 @@ You may encounter scenarios where you need to tag a response with additional tag
 This often occurs when elements are related to one another, or when you want to invalidate a specific tag in response to the invalidation of a particular element.
 To handle such cases, you can listen to the relevant events and add or invalidate tags as needed.
 
-#### Example for adding additional tags
+### Example for adding additional tags
 
 ```php
 
@@ -24,7 +24,7 @@ final class TagElementListener
 }
 ```
 
-#### Example for invalidating additional tags
+### Example for invalidating additional tags
 
 ```php
 

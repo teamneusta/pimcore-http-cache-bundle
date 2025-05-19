@@ -1,6 +1,6 @@
 ## Pimcore Elements
 
-By default, the bundle handles cache tagging & invalidation for all Pimcore elements (assets, documents, objects) and custom cache
+By default, the bundle handles cache tagging and invalidation for all Pimcore elements (assets, documents, objects) and custom cache
 types. You can enable or disable cache handling for specific element types and classes in the configuration file.
 
 ### Assets
