@@ -1,9 +1,10 @@
 
 ## Events
 
-You can listen to two events: 
+You can listen to the following events:
 
-- `ElementTaggingEvent` : This event is triggered  before a Pimcore element is tagged.
-- `ElementInvalidationEvent` : This event is triggered before a Pimcore element is invalidated.
+**ElementTaggingEvent**: Triggered before a Pimcore element is tagged; allows adding tags or canceling the tagging process.
 
-This allows you to add additional tags or cancel the tagging/invalidation process or just do your own stuff. 
+**ElementInvalidationEvent**: Triggered before a Pimcore element is invalidated; allows canceling the invalidation process or performing custom actions.
+
+This allows you to add additional tags, cancel the tagging/invalidation process, or implement custom logic.

@@ -1,6 +1,6 @@
 ## Contribution
 
-Feel free to open issues for any bug, feature request, or other ideas.
+Please open issues for bugs, feature requests, or other ideas.
 
 Please remember to create an issue before creating large pull requests, so we can ensure it goes in the right direction and can be merged.
 

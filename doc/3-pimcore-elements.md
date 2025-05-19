@@ -20,7 +20,7 @@ neusta_pimcore_http_cache:
                 unknown: false
 ```
 #### Disable assets completely
-Example configuration to disable assets completely:
+Example configuration to disable assets entirely:
 ```yaml
 neusta_pimcore_http_cache:
     elements:
@@ -40,7 +40,7 @@ neusta_pimcore_http_cache:
                 link: false
 ```
 
-#### Disable documents completely
+#### Disable documents entirely
 
 Example configuration to disable documents completely:
 ```yaml
@@ -62,7 +62,7 @@ neusta_pimcore_http_cache:
                 variant: false
 ```
 
-#### Disable objects completely
+#### Disable objects entirely
 Example configuration to disable objects completely:
 ```yaml
 neusta_pimcore_http_cache:
