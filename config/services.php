@@ -9,7 +9,9 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator\RemoveDisabledTagsCach
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\ElementCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\StaticCacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagDataCollector;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
+use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\CollectTagsResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\OnlyWhenActiveResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\RemoveDisabledTagsResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
@@ -35,6 +37,10 @@ return static function (ContainerConfigurator $configurator) {
 
     $services->set(OnlyWhenActiveCacheInvalidator::class)
         ->decorate(CacheInvalidator::class, null, -100)
+        ->args([service('.inner'), service(CacheActivator::class)]);
+
+    $services->set(CollectTagsResponseTagger::class)
+        ->decorate(ResponseTagger::class, null, -100)
         ->args([service('.inner'), service(CacheActivator::class)]);
 
     $services->set(ResponseTagger::class, ResponseTaggerAdapter::class)
@@ -68,4 +74,12 @@ return static function (ContainerConfigurator $configurator) {
     $services->set(InvalidateElementListener::class)
         ->arg('$cacheInvalidator', service(CacheInvalidator::class))
         ->arg('$dispatcher', service('event_dispatcher'));
+
+    $services->set(CacheTagDataCollector::class)
+        ->arg('$cacheTagCollector', service(CollectTagsResponseTagger::class))
+        ->tag('data_collector', [
+            'template' => '@NeustaPimcoreHttpCache/cache_tags.html.twig',
+            'id' => 'cache_tags',
+            'priority' => 255,
+        ]);
 };
