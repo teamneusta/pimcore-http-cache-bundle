@@ -7,6 +7,8 @@ use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
 
 final class CacheTagCollector
 {
+    private array $collectedTags = [];
+
     public function __construct(
         private readonly CacheActivator $activator,
         private readonly CacheTagChecker $tagChecker,
@@ -22,7 +24,14 @@ final class CacheTagCollector
     public function addTags(CacheTags $tags): void
     {
         if ($this->activator->isCachingActive()) {
-            $this->responseTagger->addTags($tags->withoutDisabled($this->tagChecker)->toArray());
+            $enabledTags = $tags->withoutDisabled($this->tagChecker)->toArray();
+            $this->responseTagger->addTags($enabledTags);
+            $this->collectedTags = array_merge($this->collectedTags, $enabledTags);
         }
+    }
+
+    public function getTags(): array
+    {
+        return array_unique($this->collectedTags);
     }
 }
