@@ -1,91 +1,29 @@
 # Pimcore HTTP Cache Bundle
 
-## Installation
+This bundle provides a simple way to handle cache invalidation for Pimcore elements. 
+The Bundle relies on the [FOSHttpCacheBundle](https://github.com/FriendsOfSymfony/FOSHttpCacheBundle/), which is used to manage a reverse proxy http cache.
 
-1.  **Require the bundle**
+## Documentation
 
-    ```shell
-    composer require teamneusta/pimcore-http-cache-bundle
-    ```
+You will find the detailed documentation in the following links:
 
-2.  **Enable the bundle**
+* [Installation](doc/1-installation.md)
+* [Configuration](doc/2-configuration.md)
+* [Pimcore elements](doc/3-pimcore-elements.md)
+* [Events](doc/4-events.md)
+* [Additional tags](doc/5-additional-tags.md)
+* [Cancel caching behavior](doc/6-cancel-caching-behavior.md)
+* [Custom cache types](doc/7-custom-cache-types.md)
+* [Disabling caching behavior](doc/8-disable-caching-behavior.md)
+* [Error handling](doc/9-error-handling.md)
+* [Contributing](doc/10-contributing.md)
 
-    Add the Bundle to your `config/bundles.php`:
 
-    ```php
-    Neusta\Pimcore\HttpCacheBundle\NeustaPimcoreHttpCacheBundle::class => ['all' => true],
-    ```
+We hope you will enjoy this bundle as much as we do. If you have any questions or suggestions, please feel free to open an issue on GitHub.
+This repository is maintained by [neusta](https://www.team-neusta.de/).
 
-## Usage
+Happy caching!
 
-TODO
 
-## Configuration
+![Logo](./pimcore-http-cache-bundle-logo.png)
 
-```yaml
-neusta_pimcore_http_cache:
-    # Enable/disable cache handling for certain element types
-    elements:
-        assets:
-            # By default, every type except "folder" is enabled
-            types:
-                archive: false
-                unknown: false
-                
-            # Unless you disable assets completely
-            enabled: false
-            
-        documents:
-            # By default, every type except "email", "folder" and "hardlink" is enabled
-            types:
-                link: false
-                
-            # Unless you disable documents completely
-            enabled: false
-            
-        objects:
-            # By default, every type except "folder" is enabled
-            types:
-                variant: false
-            
-            # By default, every data object class is enabled
-            classes:
-                MyDataObjectClass: false
-
-            # Unless you disable data objects completely
-            enabled: false
-
-    # Enable/disable cache handling for custom cache types
-    # Note that custom types MUST be defined (and enabled) here to be tagged/invalidated!
-    cache_types:
-        someType: true
-        otherType: false
-```
-
-## Contribution
-
-Feel free to open issues for any bug, feature request, or other ideas.
-
-Please remember to create an issue before creating large pull requests.
-
-### Local Development
-
-Build the Docker container with:
-
-```shell
-docker compose build
-```
-
-To develop on your local machine, the vendor dependencies are required.
-
-```shell
-bin/composer install
-```
-
-We use composer scripts for our main quality tools. They can be executed via the `bin/composer` file as well.
-
-```shell
-bin/composer cs:fix
-bin/composer phpstan
-bin/composer tests
-```
