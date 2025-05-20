@@ -10,7 +10,6 @@ The Bundle relies on the [FOSHttpCacheBundle](https://github.com/FriendsOfSymfon
 ## Documentation
 
 You will find the detailed documentation in the following links:
-k
 * [Installation](doc/1-installation.md)
 * [Configuration](doc/2-configuration.md)
 * [Pimcore elements](doc/3-pimcore-elements.md)
