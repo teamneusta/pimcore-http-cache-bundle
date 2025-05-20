@@ -58,4 +58,11 @@ return static function (ContainerConfigurator $configurator) {
     $services->set(InvalidateElementListener::class)
         ->arg('$cacheInvalidator', service(CacheInvalidatorInterface::class))
         ->arg('$dispatcher', service('event_dispatcher'));
+    $services->set(CacheTagDataCollector::class)
+        ->arg('$cacheTagCollector', service(CacheTagCollector::class))
+        ->tag('data_collector', [
+            'template' => '@NeustaPimcoreHttpCache/Collector/cache_tags.html.twig',
+            'id' => 'cache_tags',
+            'priority' => 255,
+        ]);
 };
