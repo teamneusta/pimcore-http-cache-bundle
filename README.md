@@ -3,10 +3,13 @@
 This bundle provides a simple way to handle cache invalidation for Pimcore elements. 
 The Bundle relies on the [FOSHttpCacheBundle](https://github.com/FriendsOfSymfony/FOSHttpCacheBundle/), which is used to manage a reverse proxy http cache.
 
+
+![Logo](./pimcore-http-cache-bundle-logo.png)
+
+
 ## Documentation
 
 You will find the detailed documentation in the following links:
-
 * [Installation](doc/1-installation.md)
 * [Configuration](doc/2-configuration.md)
 * [Pimcore elements](doc/3-pimcore-elements.md)
@@ -24,6 +27,4 @@ This repository is maintained by [neusta](https://www.team-neusta.de/).
 
 Happy caching!
 
-
-![Logo](./pimcore-http-cache-bundle-logo.png)
 
