@@ -8,7 +8,7 @@ This bundle provides a simple way to handle cache invalidation for Pimcore eleme
 
 An HTTP reverse proxy is a server that sits between your web application and the internet. Instead of serving content directly to clients, it forwards requests to the origin server (your web application) and caches the responses. When the same request comes again, it can serve the cached response directly, reducing load on your origin server and improving response times.
 
-![http proxy overview](./http-proxy-overview.png)
+![http proxy overview](./reverse-http-proxy-overview.png)
 
 ## What is FOS HTTP Cache Bundle?
 
