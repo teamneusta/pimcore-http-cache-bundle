@@ -12,7 +12,7 @@ An HTTP reverse proxy is a server that sits between your web application and the
 
 ## What is FOS HTTP Cache Bundle?
 
-The [FOSHttpCacheBundle](https://github.com/FriendsOfSymfony/FOSHttpCacheBundle/) is a Symfony bundle that helps manage HTTP caching using reverse proxies. It provides tools to:
+The [`FOSHttpCacheBundle`](https://github.com/FriendsOfSymfony/FOSHttpCacheBundle/) is a Symfony bundle that helps manage HTTP caching using reverse proxies. It provides tools to:
 - Invalidate cached content when data changes
 - Configure cache headers
 - Handle cache tags and variations
@@ -24,7 +24,7 @@ This bundle extends the functionality of `FOSHttpCacheBundle` specifically for P
 - Automatically handles cache invalidation for Pimcore elements (documents, assets, objects)
 - Provides Pimcore-specific cache tags and variations
 - Integrates seamlessly with Pimcore's event system
-- Offers custom cache types for different Pimcore use cases
+- Offers custom cache types for different use cases
 - Allows for fine-grained control over caching behavior
 
 In essence, this bundle makes it easy to implement efficient HTTP caching in your Pimcore application while maintaining proper cache invalidation when your content changes.

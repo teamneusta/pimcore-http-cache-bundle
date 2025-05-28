@@ -81,4 +81,3 @@ neusta_pimcore_http_cache:
             classes:
                 MyDataObjectClass: false
 ```
-
