@@ -1,6 +1,6 @@
 # Pimcore HTTP Cache Bundle
 
-This bundle provides a simple way to handle cache invalidation for Pimcore elements. The Bundle relies on the FOSHttpCacheBundle, which is used to manage a reverse proxy http cache.
+This bundle provides a simple way to handle cache invalidation for Pimcore elements. The Bundle relies on the `FOSHttpCacheBundle`, which is used to manage a reverse proxy HTTP cache.
 
 ![Logo](./pimcore-http-cache-bundle-logo.png)
 
@@ -20,7 +20,7 @@ The [FOSHttpCacheBundle](https://github.com/FriendsOfSymfony/FOSHttpCacheBundle/
 
 ## What does this Bundle do?
 
-This bundle extends the functionality of FOSHttpCacheBundle specifically for Pimcore CMS. It:
+This bundle extends the functionality of `FOSHttpCacheBundle` specifically for Pimcore. It:
 - Automatically handles cache invalidation for Pimcore elements (documents, assets, objects)
 - Provides Pimcore-specific cache tags and variations
 - Integrates seamlessly with Pimcore's event system
