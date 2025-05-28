@@ -82,4 +82,3 @@ neusta_pimcore_http_cache:
                 MyDataObjectClass: false
 ```
 
-![Logo](./image-001.png)
