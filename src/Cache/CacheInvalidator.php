@@ -2,7 +2,6 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Cache;
 
-use FOS\HttpCache\CacheInvalidator as FosCacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
 use Pimcore\Model\Element\ElementInterface;
 
@@ -11,7 +10,7 @@ final class CacheInvalidator implements CacheInvalidatorInterface
     public function __construct(
         private readonly CacheActivator $cacheActivator,
         private readonly CacheTagChecker $tagChecker,
-        private readonly FosCacheInvalidator $invalidator,
+        private readonly InvalidateResponseAdapter $invalidateResponseAdapter,
     ) {
     }
 
@@ -32,6 +31,6 @@ final class CacheInvalidator implements CacheInvalidatorInterface
             return;
         }
 
-        $this->invalidator->invalidateTags($tags->toArray());
+        $this->invalidateResponseAdapter->invalidate($tags);
     }
 }
