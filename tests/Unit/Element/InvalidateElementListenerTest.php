@@ -2,7 +2,7 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Element;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidatorInterface;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementInvalidationEvent;
@@ -26,7 +26,7 @@ final class InvalidateElementListenerTest extends TestCase
 
     private InvalidateElementListener $invalidateElementListener;
 
-    /** @var ObjectProphecy<CacheInvalidatorInterface> */
+    /** @var ObjectProphecy<CacheInvalidator> */
     private $cacheInvalidator;
 
     /** @var ObjectProphecy<EventDispatcherInterface> */
@@ -34,7 +34,7 @@ final class InvalidateElementListenerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->cacheInvalidator = $this->prophesize(CacheInvalidatorInterface::class);
+        $this->cacheInvalidator = $this->prophesize(CacheInvalidator::class);
         $this->eventDispatcher = $this->prophesize(EventDispatcherInterface::class);
         $this->invalidateElementListener = new InvalidateElementListener(
             $this->cacheInvalidator->reveal(),
@@ -101,9 +101,7 @@ final class InvalidateElementListenerTest extends TestCase
 
         $this->invalidateElementListener->onUpdate($event);
 
-        $this->cacheInvalidator->invalidateElement($element)
-            ->shouldHaveBeenCalledOnce();
-        $this->cacheInvalidator->invalidateTags(Argument::type(CacheTags::class))
+        $this->cacheInvalidator->invalidate(Argument::which('toString', CacheTag::fromElement($element)->toString()))
             ->shouldHaveBeenCalledOnce();
     }
 
@@ -123,9 +121,7 @@ final class InvalidateElementListenerTest extends TestCase
 
         $this->invalidateElementListener->onUpdate($event);
 
-        $this->cacheInvalidator->invalidateElement($element)
-            ->shouldNotHaveBeenCalled();
-        $this->cacheInvalidator->invalidateTags(Argument::type(CacheTags::class))
+        $this->cacheInvalidator->invalidate(Argument::any())
             ->shouldNotHaveBeenCalled();
     }
 
@@ -140,15 +136,16 @@ final class InvalidateElementListenerTest extends TestCase
         $invalidationEvent = ElementInvalidationEvent::fromElement($element);
         $invalidationEvent->cacheTags->add(CacheTag::fromString('tag1'));
         $invalidationEvent->cacheTags->add(CacheTag::fromString('tag2'));
+        $expected = CacheTags::fromElements([$element]);
+        $expected->add(CacheTag::fromString('tag1'));
+        $expected->add(CacheTag::fromString('tag2'));
 
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
             ->willReturn($invalidationEvent);
 
         $this->invalidateElementListener->onUpdate($event);
 
-        $this->cacheInvalidator->invalidateElement($element)
-            ->shouldHaveBeenCalledOnce();
-        $this->cacheInvalidator->invalidateTags($invalidationEvent->cacheTags)
+        $this->cacheInvalidator->invalidate(Argument::which('toArray', $expected->toArray()))
             ->shouldHaveBeenCalledOnce();
     }
 
@@ -176,9 +173,7 @@ final class InvalidateElementListenerTest extends TestCase
 
         $this->invalidateElementListener->onDelete($event);
 
-        $this->cacheInvalidator->invalidateElement($element)
-            ->shouldHaveBeenCalledOnce();
-        $this->cacheInvalidator->invalidateTags(Argument::type(CacheTags::class))
+        $this->cacheInvalidator->invalidate(Argument::which('toString', CacheTag::fromElement($element)->toString()))
             ->shouldHaveBeenCalledOnce();
     }
 
@@ -198,9 +193,7 @@ final class InvalidateElementListenerTest extends TestCase
 
         $this->invalidateElementListener->onDelete($event);
 
-        $this->cacheInvalidator->invalidateElement($element)
-            ->shouldNotHaveBeenCalled();
-        $this->cacheInvalidator->invalidateTags(Argument::type(CacheTags::class))
+        $this->cacheInvalidator->invalidate(Argument::any())
             ->shouldNotHaveBeenCalled();
     }
 
@@ -215,22 +208,31 @@ final class InvalidateElementListenerTest extends TestCase
         $invalidationEvent = ElementInvalidationEvent::fromElement($element);
         $invalidationEvent->cacheTags->add(CacheTag::fromString('tag1'));
         $invalidationEvent->cacheTags->add(CacheTag::fromString('tag2'));
+        $expected = CacheTags::fromElements([$element]);
+        $expected->add(CacheTag::fromString('tag1'));
+        $expected->add(CacheTag::fromString('tag2'));
 
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
             ->willReturn($invalidationEvent);
 
         $this->invalidateElementListener->onDelete($event);
 
-        $this->cacheInvalidator->invalidateElement($element)
-            ->shouldHaveBeenCalledOnce();
-        $this->cacheInvalidator->invalidateTags($invalidationEvent->cacheTags)
+        $this->cacheInvalidator->invalidate(Argument::which('toArray', $expected->toArray()))
             ->shouldHaveBeenCalledOnce();
     }
 
     public function elementProvider(): iterable
     {
-        yield 'Asset' => ['event' => new AssetEvent($this->prophesize(Asset::class)->reveal())];
-        yield 'Document' => ['event' => new DocumentEvent($this->prophesize(Document::class)->reveal())];
-        yield 'Object' => ['event' => new DataObjectEvent($this->prophesize(DataObject::class)->reveal())];
+        $asset = $this->prophesize(Asset::class);
+        $asset->getId()->willReturn(42);
+        yield 'Asset' => ['event' => new AssetEvent($asset->reveal())];
+
+        $document = $this->prophesize(Document::class);
+        $document->getId()->willReturn(42);
+        yield 'Document' => ['event' => new DocumentEvent($document->reveal())];
+
+        $dataObject = $this->prophesize(DataObject::class);
+        $dataObject->getId()->willReturn(42);
+        yield 'Object' => ['event' => new DataObjectEvent($dataObject->reveal())];
     }
 }
