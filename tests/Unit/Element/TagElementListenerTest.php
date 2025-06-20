@@ -3,8 +3,8 @@
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Element;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagCollector;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
+use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementTaggingEvent;
 use Neusta\Pimcore\HttpCacheBundle\Element\TagElementListener;
 use PHPUnit\Framework\TestCase;
@@ -15,7 +15,6 @@ use Pimcore\Event\Model\ElementEventInterface;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject;
 use Pimcore\Model\Document;
-use Pimcore\Model\Element\ElementInterface;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -25,8 +24,8 @@ final class TagElementListenerTest extends TestCase
 {
     use ProphecyTrait;
 
-    /** @var ObjectProphecy<CacheTagCollector> */
-    private ObjectProphecy $cacheTagCollector;
+    /** @var ObjectProphecy<ResponseTagger> */
+    private ObjectProphecy $responseTagger;
 
     /** @var ObjectProphecy<EventDispatcherInterface> */
     private ObjectProphecy $eventDispatcher;
@@ -35,10 +34,10 @@ final class TagElementListenerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->cacheTagCollector = $this->prophesize(CacheTagCollector::class);
+        $this->responseTagger = $this->prophesize(ResponseTagger::class);
         $this->eventDispatcher = $this->prophesize(EventDispatcherInterface::class);
         $this->tagElementListener = new TagElementListener(
-            $this->cacheTagCollector->reveal(),
+            $this->responseTagger->reveal(),
             $this->eventDispatcher->reveal(),
         );
 
@@ -58,7 +57,7 @@ final class TagElementListenerTest extends TestCase
 
         $this->tagElementListener->__invoke($event);
 
-        $this->cacheTagCollector->addTags(Argument::which('toString', $expected->toString()))
+        $this->responseTagger->tag(Argument::which('toString', $expected->toString()))
             ->shouldHaveBeenCalledTimes(1);
     }
 
@@ -78,7 +77,7 @@ final class TagElementListenerTest extends TestCase
 
         $this->tagElementListener->__invoke($event);
 
-        $this->cacheTagCollector->addTags(Argument::any())
+        $this->responseTagger->tag(Argument::any())
             ->shouldNotHaveBeenCalled();
     }
 
@@ -102,7 +101,7 @@ final class TagElementListenerTest extends TestCase
 
         $this->tagElementListener->__invoke($event);
 
-        $this->cacheTagCollector->addTags(Argument::which('toArray', $expected->toArray()))
+        $this->responseTagger->tag(Argument::which('toArray', $expected->toArray()))
             ->shouldHaveBeenCalledOnce();
     }
 

@@ -2,14 +2,14 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Element;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagCollector;
+use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
 use Pimcore\Event\Model\ElementEventInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 final class TagElementListener
 {
     public function __construct(
-        private readonly CacheTagCollector $tagCollector,
+        private readonly ResponseTagger $responseTagger,
         private readonly EventDispatcherInterface $dispatcher,
     ) {
     }
@@ -23,6 +23,6 @@ final class TagElementListener
             return;
         }
 
-        $this->tagCollector->addTags($taggingEvent->cacheTags);
+        $this->responseTagger->tag($taggingEvent->cacheTags);
     }
 }

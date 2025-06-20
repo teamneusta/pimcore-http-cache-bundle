@@ -10,8 +10,9 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator\RemoveDisabledTagsCach
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\ElementCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\StaticCacheTagChecker;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagCollector;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
+use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\OnlyWhenActiveResponseTagger;
+use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\RemoveDisabledTagsResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
@@ -41,10 +42,13 @@ return static function (ContainerConfigurator $configurator) {
     $services->set(ResponseTagger::class, ResponseTaggerAdapter::class)
         ->arg('$responseTagger', service('fos_http_cache.http.symfony_response_tagger'));
 
-    $services->set(CacheTagCollector::class)
-        ->arg('$activator', service(CacheActivator::class))
-        ->arg('$tagChecker', service(CacheTagChecker::class))
-        ->arg('$responseTagger', service(ResponseTagger::class));
+    $services->set(RemoveDisabledTagsResponseTagger::class)
+        ->decorate(ResponseTagger::class, null, -99)
+        ->args([service('.inner'), service(CacheTagChecker::class)]);
+
+    $services->set(OnlyWhenActiveResponseTagger::class)
+        ->decorate(ResponseTagger::class, null, -100)
+        ->args([service('.inner'), service(CacheActivator::class)]);
 
     $services->set(StaticCacheTagChecker::class)
         ->arg('$types', abstract_arg('Set in the extension'));
@@ -60,7 +64,7 @@ return static function (ContainerConfigurator $configurator) {
     $services->alias(CacheTagChecker::class, StaticCacheTagChecker::class);
 
     $services->set(TagElementListener::class)
-        ->arg('$tagCollector', service(CacheTagCollector::class))
+        ->arg('$responseTagger', service(ResponseTagger::class))
         ->arg('$dispatcher', service('event_dispatcher'));
 
     $services->set(CacheInvalidationListener::class)
