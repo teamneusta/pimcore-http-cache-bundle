@@ -4,9 +4,13 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Element;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagCollector;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementTaggingEvent;
 use Neusta\Pimcore\HttpCacheBundle\Element\TagElementListener;
 use PHPUnit\Framework\TestCase;
+use Pimcore\Event\Model\AssetEvent;
+use Pimcore\Event\Model\DataObjectEvent;
+use Pimcore\Event\Model\DocumentEvent;
 use Pimcore\Event\Model\ElementEventInterface;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject;
@@ -47,18 +51,14 @@ final class TagElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function it_adds_cache_tags(string $class): void
+    public function it_adds_cache_tags(ElementEventInterface $event): void
     {
-        $event = $this->prophesize(ElementEventInterface::class);
-        /** @var ObjectProphecy<ElementInterface> $element */
-        $element = $this->prophesize($class);
+        $element = $event->getElement();
+        $expected = CacheTag::fromElement($element);
 
-        $event->getElement()->willReturn($element);
-        $element->getId()->willReturn(42);
+        $this->tagElementListener->__invoke($event);
 
-        $this->tagElementListener->__invoke($event->reveal());
-
-        $this->cacheTagCollector->addTag(Argument::type(CacheTag::class))
+        $this->cacheTagCollector->addTags(Argument::which('toString', $expected->toString()))
             ->shouldHaveBeenCalledTimes(1);
     }
 
@@ -67,25 +67,57 @@ final class TagElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function it_dispatches_element_tagging_event(string $class): void
+    public function it_does_not_add_tags_when_event_was_canceled(ElementEventInterface $event): void
     {
-        $event = $this->prophesize(ElementEventInterface::class);
-        /** @var ObjectProphecy<ElementInterface> $element */
-        $element = $this->prophesize($class);
-
-        $event->getElement()->willReturn($element);
-        $element->getId()->willReturn(42);
-
-        $this->tagElementListener->__invoke($event->reveal());
+        $element = $event->getElement();
+        $taggingEvent = ElementTaggingEvent::fromElement($element);
+        $taggingEvent->cancel = true;
 
         $this->eventDispatcher->dispatch(Argument::type(ElementTaggingEvent::class))
-            ->shouldHaveBeenCalledTimes(1);
+            ->willReturn($taggingEvent);
+
+        $this->tagElementListener->__invoke($event);
+
+        $this->cacheTagCollector->addTags(Argument::any())
+            ->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider elementProvider
+     */
+    public function it_should_add_additional_tags_when_requested(ElementEventInterface $event): void
+    {
+        $element = $event->getElement();
+        $taggingEvent = ElementTaggingEvent::fromElement($element);
+        $taggingEvent->cacheTags->add(CacheTag::fromString('tag1'));
+        $taggingEvent->cacheTags->add(CacheTag::fromString('tag2'));
+        $expected = CacheTags::fromElements([$element]);
+        $expected->add(CacheTag::fromString('tag1'));
+        $expected->add(CacheTag::fromString('tag2'));
+
+        $this->eventDispatcher->dispatch(Argument::type(ElementTaggingEvent::class))
+            ->willReturn($taggingEvent);
+
+        $this->tagElementListener->__invoke($event);
+
+        $this->cacheTagCollector->addTags(Argument::which('toArray', $expected->toArray()))
+            ->shouldHaveBeenCalledOnce();
     }
 
     public function elementProvider(): iterable
     {
-        yield 'Asset' => ['class' => Asset::class];
-        yield 'Document' => ['class' => Document::class];
-        yield 'Object' => ['class' => DataObject::class];
+        $asset = $this->prophesize(Asset::class);
+        $asset->getId()->willReturn(42);
+        yield 'Asset' => ['event' => new AssetEvent($asset->reveal())];
+
+        $document = $this->prophesize(Document::class);
+        $document->getId()->willReturn(42);
+        yield 'Document' => ['event' => new DocumentEvent($document->reveal())];
+
+        $dataObject = $this->prophesize(DataObject::class);
+        $dataObject->getId()->willReturn(42);
+        yield 'Object' => ['event' => new DataObjectEvent($dataObject->reveal())];
     }
 }

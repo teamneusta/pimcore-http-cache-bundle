@@ -2,7 +2,6 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Cache;
 
-use FOS\HttpCache\ResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
 
 final class CacheTagCollector
@@ -22,7 +21,7 @@ final class CacheTagCollector
     public function addTags(CacheTags $tags): void
     {
         if ($this->activator->isCachingActive()) {
-            $this->responseTagger->addTags($tags->withoutDisabled($this->tagChecker)->toArray());
+            $this->responseTagger->tag($tags->withoutDisabled($this->tagChecker));
         }
     }
 }

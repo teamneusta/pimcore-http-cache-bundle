@@ -2,11 +2,11 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Cache;
 
-use FOS\HttpCache\ResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagCollector;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
+use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -51,7 +51,7 @@ final class CacheTagCollectorTest extends TestCase
 
         $this->cacheTagCollector->addTag($tag);
 
-        $this->responseTagger->addTags([$tag->toString()])->shouldHaveBeenCalledOnce();
+        $this->responseTagger->tag(new CacheTags($tag))->shouldHaveBeenCalledOnce();
     }
 
     /**
@@ -66,7 +66,7 @@ final class CacheTagCollectorTest extends TestCase
 
         $this->cacheTagCollector->addTag($tag);
 
-        $this->responseTagger->addTags(Argument::any())->shouldNotHaveBeenCalled();
+        $this->responseTagger->tag(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -81,7 +81,7 @@ final class CacheTagCollectorTest extends TestCase
 
         $this->cacheTagCollector->addTag($tag);
 
-        $this->responseTagger->addTags([])->shouldHaveBeenCalledOnce();
+        $this->responseTagger->tag(new CacheTags())->shouldHaveBeenCalledOnce();
     }
 
     /**
@@ -98,7 +98,7 @@ final class CacheTagCollectorTest extends TestCase
 
         $this->cacheTagCollector->addTags(new CacheTags($tag1, $tag2));
 
-        $this->responseTagger->addTags([$tag1->toString(), $tag2->toString()])->shouldHaveBeenCalledOnce();
+        $this->responseTagger->tag(new CacheTags($tag1, $tag2))->shouldHaveBeenCalledOnce();
     }
 
     /**
@@ -115,7 +115,7 @@ final class CacheTagCollectorTest extends TestCase
 
         $this->cacheTagCollector->addTags(new CacheTags($tag1, $tag2));
 
-        $this->responseTagger->addTags(Argument::any())->shouldNotHaveBeenCalled();
+        $this->responseTagger->tag(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -132,6 +132,6 @@ final class CacheTagCollectorTest extends TestCase
 
         $this->cacheTagCollector->addTags(new CacheTags($tag1, $tag2));
 
-        $this->responseTagger->addTags([])->shouldHaveBeenCalledOnce();
+        $this->responseTagger->tag(new CacheTags())->shouldHaveBeenCalledOnce();
     }
 }

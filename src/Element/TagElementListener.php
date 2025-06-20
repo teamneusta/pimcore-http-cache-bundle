@@ -2,7 +2,6 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Element;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagCollector;
 use Pimcore\Event\Model\ElementEventInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -24,7 +23,6 @@ final class TagElementListener
             return;
         }
 
-        $this->tagCollector->addTag(CacheTag::fromElement($taggingEvent->element));
         $this->tagCollector->addTags($taggingEvent->cacheTags);
     }
 }
