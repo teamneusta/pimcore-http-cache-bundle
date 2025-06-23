@@ -35,6 +35,11 @@ final class CacheTags implements \IteratorAggregate
         return new \ArrayIterator($this->tags);
     }
 
+    public function add(CacheTag $tag): void
+    {
+        $this->tags[] = $tag;
+    }
+
     public function withoutDisabled(CacheTagChecker $checker): self
     {
         return new self(...array_filter($this->tags, $checker->isEnabled(...)));
@@ -59,10 +64,5 @@ final class CacheTags implements \IteratorAggregate
     public function isEmpty(): bool
     {
         return 0 === \count($this->tags);
-    }
-
-    public function add(CacheTag $tag): void
-    {
-        $this->tags[] = $tag;
     }
 }

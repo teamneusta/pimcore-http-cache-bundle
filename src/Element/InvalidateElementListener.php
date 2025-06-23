@@ -2,7 +2,7 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Element;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidatorInterface;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Pimcore\Event\Model\ElementEventInterface;
 use Pimcore\Model\Element\ElementInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -10,7 +10,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 final class InvalidateElementListener
 {
     public function __construct(
-        private readonly CacheInvalidatorInterface $cacheInvalidator,
+        private readonly CacheInvalidator $cacheInvalidator,
         private readonly EventDispatcherInterface $dispatcher,
     ) {
     }
@@ -38,7 +38,6 @@ final class InvalidateElementListener
             return;
         }
 
-        $this->cacheInvalidator->invalidateElement($invalidationEvent->element);
-        $this->cacheInvalidator->invalidateTags($invalidationEvent->cacheTags);
+        $this->cacheInvalidator->invalidate($invalidationEvent->cacheTags);
     }
 }

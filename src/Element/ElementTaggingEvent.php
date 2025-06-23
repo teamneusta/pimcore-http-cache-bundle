@@ -10,17 +10,19 @@ final class ElementTaggingEvent extends Event
 {
     public bool $cancel = false;
 
-    public readonly CacheTags $cacheTags;
-
     private function __construct(
         public readonly ElementInterface $element,
         public readonly ElementType $elementType,
+        public readonly CacheTags $cacheTags,
     ) {
-        $this->cacheTags = new CacheTags();
     }
 
     public static function fromElement(ElementInterface $element): self
     {
-        return new self($element, ElementType::fromElement($element));
+        return new self(
+            $element,
+            ElementType::fromElement($element),
+            CacheTags::fromElements([$element]),
+        );
     }
 }

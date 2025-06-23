@@ -55,7 +55,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $object->setContent('Updated test content')->save();
 
-        $this->cacheManager->invalidateTags(['foo-bar'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['o42', 'foo-bar'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -75,7 +75,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $object->setKey('updated_test_object')->save();
 
-        $this->cacheManager->invalidateTags(['foo-bar'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(['o42', 'foo-bar'])->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -95,7 +95,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $document->setKey('updated_test_document_page')->save();
 
-        $this->cacheManager->invalidateTags(['foo-bar'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['d42', 'foo-bar'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -115,7 +115,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $document->setKey('updated_test_document_page')->save();
 
-        $this->cacheManager->invalidateTags(['foo-bar'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(['d42', 'foo-bar'])->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -135,7 +135,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $asset->setData('Updated test content')->save();
 
-        $this->cacheManager->invalidateTags(['foo-bar'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['a42', 'foo-bar'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -155,7 +155,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $asset->setData('Updated test content')->save();
 
-        $this->cacheManager->invalidateTags(['foo-bar'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(['a42', 'foo-bar'])->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -175,7 +175,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $object->delete();
 
-        $this->cacheManager->invalidateTags(['foo-bar'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['o42', 'foo-bar'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -195,7 +195,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $object->delete();
 
-        $this->cacheManager->invalidateTags(['foo-bar'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(['o42', 'foo-bar'])->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -215,7 +215,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $asset->delete();
 
-        $this->cacheManager->invalidateTags(['foo-bar'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['a42', 'foo-bar'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -235,7 +235,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $asset->delete();
 
-        $this->cacheManager->invalidateTags(['foo-bar'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(['a42', 'foo-bar'])->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -255,7 +255,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $document->delete();
 
-        $this->cacheManager->invalidateTags(['foo-bar'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['d42', 'foo-bar'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -275,6 +275,6 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $document->delete();
 
-        $this->cacheManager->invalidateTags(['foo-bar'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(['d42', 'foo-bar'])->shouldNotHaveBeenCalled();
     }
 }
