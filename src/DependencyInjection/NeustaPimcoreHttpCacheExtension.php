@@ -2,10 +2,6 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\DependencyInjection;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\ElementCacheTagChecker;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\StaticCacheTagChecker;
-use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
-use Neusta\Pimcore\HttpCacheBundle\Element\TagElementListener;
 use Pimcore\Event\AssetEvents;
 use Pimcore\Event\DataObjectEvents;
 use Pimcore\Event\DocumentEvents;
@@ -25,7 +21,7 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
 
         $loader->load('services.php');
 
-        $container->getDefinition(StaticCacheTagChecker::class)
+        $container->getDefinition('neusta_pimcore_http_cache.cache_tag_checker')
             ->setArgument('$types', $mergedConfig['cache_types']);
 
         $this->registerElements($container, $mergedConfig['elements']);
@@ -36,9 +32,9 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
      */
     private function registerElements(ContainerBuilder $container, array $config): void
     {
-        $tagChecker = $container->getDefinition(ElementCacheTagChecker::class);
-        $tagListener = $container->getDefinition(TagElementListener::class);
-        $invalidateListener = $container->getDefinition(InvalidateElementListener::class);
+        $tagChecker = $container->getDefinition('neusta_pimcore_http_cache.cache_tag_checker.element');
+        $tagListener = $container->getDefinition('neusta_pimcore_http_cache.element.tag_listener');
+        $invalidateListener = $container->getDefinition('neusta_pimcore_http_cache.element.invalidate_listener');
 
         if ($config['assets']['enabled']) {
             $tagChecker->setArgument('$assets', $config['assets']);
