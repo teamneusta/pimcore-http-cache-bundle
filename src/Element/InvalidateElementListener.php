@@ -38,6 +38,6 @@ final class InvalidateElementListener
             return;
         }
 
-        $this->cacheInvalidator->invalidate($invalidationEvent->cacheTags);
+        $this->cacheInvalidator->invalidate($invalidationEvent->cacheTags());
     }
 }

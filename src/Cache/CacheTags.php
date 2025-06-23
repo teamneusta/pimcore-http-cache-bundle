@@ -10,17 +10,38 @@ use Pimcore\Model\Element\ElementInterface;
 final class CacheTags implements \IteratorAggregate
 {
     /**
-     * @var CacheTag[]
+     * @var list<CacheTag>
      */
-    private array $tags;
+    private readonly array $tags;
 
+    /**
+     * @no-named-arguments
+     */
     public function __construct(CacheTag ...$tags)
     {
         $this->tags = $tags;
     }
 
+    public static function fromString(string $tag, ?CacheType $type = null): self
+    {
+        return new self(CacheTag::fromString($tag, $type));
+    }
+
     /**
-     * @param ElementInterface[] $elements
+     * @param list<string> $tags
+     */
+    public static function fromStrings(array $tags, ?CacheType $type = null): self
+    {
+        return new self(...array_map(fn ($tag) => CacheTag::fromString($tag, $type), $tags));
+    }
+
+    public static function fromElement(ElementInterface $element): self
+    {
+        return new self(CacheTag::fromElement($element));
+    }
+
+    /**
+     * @param list<ElementInterface> $elements
      */
     public static function fromElements(array $elements): self
     {
@@ -35,9 +56,18 @@ final class CacheTags implements \IteratorAggregate
         return new \ArrayIterator($this->tags);
     }
 
-    public function add(CacheTag $tag): void
+    public function with(CacheTag|self ...$tags): self
     {
-        $this->tags[] = $tag;
+        $newTags = $this->tags;
+        foreach ($tags as $tag) {
+            if ($tag instanceof self) {
+                $newTags = [...$newTags, ...$tag->tags];
+            } else {
+                $newTags[] = $tag;
+            }
+        }
+
+        return new self(...$newTags);
     }
 
     public function withoutDisabled(CacheTagChecker $checker): self
@@ -46,7 +76,7 @@ final class CacheTags implements \IteratorAggregate
     }
 
     /**
-     * @return string[]
+     * @return list<string>
      */
     public function toArray(): array
     {
