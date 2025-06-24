@@ -53,11 +53,15 @@
                 <tr>
                     <th>Tag</th>
                 </tr>
+                <tr>
+                    <th>Type</th>
+                </tr>
             </thead>
             <tbody>
                 {% for tag in collector.tags %}
                     <tr>
-                        <td>{{ tag }}</td>
+                        <td>{{ tag.tag }}</td>
+                        <td>{{ tag.type }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
