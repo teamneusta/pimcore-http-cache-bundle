@@ -134,11 +134,11 @@ final class InvalidateElementListenerTest extends TestCase
     {
         $element = $event->getElement();
         $invalidationEvent = ElementInvalidationEvent::fromElement($element);
-        $invalidationEvent->cacheTags->add(CacheTag::fromString('tag1'));
-        $invalidationEvent->cacheTags->add(CacheTag::fromString('tag2'));
+        $invalidationEvent->cacheTags->addTag(CacheTag::fromString('tag1'));
+        $invalidationEvent->cacheTags->addTag(CacheTag::fromString('tag2'));
         $expected = CacheTags::fromElements([$element]);
-        $expected->add(CacheTag::fromString('tag1'));
-        $expected->add(CacheTag::fromString('tag2'));
+        $expected->addTag(CacheTag::fromString('tag1'));
+        $expected->addTag(CacheTag::fromString('tag2'));
 
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
             ->willReturn($invalidationEvent);
@@ -206,11 +206,11 @@ final class InvalidateElementListenerTest extends TestCase
     {
         $element = $event->getElement();
         $invalidationEvent = ElementInvalidationEvent::fromElement($element);
-        $invalidationEvent->cacheTags->add(CacheTag::fromString('tag1'));
-        $invalidationEvent->cacheTags->add(CacheTag::fromString('tag2'));
+        $invalidationEvent->cacheTags->addTag(CacheTag::fromString('tag1'));
+        $invalidationEvent->cacheTags->addTag(CacheTag::fromString('tag2'));
         $expected = CacheTags::fromElements([$element]);
-        $expected->add(CacheTag::fromString('tag1'));
-        $expected->add(CacheTag::fromString('tag2'));
+        $expected->addTag(CacheTag::fromString('tag1'));
+        $expected->addTag(CacheTag::fromString('tag2'));
 
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
             ->willReturn($invalidationEvent);

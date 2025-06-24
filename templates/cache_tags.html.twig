@@ -1,0 +1,74 @@
+{% extends '@WebProfiler/Profiler/layout.html.twig' %}
+
+{% block toolbar %}
+    {% if collector.tags|length > 0 %}
+        {% set status_color = 'green' %}
+    {% else %}
+        {% set status_color = 'grey' %}
+    {% endif %}
+
+    {% set icon %}
+        <span class="sf-toolbar-icon">
+            <svg width="24" height="28" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 28">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM10 20H6v-6h4v6zm8 0h-4v-6h4v6zm2-10H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V12c0-1.1-.9-2-2-2z"/>
+            </svg>
+            <span class="sf-toolbar-value">{{ collector.tags|length }}</span>
+        </span>
+    {% endset %}
+
+    {% set text %}
+        <div class="sf-toolbar-info-piece">
+            <b>Cache Tags</b>
+            <span class="sf-toolbar-status">{{ collector.tags|length }}</span>
+        </div>
+    {% endset %}
+
+    {{ include('@WebProfiler/Profiler/toolbar_item.html.twig', { link: profiler_url }) }}
+{% endblock %}
+
+{% block menu %}
+    <span class="label {{ collector.tags|length > 0 ? 'status-green' : 'status-grey' }}">
+        <span class="icon">htag</span>
+        <strong>Cache Tags</strong>
+        <span class="count">{{ collector.tags|length }}</span>
+    </span>
+{% endblock %}
+
+{% block panel %}
+    <h2>Cache Tags</h2>
+
+    {% if collector.tags|length > 0 %}
+        <table class="metrics">
+            <tbody>
+                <tr>
+                    <td>Total Tags</td>
+                    <td class="font-normal">{{ collector.tags|length }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Tag Details</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Tag</th>
+                </tr>
+                <tr>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tag in collector.tags %}
+                    <tr>
+                        <td>{{ tag.tag }}</td>
+                        <td>{{ tag.type }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty">
+            <p>No cache tags were collected for this request.</p>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -12,7 +12,7 @@ final class CacheTags implements \IteratorAggregate
     /**
      * @var CacheTag[]
      */
-    private array $tags;
+    public array $tags;
 
     public function __construct(CacheTag ...$tags)
     {
@@ -35,9 +35,14 @@ final class CacheTags implements \IteratorAggregate
         return new \ArrayIterator($this->tags);
     }
 
-    public function add(CacheTag $tag): void
+    public function addTag(CacheTag $tags): void
     {
-        $this->tags[] = $tag;
+        $this->tags[] = $tags;
+    }
+
+    public function addTags(CacheTags $tags): void
+    {
+        $this->tags = \array_merge($tags->tags, $this->tags->tags);
     }
 
     public function withoutDisabled(CacheTagChecker $checker): self
@@ -48,12 +53,16 @@ final class CacheTags implements \IteratorAggregate
     /**
      * @return string[]
      */
-    public function toArray(): array
+    public function toArray(bool $types = false): array
     {
         $tags = array_map(static fn (CacheTag $tag): string => $tag->toString(), $this->tags);
+
         natsort($tags);
 
-        return $tags;
+        return !$types ? $tags : array_map(static fn (string $tag, int $index): array => [
+            'tag' => $tag,
+            'type' => $this->tags[$index]->type,
+        ], $tags, array_keys($tags));
     }
 
     public function toString(): string

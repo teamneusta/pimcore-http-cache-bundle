@@ -90,11 +90,11 @@ final class TagElementListenerTest extends TestCase
     {
         $element = $event->getElement();
         $taggingEvent = ElementTaggingEvent::fromElement($element);
-        $taggingEvent->cacheTags->add(CacheTag::fromString('tag1'));
-        $taggingEvent->cacheTags->add(CacheTag::fromString('tag2'));
+        $taggingEvent->cacheTags->addTag(CacheTag::fromString('tag1'));
+        $taggingEvent->cacheTags->addTag(CacheTag::fromString('tag2'));
         $expected = CacheTags::fromElements([$element]);
-        $expected->add(CacheTag::fromString('tag1'));
-        $expected->add(CacheTag::fromString('tag2'));
+        $expected->addTag(CacheTag::fromString('tag1'));
+        $expected->addTag(CacheTag::fromString('tag2'));
 
         $this->eventDispatcher->dispatch(Argument::type(ElementTaggingEvent::class))
             ->willReturn($taggingEvent);
