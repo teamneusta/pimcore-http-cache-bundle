@@ -34,7 +34,9 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementInvalidationEvent::class,
-            fn ($event) => $event->cacheTags->add(CacheTag::fromString('bar', new CustomCacheType('foo'))),
+            fn (ElementInvalidationEvent $event) => $event->addTag(
+                CacheTag::fromString('bar', new CustomCacheType('foo')),
+            ),
         );
     }
 

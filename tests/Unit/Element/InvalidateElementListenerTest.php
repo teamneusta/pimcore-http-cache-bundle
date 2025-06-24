@@ -133,12 +133,12 @@ final class InvalidateElementListenerTest extends TestCase
     public function onUpdate_should_invalidate_additional_tags_when_requested(ElementEventInterface $event): void
     {
         $element = $event->getElement();
+        $additionalTag = CacheTag::fromString('tag1');
+        $additionalTags = CacheTags::fromStrings(['tag2', 'tag3']);
         $invalidationEvent = ElementInvalidationEvent::fromElement($element);
-        $invalidationEvent->cacheTags->add(CacheTag::fromString('tag1'));
-        $invalidationEvent->cacheTags->add(CacheTag::fromString('tag2'));
-        $expected = CacheTags::fromElements([$element]);
-        $expected->add(CacheTag::fromString('tag1'));
-        $expected->add(CacheTag::fromString('tag2'));
+        $invalidationEvent->addTag($additionalTag);
+        $invalidationEvent->addTags($additionalTags);
+        $expected = CacheTags::fromElement($element)->with($additionalTag, $additionalTags);
 
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
             ->willReturn($invalidationEvent);
@@ -205,12 +205,12 @@ final class InvalidateElementListenerTest extends TestCase
     public function onDelete_should_invalidate_additional_tags_when_requested(ElementEventInterface $event): void
     {
         $element = $event->getElement();
+        $additionalTag = CacheTag::fromString('tag1');
+        $additionalTags = CacheTags::fromStrings(['tag2', 'tag3']);
         $invalidationEvent = ElementInvalidationEvent::fromElement($element);
-        $invalidationEvent->cacheTags->add(CacheTag::fromString('tag1'));
-        $invalidationEvent->cacheTags->add(CacheTag::fromString('tag2'));
-        $expected = CacheTags::fromElements([$element]);
-        $expected->add(CacheTag::fromString('tag1'));
-        $expected->add(CacheTag::fromString('tag2'));
+        $invalidationEvent->addTag($additionalTag);
+        $invalidationEvent->addTags($additionalTags);
+        $expected = CacheTags::fromElement($element)->with($additionalTag, $additionalTags);
 
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
             ->willReturn($invalidationEvent);

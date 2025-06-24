@@ -4,7 +4,6 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Adapter\FOSHttpCache;
 
 use FOS\HttpCache\CacheInvalidator as FosCacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Adapter\FOSHttpCache\CacheInvalidatorAdapter;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -45,7 +44,7 @@ final class CacheInvalidatorAdapterTest extends TestCase
      */
     public function invalidateTags_should_invalidate_tags(): void
     {
-        $tags = new CacheTags(CacheTag::fromString('tag1'), CacheTag::fromString('tag2'));
+        $tags = CacheTags::fromStrings(['tag1', 'tag2']);
 
         $this->subject->invalidate($tags);
 

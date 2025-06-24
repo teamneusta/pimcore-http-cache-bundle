@@ -89,12 +89,12 @@ final class TagElementListenerTest extends TestCase
     public function it_should_add_additional_tags_when_requested(ElementEventInterface $event): void
     {
         $element = $event->getElement();
+        $additionalTag = CacheTag::fromString('tag1');
+        $additionalTags = CacheTags::fromStrings(['tag2', 'tag3']);
         $taggingEvent = ElementTaggingEvent::fromElement($element);
-        $taggingEvent->cacheTags->add(CacheTag::fromString('tag1'));
-        $taggingEvent->cacheTags->add(CacheTag::fromString('tag2'));
-        $expected = CacheTags::fromElements([$element]);
-        $expected->add(CacheTag::fromString('tag1'));
-        $expected->add(CacheTag::fromString('tag2'));
+        $taggingEvent->addTag($additionalTag);
+        $taggingEvent->addTags($additionalTags);
+        $expected = CacheTags::fromElement($element)->with($additionalTag, $additionalTags);
 
         $this->eventDispatcher->dispatch(Argument::type(ElementTaggingEvent::class))
             ->willReturn($taggingEvent);
