@@ -3,7 +3,6 @@
 use FOS\HttpCacheBundle\CacheManager;
 use Neusta\Pimcore\HttpCacheBundle\Adapter\FOSHttpCache\CacheInvalidatorAdapter;
 use Neusta\Pimcore\HttpCacheBundle\Adapter\FOSHttpCache\ResponseTaggerAdapter;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidationListener;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator\OnlyWhenActiveCacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator\RemoveDisabledTagsCacheInvalidator;
@@ -18,7 +17,6 @@ use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
 use Neusta\Pimcore\HttpCacheBundle\Element\TagElementListener;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Symfony\Component\Messenger\Event\WorkerMessageHandledEvent;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\abstract_arg;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\inline_service;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
@@ -66,11 +64,6 @@ return static function (ContainerConfigurator $configurator) {
     $services->set(TagElementListener::class)
         ->arg('$responseTagger', service(ResponseTagger::class))
         ->arg('$dispatcher', service('event_dispatcher'));
-
-    $services->set(CacheInvalidationListener::class)
-        ->arg('$invalidator', service(CacheManager::class))
-        ->arg('$logger',  service('logger'))
-        ->tag('kernel.event_listener', ['event' => WorkerMessageHandledEvent::class]);
 
     $services->set(InvalidateElementListener::class)
         ->arg('$cacheInvalidator', service(CacheInvalidator::class))
