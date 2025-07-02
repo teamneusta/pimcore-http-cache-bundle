@@ -7,6 +7,9 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator\OnlyWhenActiveCacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator\RemoveDisabledTagsCacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\Element\AssetCacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\Element\DocumentCacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\Element\ObjectCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\ElementCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\StaticCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
@@ -18,7 +21,6 @@ use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
 use Neusta\Pimcore\HttpCacheBundle\Element\TagElementListener;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\abstract_arg;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\inline_service;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 return static function (ContainerConfigurator $configurator) {
@@ -54,10 +56,23 @@ return static function (ContainerConfigurator $configurator) {
     $services->set(ElementCacheTagChecker::class)
         ->decorate(StaticCacheTagChecker::class)
         ->arg('$inner', service('.inner'))
-        ->arg('$repository', inline_service(ElementRepository::class))
-        ->arg('$assets', ['enabled' => false, 'types' => []])
-        ->arg('$documents', ['enabled' => false, 'types' => []])
-        ->arg('$objects', ['enabled' => false, 'types' => [], 'classes' => []]);
+        ->arg('$asset', service(AssetCacheTagChecker::class))
+        ->arg('$document', service(DocumentCacheTagChecker::class))
+        ->arg('$object', service(ObjectCacheTagChecker::class));
+
+    $services->set(ElementRepository::class);
+
+    $services->set(AssetCacheTagChecker::class)
+        ->arg('$repository', service(ElementRepository::class))
+        ->arg('$config', ['enabled' => false, 'types' => []]);
+
+    $services->set(DocumentCacheTagChecker::class)
+        ->arg('$repository', service(ElementRepository::class))
+        ->arg('$config', ['enabled' => false, 'types' => []]);
+
+    $services->set(ObjectCacheTagChecker::class)
+        ->arg('$repository', service(ElementRepository::class))
+        ->arg('$config', ['enabled' => false, 'types' => [], 'classes' => []]);
 
     $services->alias(CacheTagChecker::class, StaticCacheTagChecker::class);
 

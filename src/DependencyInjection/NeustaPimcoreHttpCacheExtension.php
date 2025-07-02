@@ -2,7 +2,9 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\DependencyInjection;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\ElementCacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\Element\AssetCacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\Element\DocumentCacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\Element\ObjectCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\StaticCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
 use Neusta\Pimcore\HttpCacheBundle\Element\TagElementListener;
@@ -36,14 +38,15 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
      */
     private function registerElements(ContainerBuilder $container, array $config): void
     {
-        $tagChecker = $container->getDefinition(ElementCacheTagChecker::class);
         $tagListener = $container->getDefinition(TagElementListener::class);
         $invalidateListener = $container->getDefinition(InvalidateElementListener::class);
 
         if ($config['assets']['enabled']) {
-            $tagChecker->setArgument('$assets', $config['assets']);
+            $container->getDefinition(AssetCacheTagChecker::class)
+                ->setArgument('$config', $config['assets']);
 
-            $tagListener->addTag('kernel.event_listener', ['event' => AssetEvents::POST_LOAD]);
+            $tagListener
+                ->addTag('kernel.event_listener', ['event' => AssetEvents::POST_LOAD]);
 
             $invalidateListener
                 ->addTag('kernel.event_listener', ['event' => AssetEvents::POST_UPDATE, 'method' => 'onUpdate'])
@@ -51,9 +54,11 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
         }
 
         if ($config['documents']['enabled']) {
-            $tagChecker->setArgument('$documents', $config['documents']);
+            $container->getDefinition(DocumentCacheTagChecker::class)
+                ->setArgument('$config', $config['documents']);
 
-            $tagListener->addTag('kernel.event_listener', ['event' => DocumentEvents::POST_LOAD]);
+            $tagListener
+                ->addTag('kernel.event_listener', ['event' => DocumentEvents::POST_LOAD]);
 
             $invalidateListener
                 ->addTag('kernel.event_listener', ['event' => DocumentEvents::POST_UPDATE, 'method' => 'onUpdate'])
@@ -61,9 +66,11 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
         }
 
         if ($config['objects']['enabled']) {
-            $tagChecker->setArgument('$objects', $config['objects']);
+            $container->getDefinition(ObjectCacheTagChecker::class)
+                ->setArgument('$config', $config['objects']);
 
-            $tagListener->addTag('kernel.event_listener', ['event' => DataObjectEvents::POST_LOAD]);
+            $tagListener
+                ->addTag('kernel.event_listener', ['event' => DataObjectEvents::POST_LOAD]);
 
             $invalidateListener
                 ->addTag('kernel.event_listener', ['event' => DataObjectEvents::POST_UPDATE, 'method' => 'onUpdate'])
