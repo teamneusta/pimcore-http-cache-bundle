@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\CacheTagChecker;
+namespace Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagChecker;
 
 use Neusta\Pimcore\HttpCacheBundle\CacheTag;
-use Neusta\Pimcore\HttpCacheBundle\CacheTagChecker;
-use Neusta\Pimcore\HttpCacheBundle\CacheType\ElementCacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType\ElementCacheType;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 use Pimcore\Model\DataObject\Concrete;

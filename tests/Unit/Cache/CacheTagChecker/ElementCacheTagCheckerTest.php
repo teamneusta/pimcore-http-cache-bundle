@@ -3,9 +3,9 @@
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Cache\CacheTagChecker;
 
 use Neusta\Pimcore\HttpCacheBundle\CacheTag;
-use Neusta\Pimcore\HttpCacheBundle\CacheTagChecker;
-use Neusta\Pimcore\HttpCacheBundle\CacheTagChecker\ElementCacheTagChecker;
-use Neusta\Pimcore\HttpCacheBundle\CacheType\CustomCacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagChecker\ElementCacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType\CustomCacheType;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Model\Asset;

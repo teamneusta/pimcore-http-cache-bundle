@@ -4,7 +4,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Invalidation;
 
 use FOS\HttpCacheBundle\CacheManager;
 use Neusta\Pimcore\HttpCacheBundle\CacheTag;
-use Neusta\Pimcore\HttpCacheBundle\CacheType\CustomCacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType\CustomCacheType;
 use Neusta\Pimcore\HttpCacheBundle\Element\Event\ElementInvalidationEvent;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestAssetFactory;

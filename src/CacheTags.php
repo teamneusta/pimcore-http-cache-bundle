@@ -2,6 +2,8 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle;
 
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType;
 use Pimcore\Model\Element\ElementInterface;
 
 /**

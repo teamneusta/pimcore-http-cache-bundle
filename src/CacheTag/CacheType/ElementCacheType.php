@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\CacheType;
+namespace Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType;
 
-use Neusta\Pimcore\HttpCacheBundle\CacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 
 final class ElementCacheType implements CacheType

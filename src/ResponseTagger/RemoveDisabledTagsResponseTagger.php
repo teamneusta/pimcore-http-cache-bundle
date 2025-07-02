@@ -2,7 +2,7 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\ResponseTagger;
 
-use Neusta\Pimcore\HttpCacheBundle\CacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\ResponseTagger;
 

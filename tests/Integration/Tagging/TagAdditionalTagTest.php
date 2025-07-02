@@ -3,8 +3,8 @@
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Tagging;
 
 use Neusta\Pimcore\HttpCacheBundle\CacheTag;
-use Neusta\Pimcore\HttpCacheBundle\CacheType\CustomCacheType;
-use Neusta\Pimcore\HttpCacheBundle\CacheType\ElementCacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType\CustomCacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType\ElementCacheType;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 use Neusta\Pimcore\HttpCacheBundle\Element\Event\ElementTaggingEvent;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;

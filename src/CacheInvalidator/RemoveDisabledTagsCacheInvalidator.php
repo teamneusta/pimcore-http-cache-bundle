@@ -3,7 +3,7 @@
 namespace Neusta\Pimcore\HttpCacheBundle\CacheInvalidator;
 
 use Neusta\Pimcore\HttpCacheBundle\CacheInvalidator;
-use Neusta\Pimcore\HttpCacheBundle\CacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\CacheTags;
 
 final class RemoveDisabledTagsCacheInvalidator implements CacheInvalidator

@@ -2,7 +2,9 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle;
 
-use Neusta\Pimcore\HttpCacheBundle\CacheType\ElementCacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType\ElementCacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTypeFactory;
 use Neusta\Pimcore\HttpCacheBundle\Exception\InvalidArgumentException;
 use Pimcore\Model\Element\ElementInterface;
 
