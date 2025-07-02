@@ -1,13 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\Element;
+namespace Neusta\Pimcore\HttpCacheBundle\Element\Event;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag;
+use Neusta\Pimcore\HttpCacheBundle\CacheTags;
+use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 use Pimcore\Model\Element\ElementInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
-final class ElementTaggingEvent extends Event
+final class ElementInvalidationEvent extends Event
 {
     public bool $cancel = false;
 

@@ -2,11 +2,11 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Cache\CacheInvalidator;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator\RemoveDisabledTagsCacheInvalidator;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
+use Neusta\Pimcore\HttpCacheBundle\CacheInvalidator;
+use Neusta\Pimcore\HttpCacheBundle\CacheInvalidator\RemoveDisabledTagsCacheInvalidator;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag;
+use Neusta\Pimcore\HttpCacheBundle\CacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\CacheTags;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;

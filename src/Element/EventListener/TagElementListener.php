@@ -1,8 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\Element;
+namespace Neusta\Pimcore\HttpCacheBundle\Element\EventListener;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
+use Neusta\Pimcore\HttpCacheBundle\Element\Event\ElementTaggingEvent;
+use Neusta\Pimcore\HttpCacheBundle\ResponseTagger;
 use Pimcore\Event\Model\ElementEventInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 

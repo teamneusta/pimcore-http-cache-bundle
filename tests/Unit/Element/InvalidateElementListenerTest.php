@@ -2,11 +2,11 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Element;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
-use Neusta\Pimcore\HttpCacheBundle\Element\ElementInvalidationEvent;
-use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
+use Neusta\Pimcore\HttpCacheBundle\CacheInvalidator;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag;
+use Neusta\Pimcore\HttpCacheBundle\CacheTags;
+use Neusta\Pimcore\HttpCacheBundle\Element\Event\ElementInvalidationEvent;
+use Neusta\Pimcore\HttpCacheBundle\Element\EventListener\InvalidateElementListener;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Event\Model\AssetEvent;
 use Pimcore\Event\Model\DataObjectEvent;

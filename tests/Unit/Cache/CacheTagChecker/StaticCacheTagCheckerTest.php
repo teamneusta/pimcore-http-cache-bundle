@@ -2,9 +2,9 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Cache\CacheTagChecker;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\StaticCacheTagChecker;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType\CustomCacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag;
+use Neusta\Pimcore\HttpCacheBundle\CacheTagChecker\StaticCacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\CacheType\CustomCacheType;
 use PHPUnit\Framework\TestCase;
 
 final class StaticCacheTagCheckerTest extends TestCase

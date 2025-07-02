@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\Cache;
+namespace Neusta\Pimcore\HttpCacheBundle;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType\ElementCacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheType\ElementCacheType;
 use Neusta\Pimcore\HttpCacheBundle\Exception\InvalidArgumentException;
 use Pimcore\Model\Element\ElementInterface;
 

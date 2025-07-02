@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\Cache;
+namespace Neusta\Pimcore\HttpCacheBundle;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType\CustomCacheType;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType\ElementCacheType;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType\EmptyCacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheType\CustomCacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheType\ElementCacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheType\EmptyCacheType;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 use Pimcore\Model\Element\ElementInterface;
 

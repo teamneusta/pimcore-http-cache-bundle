@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
+namespace Neusta\Pimcore\HttpCacheBundle\CacheTagChecker;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag;
+use Neusta\Pimcore\HttpCacheBundle\CacheTagChecker;
 
 final class StaticCacheTagChecker implements CacheTagChecker
 {

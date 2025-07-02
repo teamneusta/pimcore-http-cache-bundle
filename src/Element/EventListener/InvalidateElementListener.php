@@ -1,8 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\Element;
+namespace Neusta\Pimcore\HttpCacheBundle\Element\EventListener;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
+use Neusta\Pimcore\HttpCacheBundle\CacheInvalidator;
+use Neusta\Pimcore\HttpCacheBundle\Element\Event\ElementInvalidationEvent;
 use Pimcore\Event\Model\ElementEventInterface;
 use Pimcore\Model\Element\ElementInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;

@@ -2,7 +2,7 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Exception;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheType;
 
 final class InvalidArgumentException extends \InvalidArgumentException implements PimcoreHttpCacheException
 {

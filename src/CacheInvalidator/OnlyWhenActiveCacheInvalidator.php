@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
+namespace Neusta\Pimcore\HttpCacheBundle\CacheInvalidator;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
+use Neusta\Pimcore\HttpCacheBundle\CacheInvalidator;
+use Neusta\Pimcore\HttpCacheBundle\CacheTags;
 
 final class OnlyWhenActiveCacheInvalidator implements CacheInvalidator
 {

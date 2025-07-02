@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\Cache\CacheType;
+namespace Neusta\Pimcore\HttpCacheBundle\CacheType;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheType;
 use Neusta\Pimcore\HttpCacheBundle\Exception\InvalidArgumentException;
 
 final class CustomCacheType implements CacheType
