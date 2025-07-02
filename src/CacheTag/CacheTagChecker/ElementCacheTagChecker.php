@@ -4,7 +4,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagChecker;
 
 use Neusta\Pimcore\HttpCacheBundle\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagChecker;
-use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType\ElementCacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagType\ElementCacheTagType;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 use Pimcore\Model\DataObject\Concrete;
@@ -27,7 +27,7 @@ final class ElementCacheTagChecker implements CacheTagChecker
 
     public function isEnabled(CacheTag $tag): bool
     {
-        if (!$tag->type instanceof ElementCacheType) {
+        if (!$tag->type instanceof ElementCacheTagType) {
             return $this->inner->isEnabled($tag);
         }
 

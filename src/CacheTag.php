@@ -2,9 +2,9 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle;
 
-use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType;
-use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType\ElementCacheType;
-use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTypeFactory;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagType\ElementCacheTagType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagTypeFactory;
 use Neusta\Pimcore\HttpCacheBundle\Exception\InvalidArgumentException;
 use Pimcore\Model\Element\ElementInterface;
 
@@ -12,20 +12,20 @@ final class CacheTag
 {
     private function __construct(
         public readonly string $tag,
-        public readonly CacheType $type,
+        public readonly CacheTagType $type,
     ) {
         if ('' === trim($tag)) {
             throw InvalidArgumentException::becauseCacheTagIsEmpty();
         }
 
-        if (!$type instanceof ElementCacheType && ElementCacheType::isReserved($type->toString())) {
+        if (!$type instanceof ElementCacheTagType && ElementCacheTagType::isReserved($type->toString())) {
             throw InvalidArgumentException::becauseCacheTypeIsReserved($type);
         }
     }
 
-    public static function fromString(string $tag, ?CacheType $type = null): self
+    public static function fromString(string $tag, ?CacheTagType $type = null): self
     {
-        return new self($tag, $type ?? CacheTypeFactory::createEmpty());
+        return new self($tag, $type ?? CacheTagTypeFactory::createEmpty());
     }
 
     public static function fromElement(ElementInterface $element): self
@@ -34,7 +34,7 @@ final class CacheTag
             throw InvalidArgumentException::becauseElementHasNoId();
         }
 
-        return new self((string) $id, CacheTypeFactory::createFromElement($element));
+        return new self((string) $id, CacheTagTypeFactory::createFromElement($element));
     }
 
     public function toString(): string

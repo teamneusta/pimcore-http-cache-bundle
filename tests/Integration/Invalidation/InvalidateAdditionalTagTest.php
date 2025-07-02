@@ -4,7 +4,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Invalidation;
 
 use FOS\HttpCacheBundle\CacheManager;
 use Neusta\Pimcore\HttpCacheBundle\CacheTag;
-use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType\CustomCacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagType\CustomCacheTagType;
 use Neusta\Pimcore\HttpCacheBundle\Element\Event\ElementInvalidationEvent;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestAssetFactory;
@@ -35,7 +35,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementInvalidationEvent::class,
             fn (ElementInvalidationEvent $event) => $event->addTag(
-                CacheTag::fromString('bar', new CustomCacheType('foo')),
+                CacheTag::fromString('bar', new CustomCacheTagType('foo')),
             ),
         );
     }

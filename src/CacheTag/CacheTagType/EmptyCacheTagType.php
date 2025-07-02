@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType;
+namespace Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagType;
 
-use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagType;
 
-final class EmptyCacheType implements CacheType
+final class EmptyCacheTagType implements CacheTagType
 {
     public function applyTo(string $tag): string
     {

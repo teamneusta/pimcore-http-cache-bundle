@@ -2,7 +2,7 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Exception;
 
-use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagType;
 
 final class InvalidArgumentException extends \InvalidArgumentException implements PimcoreHttpCacheException
 {
@@ -11,7 +11,7 @@ final class InvalidArgumentException extends \InvalidArgumentException implement
         return new self('Cache tag must not be empty.');
     }
 
-    public static function becauseCacheTypeIsReserved(CacheType $type): self
+    public static function becauseCacheTypeIsReserved(CacheTagType $type): self
     {
         return new self(\sprintf(
             'The cache type "%s" is reserved for Pimcore elements.',

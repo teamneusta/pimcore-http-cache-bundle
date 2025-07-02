@@ -5,7 +5,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Cache\CacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagChecker\ElementCacheTagChecker;
-use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType\CustomCacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagType\CustomCacheTagType;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Model\Asset;
@@ -35,7 +35,7 @@ final class ElementCacheTagCheckerTest extends TestCase
      */
     public function it_delegates_cache_tag_check_to_next_cache_tag_checker(): void
     {
-        $tag = CacheTag::fromString('foo', new CustomCacheType('custom'));
+        $tag = CacheTag::fromString('foo', new CustomCacheTagType('custom'));
         $elementCacheTagChecker = new ElementCacheTagChecker(
             $this->innerCacheTagChecker->reveal(),
             $this->elementRepository->reveal(),

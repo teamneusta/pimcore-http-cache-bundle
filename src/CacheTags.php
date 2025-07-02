@@ -3,7 +3,7 @@
 namespace Neusta\Pimcore\HttpCacheBundle;
 
 use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagChecker;
-use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagType;
 use Pimcore\Model\Element\ElementInterface;
 
 /**
@@ -24,7 +24,7 @@ final class CacheTags implements \IteratorAggregate
         $this->tags = $tags;
     }
 
-    public static function fromString(string $tag, ?CacheType $type = null): self
+    public static function fromString(string $tag, ?CacheTagType $type = null): self
     {
         return new self(CacheTag::fromString($tag, $type));
     }
@@ -32,7 +32,7 @@ final class CacheTags implements \IteratorAggregate
     /**
      * @param list<string> $tags
      */
-    public static function fromStrings(array $tags, ?CacheType $type = null): self
+    public static function fromStrings(array $tags, ?CacheTagType $type = null): self
     {
         return new self(...array_map(fn ($tag) => CacheTag::fromString($tag, $type), $tags));
     }

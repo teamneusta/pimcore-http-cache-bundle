@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType;
+namespace Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagType;
 
-use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagType;
 use Neusta\Pimcore\HttpCacheBundle\Exception\InvalidArgumentException;
 
-final class CustomCacheType implements CacheType
+final class CustomCacheTagType implements CacheTagType
 {
     public function __construct(
         private readonly string $type,
