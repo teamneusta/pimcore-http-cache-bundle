@@ -39,10 +39,6 @@ return static function (ContainerConfigurator $configurator) {
         ->decorate(CacheInvalidator::class, null, -100)
         ->args([service('.inner'), service(CacheActivator::class)]);
 
-    $services->set(CollectTagsResponseTagger::class)
-        ->decorate(ResponseTagger::class, null, -100)
-        ->args([service('.inner'), service(CacheActivator::class)]);
-
     $services->set(ResponseTagger::class, ResponseTaggerAdapter::class)
         ->arg('$responseTagger', service('fos_http_cache.http.symfony_response_tagger'));
 
@@ -75,11 +71,17 @@ return static function (ContainerConfigurator $configurator) {
         ->arg('$cacheInvalidator', service(CacheInvalidator::class))
         ->arg('$dispatcher', service('event_dispatcher'));
 
-    $services->set(CacheTagDataCollector::class)
-        ->arg('$cacheTagCollector', service(CollectTagsResponseTagger::class))
-        ->tag('data_collector', [
-            'template' => '@NeustaPimcoreHttpCache/cache_tags.html.twig',
-            'id' => 'cache_tags',
-            'priority' => 255,
-        ]);
+    if ('dev' ===$configurator->env()) {
+        $services->set(CacheTagDataCollector::class)
+            ->arg('$cacheTagCollector', service(CollectTagsResponseTagger::class))
+            ->tag('data_collector', [
+                'template' => '@NeustaPimcoreHttpCache/cache_tags.html.twig',
+                'id' => 'cache_tags',
+                'priority' => 255,
+            ]);
+
+        $services->set(CollectTagsResponseTagger::class)
+            ->decorate(ResponseTagger::class, null, -100)
+            ->args([service('.inner'), service(CacheActivator::class)]);
+    }
 };
