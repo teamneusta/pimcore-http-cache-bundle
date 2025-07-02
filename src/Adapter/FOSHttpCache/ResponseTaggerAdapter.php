@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Neusta\Pimcore\HttpCacheBundle\Adapter\FOSHttpCache;
 
 use FOS\HttpCache\ResponseTagger as FosResponseTagger;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
-use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
+use Neusta\Pimcore\HttpCacheBundle\CacheTags;
+use Neusta\Pimcore\HttpCacheBundle\ResponseTagger;
 
 final class ResponseTaggerAdapter implements ResponseTagger
 {

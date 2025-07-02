@@ -2,11 +2,11 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Tagging;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType\CustomCacheType;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType\ElementCacheType;
-use Neusta\Pimcore\HttpCacheBundle\Element\ElementTaggingEvent;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagType\CustomCacheTagType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagType\ElementCacheTagType;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
+use Neusta\Pimcore\HttpCacheBundle\Element\Event\ElementTaggingEvent;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestAssetFactory;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestDocumentFactory;
@@ -50,7 +50,7 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
             fn (ElementTaggingEvent $event) => $event->addTag(
-                CacheTag::fromString('17', new ElementCacheType(ElementType::Asset)),
+                CacheTag::fromString('17', new ElementCacheTagType(ElementType::Asset)),
             ),
         );
 
@@ -80,7 +80,7 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
             fn (ElementTaggingEvent $event) => $event->addTag(
-                CacheTag::fromString('23', new ElementCacheType(ElementType::Document)),
+                CacheTag::fromString('23', new ElementCacheTagType(ElementType::Document)),
             ),
         );
 
@@ -110,7 +110,7 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
             fn (ElementTaggingEvent $event) => $event->addTag(
-                CacheTag::fromString('17', new ElementCacheType(ElementType::Object)),
+                CacheTag::fromString('17', new ElementCacheTagType(ElementType::Object)),
             ),
         );
 
@@ -142,7 +142,7 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
             fn (ElementTaggingEvent $event) => $event->addTag(
-                CacheTag::fromString('bar', new CustomCacheType('foo')),
+                CacheTag::fromString('bar', new CustomCacheTagType('foo')),
             ),
         );
 

@@ -2,11 +2,11 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Element;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
-use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
-use Neusta\Pimcore\HttpCacheBundle\Element\ElementTaggingEvent;
-use Neusta\Pimcore\HttpCacheBundle\Element\TagElementListener;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag;
+use Neusta\Pimcore\HttpCacheBundle\CacheTags;
+use Neusta\Pimcore\HttpCacheBundle\Element\Event\ElementTaggingEvent;
+use Neusta\Pimcore\HttpCacheBundle\Element\EventListener\TagElementListener;
+use Neusta\Pimcore\HttpCacheBundle\ResponseTagger;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Event\Model\AssetEvent;
 use Pimcore\Event\Model\DataObjectEvent;

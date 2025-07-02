@@ -3,8 +3,8 @@
 namespace Neusta\Pimcore\HttpCacheBundle\Adapter\FOSHttpCache;
 
 use FOS\HttpCache\CacheInvalidator as FosCacheInvalidator;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
+use Neusta\Pimcore\HttpCacheBundle\CacheInvalidator;
+use Neusta\Pimcore\HttpCacheBundle\CacheTags;
 
 final class CacheInvalidatorAdapter implements CacheInvalidator
 {

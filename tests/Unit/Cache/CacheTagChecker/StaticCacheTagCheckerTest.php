@@ -2,9 +2,9 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Cache\CacheTagChecker;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\StaticCacheTagChecker;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType\CustomCacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagChecker\StaticCacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\CacheTag\CacheTagType\CustomCacheTagType;
 use PHPUnit\Framework\TestCase;
 
 final class StaticCacheTagCheckerTest extends TestCase
@@ -28,7 +28,7 @@ final class StaticCacheTagCheckerTest extends TestCase
     {
         self::assertTrue(
             (new StaticCacheTagChecker(['foo' => true]))->isEnabled(
-                CacheTag::fromString('foo', new CustomCacheType('foo')),
+                CacheTag::fromString('foo', new CustomCacheTagType('foo')),
             ),
         );
     }
@@ -40,7 +40,7 @@ final class StaticCacheTagCheckerTest extends TestCase
     {
         self::assertFalse(
             (new StaticCacheTagChecker(['foo' => false]))->isEnabled(
-                CacheTag::fromString('foo', new CustomCacheType('foo')),
+                CacheTag::fromString('foo', new CustomCacheTagType('foo')),
             ),
         );
     }
@@ -52,7 +52,7 @@ final class StaticCacheTagCheckerTest extends TestCase
     {
         self::assertFalse(
             (new StaticCacheTagChecker(['bar' => true]))->isEnabled(
-                CacheTag::fromString('foo', new CustomCacheType('foo')),
+                CacheTag::fromString('foo', new CustomCacheTagType('foo')),
             ),
         );
     }

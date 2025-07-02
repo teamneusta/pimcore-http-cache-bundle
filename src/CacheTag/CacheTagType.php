@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\Cache;
+namespace Neusta\Pimcore\HttpCacheBundle\CacheTag;
 
-interface CacheType
+interface CacheTagType
 {
     public function applyTo(string $tag): string;
 

@@ -4,7 +4,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Adapter\FOSHttpCache;
 
 use FOS\HttpCache\CacheInvalidator as FosCacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Adapter\FOSHttpCache\CacheInvalidatorAdapter;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
+use Neusta\Pimcore\HttpCacheBundle\CacheTags;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
