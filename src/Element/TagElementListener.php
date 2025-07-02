@@ -23,6 +23,6 @@ final class TagElementListener
             return;
         }
 
-        $this->responseTagger->tag($taggingEvent->cacheTags);
+        $this->responseTagger->tag($taggingEvent->cacheTags());
     }
 }

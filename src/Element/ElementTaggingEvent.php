@@ -2,6 +2,7 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Element;
 
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Pimcore\Model\Element\ElementInterface;
 use Symfony\Contracts\EventDispatcher\Event;
@@ -13,7 +14,7 @@ final class ElementTaggingEvent extends Event
     private function __construct(
         public readonly ElementInterface $element,
         public readonly ElementType $elementType,
-        public readonly CacheTags $cacheTags,
+        private CacheTags $cacheTags,
     ) {
     }
 
@@ -22,7 +23,22 @@ final class ElementTaggingEvent extends Event
         return new self(
             $element,
             ElementType::fromElement($element),
-            CacheTags::fromElements([$element]),
+            CacheTags::fromElement($element),
         );
+    }
+
+    public function addTag(CacheTag $tag): void
+    {
+        $this->cacheTags = $this->cacheTags->with($tag);
+    }
+
+    public function addTags(CacheTags $tags): void
+    {
+        $this->cacheTags = $this->cacheTags->with($tags);
+    }
+
+    public function cacheTags(): CacheTags
+    {
+        return $this->cacheTags;
     }
 }

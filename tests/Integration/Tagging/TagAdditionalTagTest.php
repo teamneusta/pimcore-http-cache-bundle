@@ -49,9 +49,10 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
-            fn ($event) => $event->cacheTags->add(
-                CacheTag::fromString('17', new ElementCacheType(ElementType::Asset))
-            ));
+            fn (ElementTaggingEvent $event) => $event->addTag(
+                CacheTag::fromString('17', new ElementCacheType(ElementType::Asset)),
+            ),
+        );
 
         $this->client->request('GET', '/get-asset?id=42');
 
@@ -78,9 +79,10 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
-            fn ($event) => $event->cacheTags->add(
-                CacheTag::fromString('23', new ElementCacheType(ElementType::Document))
-            ));
+            fn (ElementTaggingEvent $event) => $event->addTag(
+                CacheTag::fromString('23', new ElementCacheType(ElementType::Document)),
+            ),
+        );
 
         $this->client->request('GET', '/test_document_page');
 
@@ -107,9 +109,10 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
-            fn ($event) => $event->cacheTags->add(
-                CacheTag::fromString('17', new ElementCacheType(ElementType::Object))
-            ));
+            fn (ElementTaggingEvent $event) => $event->addTag(
+                CacheTag::fromString('17', new ElementCacheType(ElementType::Object)),
+            ),
+        );
 
         $this->client->request('GET', '/get-object?id=42');
 
@@ -138,9 +141,10 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
-            fn ($event) => $event->cacheTags->add(
-                CacheTag::fromString('bar', new CustomCacheType('foo'))
-            ));
+            fn (ElementTaggingEvent $event) => $event->addTag(
+                CacheTag::fromString('bar', new CustomCacheType('foo')),
+            ),
+        );
 
         $this->client->request('GET', '/get-object?id=42');
 

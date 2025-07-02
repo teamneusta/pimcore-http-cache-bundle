@@ -2,7 +2,6 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Cache\ResponseTagger;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\OnlyWhenActiveResponseTagger;
@@ -39,7 +38,7 @@ final class OnlyWhenActiveResponseTaggerTest extends TestCase
      */
     public function it_should_invalidate_tags_when_caching_is_active(): void
     {
-        $tags = new CacheTags(CacheTag::fromString('tag1'), CacheTag::fromString('tag2'));
+        $tags = CacheTags::fromStrings(['tag1', 'tag2']);
 
         $this->cacheActivator->isCachingActive()->willReturn(true);
 
@@ -53,7 +52,7 @@ final class OnlyWhenActiveResponseTaggerTest extends TestCase
      */
     public function it_should_not_invalidate_tags_when_caching_is_not_active(): void
     {
-        $tags = new CacheTags(CacheTag::fromString('tag1'), CacheTag::fromString('tag2'));
+        $tags = CacheTags::fromStrings(['tag1', 'tag2']);
 
         $this->cacheActivator->isCachingActive()->willReturn(false);
 
