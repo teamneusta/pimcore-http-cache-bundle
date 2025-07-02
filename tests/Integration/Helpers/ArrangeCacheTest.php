@@ -17,7 +17,7 @@ trait ArrangeCacheTest
      */
     public static function arrange(\Closure $arrange): mixed
     {
-        $cacheActivator = self::getContainer()->get(CacheActivator::class);
+        $cacheActivator = self::getContainer()->get('test.cache_activator');
         \assert($cacheActivator instanceof CacheActivator);
 
         $wasActive = $cacheActivator->isCachingActive();
