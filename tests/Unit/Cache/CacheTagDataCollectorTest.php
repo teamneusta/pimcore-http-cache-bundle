@@ -40,7 +40,7 @@ final class CacheTagDataCollectorTest extends TestCase
         $this->cacheDataCollector->lateCollect();
 
         self::assertSame(
-            ['tag' => 'custom-tag', 'type' => 'custom'],
+            [['tag' => 'custom-tag', 'type' => 'custom']],
             $this->cacheDataCollector->getTags(),
         );
     }

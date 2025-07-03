@@ -29,4 +29,9 @@ final class CustomCacheType implements CacheType
     {
         return false;
     }
+
+    public function identifier(): string
+    {
+        return $this->type;
+    }
 }

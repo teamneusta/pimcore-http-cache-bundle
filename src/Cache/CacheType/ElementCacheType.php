@@ -37,4 +37,9 @@ final class ElementCacheType implements CacheType
     {
         return false;
     }
+
+    public function identifier(): string
+    {
+        return $this->type->value;
+    }
 }

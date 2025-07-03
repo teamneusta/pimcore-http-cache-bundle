@@ -12,7 +12,7 @@ final class CacheTags implements \IteratorAggregate
     /**
      * @var list<CacheTag>
      */
-    private readonly array $tags;
+    public readonly array $tags;
 
     /**
      * @no-named-arguments
