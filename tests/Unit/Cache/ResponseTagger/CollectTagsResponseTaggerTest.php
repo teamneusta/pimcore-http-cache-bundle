@@ -13,6 +13,7 @@ use Prophecy\Prophecy\ObjectProphecy;
 final class CollectTagsResponseTaggerTest extends TestCase
 {
     use ProphecyTrait;
+
     private CollectTagsResponseTagger $collectTagsResponseTagger;
 
     /** @var ObjectProphecy<ResponseTagger> */
