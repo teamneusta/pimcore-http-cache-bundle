@@ -6,7 +6,6 @@ use Neusta\Pimcore\HttpCacheBundle\Adapter\FOSHttpCache\ResponseTaggerAdapter;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator\OnlyWhenActiveCacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator\RemoveDisabledTagsCacheInvalidator;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\Element\AssetCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\Element\DocumentCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\Element\ObjectCacheTagChecker;
@@ -26,61 +25,64 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 return static function (ContainerConfigurator $configurator) {
     $services = $configurator->services();
 
-    $services->set(CacheActivator::class);
+    $services->set('neusta_pimcore_http_cache.cache_activator', CacheActivator::class)
+        ->alias(CacheActivator::class, 'neusta_pimcore_http_cache.cache_activator');
 
-    $services->set(CacheInvalidator::class, CacheInvalidatorAdapter::class)
+    $services->set('neusta_pimcore_http_cache.cache_invalidator', CacheInvalidatorAdapter::class)
         ->arg('$invalidator', service(CacheManager::class));
 
-    $services->set(RemoveDisabledTagsCacheInvalidator::class)
-        ->decorate(CacheInvalidator::class, null, -99)
-        ->args([service('.inner'), service(CacheTagChecker::class)]);
+    $services->set(null, RemoveDisabledTagsCacheInvalidator::class)
+        ->decorate('neusta_pimcore_http_cache.cache_invalidator', null, -99)
+        ->args([service('.inner'), service('neusta_pimcore_http_cache.cache_tag_checker')]);
 
-    $services->set(OnlyWhenActiveCacheInvalidator::class)
-        ->decorate(CacheInvalidator::class, null, -100)
-        ->args([service('.inner'), service(CacheActivator::class)]);
+    $services->set(null, OnlyWhenActiveCacheInvalidator::class)
+        ->decorate('neusta_pimcore_http_cache.cache_invalidator', null, -100)
+        ->args([service('.inner'), service('neusta_pimcore_http_cache.cache_activator')]);
 
-    $services->set(ResponseTagger::class, ResponseTaggerAdapter::class)
+    $services->alias(CacheInvalidator::class, 'neusta_pimcore_http_cache.cache_invalidator');
+
+    $services->set('neusta_pimcore_http_cache.response_tagger', ResponseTaggerAdapter::class)
         ->arg('$responseTagger', service('fos_http_cache.http.symfony_response_tagger'));
 
-    $services->set(RemoveDisabledTagsResponseTagger::class)
-        ->decorate(ResponseTagger::class, null, -99)
-        ->args([service('.inner'), service(CacheTagChecker::class)]);
+    $services->set(null, RemoveDisabledTagsResponseTagger::class)
+        ->decorate('neusta_pimcore_http_cache.response_tagger', null, -99)
+        ->args([service('.inner'), service('neusta_pimcore_http_cache.cache_tag_checker')]);
 
-    $services->set(OnlyWhenActiveResponseTagger::class)
-        ->decorate(ResponseTagger::class, null, -100)
-        ->args([service('.inner'), service(CacheActivator::class)]);
+    $services->set(null, OnlyWhenActiveResponseTagger::class)
+        ->decorate('neusta_pimcore_http_cache.response_tagger', null, -100)
+        ->args([service('.inner'), service('neusta_pimcore_http_cache.cache_activator')]);
 
-    $services->set(StaticCacheTagChecker::class)
+    $services->alias(ResponseTagger::class, 'neusta_pimcore_http_cache.response_tagger');
+
+    $services->set('neusta_pimcore_http_cache.cache_tag_checker', StaticCacheTagChecker::class)
         ->arg('$types', abstract_arg('Set in the extension'));
 
-    $services->set(ElementCacheTagChecker::class)
-        ->decorate(StaticCacheTagChecker::class)
+    $services->set('neusta_pimcore_http_cache.cache_tag_checker.element', ElementCacheTagChecker::class)
+        ->decorate('neusta_pimcore_http_cache.cache_tag_checker')
         ->arg('$inner', service('.inner'))
-        ->arg('$asset', service(AssetCacheTagChecker::class))
-        ->arg('$document', service(DocumentCacheTagChecker::class))
-        ->arg('$object', service(ObjectCacheTagChecker::class));
+        ->arg('$asset', service('neusta_pimcore_http_cache.cache_tag_checker.element.asset'))
+        ->arg('$document', service('neusta_pimcore_http_cache.cache_tag_checker.element.document'))
+        ->arg('$object', service('neusta_pimcore_http_cache.cache_tag_checker.element.object'));
 
-    $services->set(ElementRepository::class);
+    $services->set('.neusta_pimcore_http_cache.element.repository', ElementRepository::class);
 
-    $services->set(AssetCacheTagChecker::class)
-        ->arg('$repository', service(ElementRepository::class))
+    $services->set('neusta_pimcore_http_cache.cache_tag_checker.element.asset', AssetCacheTagChecker::class)
+        ->arg('$repository', service('.neusta_pimcore_http_cache.element.repository'))
         ->arg('$config', ['enabled' => false, 'types' => []]);
 
-    $services->set(DocumentCacheTagChecker::class)
-        ->arg('$repository', service(ElementRepository::class))
+    $services->set('neusta_pimcore_http_cache.cache_tag_checker.element.document', DocumentCacheTagChecker::class)
+        ->arg('$repository', service('.neusta_pimcore_http_cache.element.repository'))
         ->arg('$config', ['enabled' => false, 'types' => []]);
 
-    $services->set(ObjectCacheTagChecker::class)
-        ->arg('$repository', service(ElementRepository::class))
+    $services->set('neusta_pimcore_http_cache.cache_tag_checker.element.object', ObjectCacheTagChecker::class)
+        ->arg('$repository', service('.neusta_pimcore_http_cache.element.repository'))
         ->arg('$config', ['enabled' => false, 'types' => [], 'classes' => []]);
 
-    $services->alias(CacheTagChecker::class, StaticCacheTagChecker::class);
-
-    $services->set(TagElementListener::class)
-        ->arg('$responseTagger', service(ResponseTagger::class))
+    $services->set('neusta_pimcore_http_cache.element.tag_listener', TagElementListener::class)
+        ->arg('$responseTagger', service('neusta_pimcore_http_cache.response_tagger'))
         ->arg('$dispatcher', service('event_dispatcher'));
 
-    $services->set(InvalidateElementListener::class)
-        ->arg('$cacheInvalidator', service(CacheInvalidator::class))
+    $services->set('neusta_pimcore_http_cache.element.invalidate_listener', InvalidateElementListener::class)
+        ->arg('$cacheInvalidator', service('neusta_pimcore_http_cache.cache_invalidator'))
         ->arg('$dispatcher', service('event_dispatcher'));
 };
