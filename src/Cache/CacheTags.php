@@ -12,7 +12,7 @@ final class CacheTags implements \IteratorAggregate
     /**
      * @var list<CacheTag>
      */
-    private readonly array $tags;
+    public readonly array $tags;
 
     /**
      * @no-named-arguments
@@ -94,5 +94,10 @@ final class CacheTags implements \IteratorAggregate
     public function isEmpty(): bool
     {
         return 0 === \count($this->tags);
+    }
+
+    public function unique(): self
+    {
+        return new self(...array_unique($this->tags, \SORT_REGULAR));
     }
 }
