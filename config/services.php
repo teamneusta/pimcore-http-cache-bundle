@@ -71,7 +71,7 @@ return static function (ContainerConfigurator $configurator) {
         ->arg('$cacheInvalidator', service(CacheInvalidator::class))
         ->arg('$dispatcher', service('event_dispatcher'));
 
-    if ('dev' ===$configurator->env()) {
+    if ('dev' === $configurator->env()) {
         $services->set(CacheTagDataCollector::class)
             ->arg('$cacheTagCollector', service(CollectTagsResponseTagger::class))
             ->tag('data_collector', [
