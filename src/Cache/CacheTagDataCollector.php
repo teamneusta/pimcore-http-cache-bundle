@@ -22,7 +22,7 @@ final class CacheTagDataCollector extends DataCollector implements LateDataColle
 
     public function lateCollect(): void
     {
-        foreach ($this->cacheTagCollector->collectedTags->tags as $tag) {
+        foreach ($this->cacheTagCollector->collectedTags->unique()->tags as $tag) {
             $this->data['tags'][] = [
                 'tag' => $tag->toString(), 'type' => $tag->type->identifier(),
             ];

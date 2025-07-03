@@ -95,4 +95,9 @@ final class CacheTags implements \IteratorAggregate
     {
         return 0 === \count($this->tags);
     }
+
+    public function unique(): self
+    {
+        return new self(...array_unique($this->tags, \SORT_REGULAR));
+    }
 }
