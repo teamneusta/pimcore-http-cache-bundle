@@ -19,7 +19,6 @@ final class CollectTagsResponseTagger implements ResponseTagger
     public function tag(CacheTags $tags): void
     {
         $this->collectedTags = $this->collectedTags->with($tags);
-
-        $this->inner->tag($tags);
+        $this->inner->tag($this->collectedTags);
     }
 }

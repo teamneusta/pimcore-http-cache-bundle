@@ -22,9 +22,7 @@ final class CollectTagsResponseTaggerTest extends TestCase
     protected function setUp(): void
     {
         $this->innerTagger = $this->prophesize(ResponseTagger::class);
-        $this->collectTagsResponseTagger = new CollectTagsResponseTagger(
-            $this->innerTagger->reveal(),
-        );
+        $this->collectTagsResponseTagger = new CollectTagsResponseTagger($this->innerTagger->reveal());
     }
 
     /**
@@ -49,7 +47,10 @@ final class CollectTagsResponseTaggerTest extends TestCase
      */
     public function it_should_forward_tags_to_inner_tagger(): void
     {
-        $tags = new CacheTags(CacheTag::fromString('tag1'), CacheTag::fromString('tag2'));
+        $tags = new CacheTags(
+            CacheTag::fromString('tag1'),
+            CacheTag::fromString('tag2'),
+        );
 
         $this->collectTagsResponseTagger->tag($tags);
 

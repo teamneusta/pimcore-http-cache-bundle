@@ -19,7 +19,12 @@ final class CacheTags implements \IteratorAggregate
      */
     public function __construct(CacheTag ...$tags)
     {
-        $this->tags = $tags;
+        $indexedTags = [];
+        foreach ($tags as $tag) {
+            $indexedTags[$tag->tag] = $tag;
+        }
+
+        $this->tags = $indexedTags;
     }
 
     public static function fromString(string $tag, ?CacheType $type = null): self
@@ -80,7 +85,10 @@ final class CacheTags implements \IteratorAggregate
      */
     public function toArray(): array
     {
-        $tags = array_map(static fn (CacheTag $tag): string => $tag->toString(), $this->tags);
+        $tags = array_map(
+            static fn (CacheTag $tag): string => $tag->toString(), array_values($this->tags),
+        );
+
         natsort($tags);
 
         return $tags;
@@ -94,10 +102,5 @@ final class CacheTags implements \IteratorAggregate
     public function isEmpty(): bool
     {
         return 0 === \count($this->tags);
-    }
-
-    public function unique(): self
-    {
-        return new self(...array_unique($this->tags, \SORT_REGULAR));
     }
 }

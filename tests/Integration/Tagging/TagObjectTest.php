@@ -158,7 +158,7 @@ final class TagObjectTest extends ConfigurableWebTestcase
             ],
         ],
     ])]
-    public function response_is_not_tagged_when_object_class_is_enabled(): void
+    public function response_is_not_tagged_when_object_class_is_disabled(): void
     {
         self::arrange(fn () => TestObjectFactory::simpleObject()->save());
 

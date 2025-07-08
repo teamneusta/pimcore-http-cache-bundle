@@ -5,6 +5,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Tagging;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagDataCollector;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType\CustomCacheType;
+use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementTaggingEvent;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestAssetFactory;
@@ -133,5 +134,99 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
             ['tag' => 'foo-bar', 'type' => 'foo'],
             $dataCollector->getTags(),
         );
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'objects' => false,
+        ],
+    ])]
+    public function does_not_collect_tags_when_type_is_disabled(): void
+    {
+        self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+
+        $this->client->request('GET', '/get-object?id=42');
+        $this->client->enableProfiler();
+        $dataCollector = $this->client->getProfile()->getCollector('cache_tags');
+        \assert($dataCollector instanceof CacheTagDataCollector);
+
+        self::assertSame([], $dataCollector->getTags());
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'objects' => true,
+        ],
+    ])]
+    public function does_not_collect_tags_when_caching_is_disabled(): void
+    {
+        self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+        self::getContainer()->get(CacheActivator::class)->deactivateCaching();
+
+        $this->client->request('GET', '/get-object?id=42');
+        $this->client->enableProfiler();
+
+        $dataCollector = $this->client->getProfile()->getCollector('cache_tags');
+        \assert($dataCollector instanceof CacheTagDataCollector);
+
+        self::assertSame([], $dataCollector->getTags());
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'objects' => [
+                'enabled' => true,
+                'types' => [
+                    'variant' => false,
+                ],
+            ],
+        ],
+    ])]
+    public function does_not_collect_tags_when_object_type_is_disabled(): void
+    {
+        self::arrange(fn () => TestObjectFactory::simpleVariant()->save());
+
+        $this->client->request('GET', '/get-object?id=42');
+        $this->client->enableProfiler();
+
+        $dataCollector = $this->client->getProfile()->getCollector('cache_tags');
+        \assert($dataCollector instanceof CacheTagDataCollector);
+
+        self::assertSame([], $dataCollector->getTags());
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'objects' => [
+                'classes' => [
+                    'TestDataObject' => false,
+                ],
+                'enabled' => true,
+            ],
+        ],
+    ])]
+    public function does_not_collect_tags_when_object_class_is_disabled(): void
+    {
+        self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+
+        $this->client->request('GET', '/get-object?id=42');
+        $this->client->enableProfiler();
+
+        $dataCollector = $this->client->getProfile()->getCollector('cache_tags');
+        \assert($dataCollector instanceof CacheTagDataCollector);
+
+        self::assertSame([], $dataCollector->getTags());
     }
 }
