@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\Cache;
+namespace Neusta\Pimcore\HttpCacheBundle\Cache\DataCollector;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\CollectTagsResponseTagger;
 use Symfony\Component\HttpFoundation\Request;

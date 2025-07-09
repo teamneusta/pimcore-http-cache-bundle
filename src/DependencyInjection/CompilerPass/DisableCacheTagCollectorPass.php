@@ -1,12 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\DependencyInjection;
+namespace Neusta\Pimcore\HttpCacheBundle\DependencyInjection\CompilerPass;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\CollectTagsResponseTagger;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-final class CacheTagCollectorPass implements CompilerPassInterface
+final class DisableCacheTagCollectorPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {
@@ -14,7 +13,7 @@ final class CacheTagCollectorPass implements CompilerPassInterface
             return;
         }
 
-        $definition = $container->getDefinition(CollectTagsResponseTagger::class);
+        $definition = $container->getDefinition('.neusta_pimcore_http_cache.collect_tags_response_tagger');
         $definition->setDecoratedService(null);
     }
 }

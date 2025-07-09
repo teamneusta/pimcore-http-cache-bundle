@@ -11,7 +11,9 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\Element\DocumentCacheTa
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\Element\ObjectCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\ElementCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\StaticCacheTagChecker;
+use Neusta\Pimcore\HttpCacheBundle\Cache\DataCollector\CacheTagDataCollector;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
+use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\CollectTagsResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\OnlyWhenActiveResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\RemoveDisabledTagsResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
@@ -52,6 +54,10 @@ return static function (ContainerConfigurator $configurator) {
         ->decorate('neusta_pimcore_http_cache.response_tagger', null, -100)
         ->args([service('.inner'), service('neusta_pimcore_http_cache.cache_activator')]);
 
+    $services->set('.neusta_pimcore_http_cache.collect_tags_response_tagger', CollectTagsResponseTagger::class)
+        ->decorate('neusta_pimcore_http_cache.response_tagger', null, 1)
+        ->args([service('.inner')]);
+
     $services->alias(ResponseTagger::class, 'neusta_pimcore_http_cache.response_tagger');
 
     $services->set('neusta_pimcore_http_cache.cache_tag_checker', StaticCacheTagChecker::class)
@@ -85,4 +91,12 @@ return static function (ContainerConfigurator $configurator) {
     $services->set('neusta_pimcore_http_cache.element.invalidate_listener', InvalidateElementListener::class)
         ->arg('$cacheInvalidator', service('neusta_pimcore_http_cache.cache_invalidator'))
         ->arg('$dispatcher', service('event_dispatcher'));
+
+    $services->set('neusta_pimcore_http_cache.cache.data_collector.cache_tag_data_collector', CacheTagDataCollector::class)
+        ->arg('$cacheTagCollector', service('.neusta_pimcore_http_cache.collect_tags_response_tagger'))
+        ->tag('data_collector', [
+            'template' => '@NeustaPimcoreHttpCache/cache_tags.html.twig',
+            'id' => 'cache_tags',
+            'priority' => 255,
+        ]);
 };

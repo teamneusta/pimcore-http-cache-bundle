@@ -10,7 +10,7 @@ use Pimcore\Model\Element\ElementInterface;
 final class CacheTags implements \IteratorAggregate
 {
     /**
-     * @var list<CacheTag>
+     * @var array<string, CacheTag>
      */
     public readonly array $tags;
 
@@ -58,7 +58,7 @@ final class CacheTags implements \IteratorAggregate
      */
     public function getIterator(): \ArrayIterator
     {
-        return new \ArrayIterator($this->tags);
+        return new \ArrayIterator(array_values($this->tags));
     }
 
     public function with(CacheTag|self ...$tags): self

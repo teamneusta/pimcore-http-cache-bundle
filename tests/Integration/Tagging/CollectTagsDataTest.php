@@ -3,8 +3,8 @@
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Tagging;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagDataCollector;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType\CustomCacheType;
+use Neusta\Pimcore\HttpCacheBundle\Cache\DataCollector\CacheTagDataCollector;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementTaggingEvent;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
@@ -144,6 +144,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
             'objects' => false,
         ],
     ])]
+    #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
     public function does_not_collect_tags_when_type_is_disabled(): void
     {
         self::arrange(fn () => TestObjectFactory::simpleObject()->save());
@@ -153,7 +154,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
         $dataCollector = $this->client->getProfile()->getCollector('cache_tags');
         \assert($dataCollector instanceof CacheTagDataCollector);
 
-        self::assertSame([], $dataCollector->getTags());
+        self::assertEmpty($dataCollector->getTags());
     }
 
     /**
@@ -164,6 +165,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
             'objects' => true,
         ],
     ])]
+    #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
     public function does_not_collect_tags_when_caching_is_disabled(): void
     {
         self::arrange(fn () => TestObjectFactory::simpleObject()->save());
@@ -175,7 +177,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
         $dataCollector = $this->client->getProfile()->getCollector('cache_tags');
         \assert($dataCollector instanceof CacheTagDataCollector);
 
-        self::assertSame([], $dataCollector->getTags());
+        self::assertEmpty($dataCollector->getTags());
     }
 
     /**
@@ -191,6 +193,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
             ],
         ],
     ])]
+    #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
     public function does_not_collect_tags_when_object_type_is_disabled(): void
     {
         self::arrange(fn () => TestObjectFactory::simpleVariant()->save());
@@ -201,7 +204,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
         $dataCollector = $this->client->getProfile()->getCollector('cache_tags');
         \assert($dataCollector instanceof CacheTagDataCollector);
 
-        self::assertSame([], $dataCollector->getTags());
+        self::assertEmpty($dataCollector->getTags());
     }
 
     /**
@@ -217,6 +220,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
             ],
         ],
     ])]
+    #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
     public function does_not_collect_tags_when_object_class_is_disabled(): void
     {
         self::arrange(fn () => TestObjectFactory::simpleObject()->save());
@@ -227,6 +231,6 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
         $dataCollector = $this->client->getProfile()->getCollector('cache_tags');
         \assert($dataCollector instanceof CacheTagDataCollector);
 
-        self::assertSame([], $dataCollector->getTags());
+        self::assertEmpty($dataCollector->getTags());
     }
 }
