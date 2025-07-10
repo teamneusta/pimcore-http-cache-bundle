@@ -16,11 +16,21 @@ final class EmptyCacheType implements CacheType
         return '';
     }
 
+    /**
+     * Indicates that this cache type is empty.
+     *
+     * @return bool Always returns true.
+     */
     public function isEmpty(): bool
     {
         return true;
     }
 
+    /**
+     * Returns the identifier for this cache type.
+     *
+     * @return string The string 'empty'.
+     */
     public function identifier(): string
     {
         return 'empty';

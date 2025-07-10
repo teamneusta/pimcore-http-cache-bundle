@@ -33,11 +33,21 @@ final class ElementCacheType implements CacheType
         return $this->type->value[0];
     }
 
+    /**
+     * Indicates that this cache type is never considered empty.
+     *
+     * @return bool Always returns false.
+     */
     public function isEmpty(): bool
     {
         return false;
     }
 
+    /**
+     * Returns the full string value of the associated element type.
+     *
+     * @return string The identifier representing the element type.
+     */
     public function identifier(): string
     {
         return $this->type->value;

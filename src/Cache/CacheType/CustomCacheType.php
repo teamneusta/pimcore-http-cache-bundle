@@ -25,11 +25,21 @@ final class CustomCacheType implements CacheType
         return $this->type;
     }
 
+    /**
+     * Indicates whether the cache type is empty.
+     *
+     * @return bool Always returns false.
+     */
     public function isEmpty(): bool
     {
         return false;
     }
 
+    /**
+     * Returns the identifier for this cache type.
+     *
+     * @return string The cache type identifier.
+     */
     public function identifier(): string
     {
         return $this->type;

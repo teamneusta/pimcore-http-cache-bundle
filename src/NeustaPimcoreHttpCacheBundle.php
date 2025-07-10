@@ -19,11 +19,21 @@ final class NeustaPimcoreHttpCacheBundle extends AbstractPimcoreBundle implement
         return \dirname(__DIR__);
     }
 
+    /**
+     * Registers the FOSHttpCacheBundle as a dependency in the provided bundle collection.
+     *
+     * @param BundleCollection $collection The collection to which the dependent bundle is added.
+     */
     public static function registerDependentBundles(BundleCollection $collection): void
     {
         $collection->addBundle(FOSHttpCacheBundle::class);
     }
 
+    /**
+     * Adds the DisableCacheTagCollectionPass compiler pass to the container during the bundle build process.
+     *
+     * This modifies the dependency injection container compilation by registering a custom compiler pass.
+     */
     public function build(ContainerBuilder $container): void
     {
         parent::build($container);

@@ -6,9 +6,24 @@ interface CacheType
 {
     public function applyTo(string $tag): string;
 
-    public function toString(): string;
+    /**
+ * Returns a string representation of the cache type.
+ *
+ * @return string The cache type as a string.
+ */
+public function toString(): string;
 
-    public function isEmpty(): bool;
+    /**
+ * Determines whether the cache type is empty.
+ *
+ * @return bool True if the cache type is empty, false otherwise.
+ */
+public function isEmpty(): bool;
 
-    public function identifier(): string;
+    /**
+ * Returns a unique string identifier for the cache type.
+ *
+ * @return string The cache type identifier.
+ */
+public function identifier(): string;
 }

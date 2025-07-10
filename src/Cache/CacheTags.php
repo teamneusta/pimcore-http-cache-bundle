@@ -15,7 +15,9 @@ final class CacheTags implements \IteratorAggregate
     public readonly array $tags;
 
     /**
-     * @no-named-arguments
+     * Initializes a new CacheTags collection from the provided CacheTag objects, indexing them by their tag string.
+     *
+     * @param CacheTag ...$tags One or more CacheTag instances to include in the collection.
      */
     public function __construct(CacheTag ...$tags)
     {
@@ -27,6 +29,13 @@ final class CacheTags implements \IteratorAggregate
         $this->tags = $indexedTags;
     }
 
+    /**
+     * Creates a CacheTags instance from a single tag string.
+     *
+     * @param string $tag The cache tag string.
+     * @param CacheType|null $type Optional cache type for the tag.
+     * @return self A CacheTags instance containing the specified tag.
+     */
     public static function fromString(string $tag, ?CacheType $type = null): self
     {
         return new self(CacheTag::fromString($tag, $type));
@@ -54,13 +63,23 @@ final class CacheTags implements \IteratorAggregate
     }
 
     /**
-     * @return \ArrayIterator<int, CacheTag>
+     * Returns an iterator over the collection of `CacheTag` objects.
+     *
+     * @return \ArrayIterator<int, CacheTag> An iterator for traversing the cache tags.
      */
     public function getIterator(): \ArrayIterator
     {
         return new \ArrayIterator(array_values($this->tags));
     }
 
+    /**
+     * Returns a new CacheTags instance containing the current tags and additional tags or collections.
+     *
+     * Accepts one or more CacheTag objects or CacheTags instances, merging all tags into a new collection.
+     *
+     * @param CacheTag|self ...$tags Additional tags or CacheTags collections to include.
+     * @return self A new CacheTags instance with the combined tags.
+     */
     public function with(CacheTag|self ...$tags): self
     {
         $newTags = $this->tags;
@@ -81,7 +100,9 @@ final class CacheTags implements \IteratorAggregate
     }
 
     /**
-     * @return list<string>
+     * Returns a naturally sorted list of tag strings from the collection.
+     *
+     * @return list<string> The sorted tag strings.
      */
     public function toArray(): array
     {
