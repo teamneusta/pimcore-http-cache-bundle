@@ -15,11 +15,14 @@ use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureRoute;
 use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 final class CollectTagsDataTest extends ConfigurableWebTestcase
 {
     use ArrangeCacheTest;
     use ResetDatabase;
+
+    private KernelBrowser $client;
 
     protected function setUp(): void
     {
