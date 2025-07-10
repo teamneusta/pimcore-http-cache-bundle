@@ -151,6 +151,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
 
         $this->client->request('GET', '/get-object?id=42');
         $this->client->enableProfiler();
+
         $dataCollector = $this->client->getProfile()->getCollector('cache_tags');
         \assert($dataCollector instanceof CacheTagDataCollector);
 

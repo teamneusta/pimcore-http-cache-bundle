@@ -6,7 +6,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
 
-final class CollectTagsResponseTagger implements ResponseTagger
+final class CacheTagCollectionResponseTagger implements ResponseTagger
 {
     public CacheTags $collectedTags;
 

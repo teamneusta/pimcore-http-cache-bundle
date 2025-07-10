@@ -7,7 +7,7 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTypeFactory;
 use Neusta\Pimcore\HttpCacheBundle\Cache\DataCollector\CacheTagDataCollector;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
-use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\CollectTagsResponseTagger;
+use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\CacheTagCollectionResponseTagger;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 
@@ -15,14 +15,14 @@ final class CacheTagDataCollectorTest extends TestCase
 {
     use ProphecyTrait;
 
-    private CollectTagsResponseTagger $collectTagsResponseTagger;
+    private CacheTagCollectionResponseTagger $collectTagsResponseTagger;
 
     private CacheTagDataCollector $cacheDataCollector;
 
     protected function setUp(): void
     {
         $tagger = $this->prophesize(ResponseTagger::class);
-        $this->collectTagsResponseTagger = new CollectTagsResponseTagger($tagger->reveal());
+        $this->collectTagsResponseTagger = new CacheTagCollectionResponseTagger($tagger->reveal());
         $this->cacheDataCollector = new CacheTagDataCollector(
             $this->collectTagsResponseTagger,
         );

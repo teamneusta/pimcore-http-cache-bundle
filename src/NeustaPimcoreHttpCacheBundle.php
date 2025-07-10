@@ -3,7 +3,7 @@
 namespace Neusta\Pimcore\HttpCacheBundle;
 
 use FOS\HttpCacheBundle\FOSHttpCacheBundle;
-use Neusta\Pimcore\HttpCacheBundle\DependencyInjection\CompilerPass\DisableCacheTagCollectorPass;
+use Neusta\Pimcore\HttpCacheBundle\DependencyInjection\CompilerPass\DisableCacheTagCollectionPass;
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
 use Pimcore\Extension\Bundle\Traits\PackageVersionTrait;
 use Pimcore\HttpKernel\Bundle\DependentBundleInterface;
@@ -27,6 +27,6 @@ final class NeustaPimcoreHttpCacheBundle extends AbstractPimcoreBundle implement
     public function build(ContainerBuilder $container): void
     {
         parent::build($container);
-        $container->addCompilerPass(new DisableCacheTagCollectorPass());
+        $container->addCompilerPass(new DisableCacheTagCollectionPass());
     }
 }

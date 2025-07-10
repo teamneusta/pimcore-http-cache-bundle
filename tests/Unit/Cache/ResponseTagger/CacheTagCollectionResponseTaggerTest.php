@@ -5,16 +5,16 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Cache\ResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
-use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\CollectTagsResponseTagger;
+use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\CacheTagCollectionResponseTagger;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 
-final class CollectTagsResponseTaggerTest extends TestCase
+final class CacheTagCollectionResponseTaggerTest extends TestCase
 {
     use ProphecyTrait;
 
-    private CollectTagsResponseTagger $collectTagsResponseTagger;
+    private CacheTagCollectionResponseTagger $collectTagsResponseTagger;
 
     /** @var ObjectProphecy<ResponseTagger> */
     private ObjectProphecy $innerTagger;
@@ -22,7 +22,7 @@ final class CollectTagsResponseTaggerTest extends TestCase
     protected function setUp(): void
     {
         $this->innerTagger = $this->prophesize(ResponseTagger::class);
-        $this->collectTagsResponseTagger = new CollectTagsResponseTagger($this->innerTagger->reveal());
+        $this->collectTagsResponseTagger = new CacheTagCollectionResponseTagger($this->innerTagger->reveal());
     }
 
     /**

@@ -13,7 +13,7 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\ElementCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\StaticCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\DataCollector\CacheTagDataCollector;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
-use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\CollectTagsResponseTagger;
+use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\CacheTagCollectionResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\OnlyWhenActiveResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\RemoveDisabledTagsResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
@@ -54,7 +54,7 @@ return static function (ContainerConfigurator $configurator) {
         ->decorate('neusta_pimcore_http_cache.response_tagger', null, -100)
         ->args([service('.inner'), service('neusta_pimcore_http_cache.cache_activator')]);
 
-    $services->set('.neusta_pimcore_http_cache.collect_tags_response_tagger', CollectTagsResponseTagger::class)
+    $services->set('.neusta_pimcore_http_cache.collect_tags_response_tagger', CacheTagCollectionResponseTagger::class)
         ->decorate('neusta_pimcore_http_cache.response_tagger', null, 1)
         ->args([service('.inner')]);
 

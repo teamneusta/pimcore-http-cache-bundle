@@ -2,7 +2,7 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Cache\DataCollector;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\CollectTagsResponseTagger;
+use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\CacheTagCollectionResponseTagger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\DataCollector\LateDataCollectorInterface;
 final class CacheTagDataCollector extends DataCollector implements LateDataCollectorInterface
 {
     public function __construct(
-        private readonly CollectTagsResponseTagger $cacheTagCollector,
+        private readonly CacheTagCollectionResponseTagger $cacheTagCollector,
     ) {
     }
 
