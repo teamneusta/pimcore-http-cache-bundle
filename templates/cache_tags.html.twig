@@ -41,13 +41,13 @@
                         stroke="#EEE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g>
                 </svg>
         </span>
-        <strong>Cache Tags</strong>
+        <strong>Http Cache Tags</strong>
         <span class="count">{{ collector.tags|length }}</span>
     </span>
 {% endblock %}
 
 {% block panel %}
-    <h2>Cache Tags</h2>
+    <h2>Http Cache Tags</h2>
 
     {% if collector.tags|length > 0 %}
         <table class="metrics">

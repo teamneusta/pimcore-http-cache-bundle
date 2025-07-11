@@ -6,7 +6,6 @@ use Neusta\Pimcore\HttpCacheBundle\DependencyInjection\CompilerPass\DisableCache
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
 
 final class DisableCacheTagCollectionPassTest extends TestCase
 {
@@ -25,16 +24,15 @@ final class DisableCacheTagCollectionPassTest extends TestCase
     public function disables_cache_tag_collection_when_profiler_is_not_enabled(): void
     {
         $container = $this->prophesize(ContainerBuilder::class);
-        $definition = $this->prophesize(Definition::class);
 
         $container->hasDefinition('profiler')->willReturn(false);
-        $container->getDefinition('.neusta_pimcore_http_cache.collect_tags_response_tagger')
-            ->willReturn($definition->reveal());
-        $definition->setDecoratedService(null)->willReturn($definition->reveal());
 
         $this->disableCacheTagCollectionPass->process($container->reveal());
 
-        $definition->setDecoratedService(null)->shouldHaveBeenCalledOnce();
+        $container->removeDefinition('.neusta_pimcore_http_cache.collect_tags_response_tagger')
+        ->shouldHaveBeenCalledOnce();
+        $container->removeDefinition('neusta_pimcore_http_cache.cache.data_collector.cache_tag_data_collector')
+        ->shouldHaveBeenCalledOnce();
     }
 
     /**
@@ -47,7 +45,9 @@ final class DisableCacheTagCollectionPassTest extends TestCase
         $container->hasDefinition('profiler')->willReturn(true);
         $this->disableCacheTagCollectionPass->process($container->reveal());
 
-        $container->getDefinition('.neusta_pimcore_http_cache.collect_tags_response_tagger')
-            ->shouldNotHaveBeenCalled();
+        $container->removeDefinition('.neusta_pimcore_http_cache.collect_tags_response_tagger')
+        ->shouldNotHaveBeenCalled();
+        $container->removeDefinition('neusta_pimcore_http_cache.cache.data_collector.cache_tag_data_collector')
+        ->shouldNotHaveBeenCalled();
     }
 }
