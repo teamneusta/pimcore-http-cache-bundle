@@ -12,7 +12,7 @@ final class CacheTags implements \IteratorAggregate
     /**
      * @var array<string, CacheTag>
      */
-    public readonly array $tags;
+    private readonly array $tags;
 
     /**
      * @no-named-arguments
@@ -21,7 +21,7 @@ final class CacheTags implements \IteratorAggregate
     {
         $indexedTags = [];
         foreach ($tags as $tag) {
-            $indexedTags[$tag->tag] = $tag;
+            $indexedTags[$tag->toString()] = $tag;
         }
 
         $this->tags = $indexedTags;
@@ -63,7 +63,7 @@ final class CacheTags implements \IteratorAggregate
 
     public function with(CacheTag|self ...$tags): self
     {
-        $newTags = $this->tags;
+        $newTags = array_values($this->tags);
         foreach ($tags as $tag) {
             if ($tag instanceof self) {
                 $newTags = [...$newTags, ...$tag->tags];
