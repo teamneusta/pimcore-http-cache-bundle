@@ -1,7 +1,7 @@
 {% extends '@WebProfiler/Profiler/layout.html.twig' %}
 
 {% block toolbar %}
-    {% if collector.tags|length > 0 %}
+    {% if profile.collectors.cache_tags.tags|length > 0 %}
         {% set status_color = 'green' %}
     {% else %}
         {% set status_color = 'grey' %}
@@ -16,14 +16,14 @@
                        d="M8.5 3H11.5118C12.2455 3 12.6124 3 12.9577 3.08289C13.2638 3.15638 13.5564 3.27759 13.8249 3.44208C14.1276 3.6276 14.387 3.88703 14.9059 4.40589L20.5 10M7.5498 10.0498H7.5598M9.51178 6H8.3C6.61984 6 5.77976 6 5.13803 6.32698C4.57354 6.6146 4.1146 7.07354 3.82698 7.63803C3.5 8.27976 3.5 9.11984 3.5 10.8V12.0118C3.5 12.7455 3.5 13.1124 3.58289 13.4577C3.65638 13.7638 3.77759 14.0564 3.94208 14.3249C4.1276 14.6276 4.38703 14.887 4.90589 15.4059L8.10589 18.6059C9.29394 19.7939 9.88796 20.388 10.5729 20.6105C11.1755 20.8063 11.8245 20.8063 12.4271 20.6105C13.112 20.388 13.7061 19.7939 14.8941 18.6059L16.1059 17.3941C17.2939 16.2061 17.888 15.612 18.1105 14.9271C18.3063 14.3245 18.3063 13.6755 18.1105 13.0729C17.888 12.388 17.2939 11.7939 16.1059 10.6059L12.9059 7.40589C12.387 6.88703 12.1276 6.6276 11.8249 6.44208C11.5564 6.27759 11.2638 6.15638 10.9577 6.08289C10.6124 6 10.2455 6 9.51178 6ZM8.0498 10.0498C8.0498 10.3259 7.82595 10.5498 7.5498 10.5498C7.27366 10.5498 7.0498 10.3259 7.0498 10.0498C7.0498 9.77366 7.27366 9.5498 7.5498 9.5498C7.82595 9.5498 8.0498 9.77366 8.0498 10.0498Z"
                        stroke="#EEE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g>
            </svg>
-            <span class="sf-toolbar-value">{{ collector.tags|length }}</span>
+            <span class="sf-toolbar-value">{{ profile.collectors.cache_tags.tags|length }}</span>
         </span>
     {% endset %}
 
     {% set text %}
         <div class="sf-toolbar-info-piece">
             <b>Cache Tags</b>
-            <span class="sf-toolbar-status">{{ collector.tags|length }}</span>
+            <span class="sf-toolbar-status">{{ profile.collectors.cache_tags.tags|length }}</span>
         </div>
     {% endset %}
 
@@ -31,7 +31,7 @@
 {% endblock %}
 
 {% block menu %}
-    <span class="label {{ collector.tags|length > 0 ? 'status-green' : 'status-grey' }}">
+    <span class="label {{ profile.collectors.cache_tags.tags|length > 0 ? 'status-green' : 'status-grey' }}">
         <span class="icon">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#EEE">
                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round"
@@ -42,19 +42,19 @@
                 </svg>
         </span>
         <strong>Http Cache Tags</strong>
-        <span class="count">{{ collector.tags|length }}</span>
+        <span class="count">{{ profile.collectors.cache_tags.tags|length }}</span>
     </span>
 {% endblock %}
 
 {% block panel %}
     <h2>Http Cache Tags</h2>
 
-    {% if collector.tags|length > 0 %}
+    {% if profile.collectors.cache_tags.tags|length > 0 %}
         <table class="metrics">
             <tbody>
             <tr>
                 <td>Total Tags</td>
-                <td class="font-normal">{{ collector.tags|length }}</td>
+                <td class="font-normal">{{ profile.collectors.cache_tags.tags|length }}</td>
             </tr>
             </tbody>
         </table>
@@ -66,7 +66,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for tag in collector.tags %}
+            {% for tag in profile.collectors.cache_tags.tags %}
                 <tr>
                     <td>{{ tag.tag }}</td>
                     <td>{{ tag.type }}</td>
@@ -79,4 +79,21 @@
             <p>No cache tags were collected for this request.</p>
         </div>
     {% endif %}
+    <h2>Configuration</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Type</th>
+            <th>Config</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for key, value in profile.collectors.configuration.config %}
+            <tr>
+                <td>{{ key }}</td>
+                <td>{{ value|json_encode }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
