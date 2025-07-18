@@ -104,6 +104,5 @@ return static function (ContainerConfigurator $configurator) {
     $services->set('neusta_pimcore_http_cache.cache.data_collector.configuration_collector', ConfigurationDataCollector::class)
         ->tag('data_collector', [
             'id' => 'configuration',
-            'priority' => 255,
         ]);
 };
