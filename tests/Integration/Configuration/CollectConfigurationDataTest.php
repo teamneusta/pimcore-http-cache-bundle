@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Tagging;
+namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Configuration;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\DataCollector\ConfigurationDataCollector;
+use Neusta\Pimcore\HttpCacheBundle\DataCollector;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestDocumentFactory;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
@@ -45,12 +45,12 @@ final class CollectConfigurationDataTest extends ConfigurableWebTestcase
         $this->client->request('GET', '/test_document_page');
         $this->client->enableProfiler();
 
-        $dataCollector = $this->client->getProfile()->getCollector('configuration');
+        $dataCollector = $this->client->getProfile()->getCollector('cache_tags');
 
-        self::assertInstanceOf(ConfigurationDataCollector::class, $dataCollector);
+        self::assertInstanceOf(DataCollector::class, $dataCollector);
         self::assertSame(
-            self::getContainer()->getParameter('neusta_pimcore_http_cache.config'),
-            $dataCollector->getConfig(),
+            self::getContainer()->getParameter('.neusta_pimcore_http_cache.config'),
+            $dataCollector->getConfiguration(),
         );
     }
 

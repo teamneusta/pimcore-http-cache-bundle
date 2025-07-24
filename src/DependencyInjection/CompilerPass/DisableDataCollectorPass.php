@@ -11,8 +11,7 @@ final class DisableDataCollectorPass implements CompilerPassInterface
     {
         if (!$container->hasDefinition('profiler')) {
             $container->removeDefinition('.neusta_pimcore_http_cache.collect_tags_response_tagger');
-            $container->removeDefinition('neusta_pimcore_http_cache.cache.data_collector.cache_tag_data_collector');
-            $container->removeDefinition('neusta_pimcore_http_cache.cache.data_collector.configuration_collector');
+            $container->removeDefinition('neusta_pimcore_http_cache.data_collector');
         }
     }
 }

@@ -4,8 +4,8 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Tagging;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType\CustomCacheType;
-use Neusta\Pimcore\HttpCacheBundle\Cache\DataCollector\CacheTagDataCollector;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
+use Neusta\Pimcore\HttpCacheBundle\DataCollector;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementTaggingEvent;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestAssetFactory;
@@ -51,9 +51,9 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
         $this->client->request('GET', '/test_document_page');
         $this->client->enableProfiler();
 
-        $dataCollector = $this->client->getProfile()->getCollector('cache_tags');
+        $dataCollector = $this->client->getProfile()->getCollector('pimcore_http_cache.data_collector');
 
-        self::assertInstanceOf(CacheTagDataCollector::class, $dataCollector);
+        self::assertInstanceOf(DataCollector::class, $dataCollector);
         self::assertSame(
             [['tag' => 'd1', 'type' => 'document'], ['tag' => 'd42', 'type' => 'document']],
             $dataCollector->getTags(),
@@ -76,9 +76,9 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
         $this->client->request('GET', '/get-object?id=42');
         $this->client->enableProfiler();
 
-        $dataCollector = $this->client->getProfile()->getCollector('cache_tags');
+        $dataCollector = $this->client->getProfile()->getCollector('pimcore_http_cache.data_collector');
 
-        self::assertInstanceOf(CacheTagDataCollector::class, $dataCollector);
+        self::assertInstanceOf(DataCollector::class, $dataCollector);
         self::assertSame(
             [['tag' => 'o42', 'type' => 'object']],
             $dataCollector->getTags(),
@@ -101,9 +101,9 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
         $this->client->request('GET', '/get-asset?id=42');
         $this->client->enableProfiler();
 
-        $dataCollector = $this->client->getProfile()->getCollector('cache_tags');
+        $dataCollector = $this->client->getProfile()->getCollector('pimcore_http_cache.data_collector');
 
-        self::assertInstanceOf(CacheTagDataCollector::class, $dataCollector);
+        self::assertInstanceOf(DataCollector::class, $dataCollector);
         self::assertSame(
             [['tag' => 'a42', 'type' => 'asset']],
             $dataCollector->getTags(),
@@ -136,9 +136,9 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
         $this->client->request('GET', '/get-object?id=42');
         $this->client->enableProfiler();
 
-        $dataCollector = $this->client->getProfile()->getCollector('cache_tags');
+        $dataCollector = $this->client->getProfile()->getCollector('pimcore_http_cache.data_collector');
 
-        self::assertInstanceOf(CacheTagDataCollector::class, $dataCollector);
+        self::assertInstanceOf(DataCollector::class, $dataCollector);
         self::assertContains(
             ['tag' => 'foo-bar', 'type' => 'foo'],
             $dataCollector->getTags(),
@@ -161,9 +161,9 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
         $this->client->request('GET', '/get-object?id=42');
         $this->client->enableProfiler();
 
-        $dataCollector = $this->client->getProfile()->getCollector('cache_tags');
+        $dataCollector = $this->client->getProfile()->getCollector('pimcore_http_cache.data_collector');
 
-        self::assertInstanceOf(CacheTagDataCollector::class, $dataCollector);
+        self::assertInstanceOf(DataCollector::class, $dataCollector);
         self::assertEmpty($dataCollector->getTags());
     }
 
@@ -184,9 +184,9 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
         $this->client->request('GET', '/get-object?id=42');
         $this->client->enableProfiler();
 
-        $dataCollector = $this->client->getProfile()->getCollector('cache_tags');
+        $dataCollector = $this->client->getProfile()->getCollector('pimcore_http_cache.data_collector');
 
-        self::assertInstanceOf(CacheTagDataCollector::class, $dataCollector);
+        self::assertInstanceOf(DataCollector::class, $dataCollector);
         self::assertEmpty($dataCollector->getTags());
     }
 
@@ -211,9 +211,9 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
         $this->client->request('GET', '/get-object?id=42');
         $this->client->enableProfiler();
 
-        $dataCollector = $this->client->getProfile()->getCollector('cache_tags');
+        $dataCollector = $this->client->getProfile()->getCollector('pimcore_http_cache.data_collector');
 
-        self::assertInstanceOf(CacheTagDataCollector::class, $dataCollector);
+        self::assertInstanceOf(DataCollector::class, $dataCollector);
         self::assertEmpty($dataCollector->getTags());
     }
 
@@ -238,9 +238,9 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
         $this->client->request('GET', '/get-object?id=42');
         $this->client->enableProfiler();
 
-        $dataCollector = $this->client->getProfile()->getCollector('cache_tags');
+        $dataCollector = $this->client->getProfile()->getCollector('pimcore_http_cache.data_collector');
 
-        self::assertInstanceOf(CacheTagDataCollector::class, $dataCollector);
+        self::assertInstanceOf(DataCollector::class, $dataCollector);
         self::assertEmpty($dataCollector->getTags());
     }
 
@@ -283,9 +283,9 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
         $this->client->request('GET', '/get-object?id=42');
         $this->client->enableProfiler();
 
-        $dataCollector = $this->client->getProfile()->getCollector('cache_tags');
+        $dataCollector = $this->client->getProfile()->getCollector('pimcore_http_cache.data_collector');
 
-        self::assertInstanceOf(CacheTagDataCollector::class, $dataCollector);
+        self::assertInstanceOf(DataCollector::class, $dataCollector);
         self::assertEmpty($dataCollector->getTags());
     }
 }
