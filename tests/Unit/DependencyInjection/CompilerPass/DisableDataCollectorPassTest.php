@@ -2,26 +2,26 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\DependencyInjection\CompilerPass;
 
-use Neusta\Pimcore\HttpCacheBundle\DependencyInjection\CompilerPass\DisableCacheTagCollectionPass;
+use Neusta\Pimcore\HttpCacheBundle\DependencyInjection\CompilerPass\DisableDataCollectorPass;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-final class DisableCacheTagCollectionPassTest extends TestCase
+final class DisableDataCollectorPassTest extends TestCase
 {
     use ProphecyTrait;
 
-    private DisableCacheTagCollectionPass $disableCacheTagCollectionPass;
+    private DisableDataCollectorPass $disableCacheTagCollectionPass;
 
     protected function setUp(): void
     {
-        $this->disableCacheTagCollectionPass = new DisableCacheTagCollectionPass();
+        $this->disableCacheTagCollectionPass = new DisableDataCollectorPass();
     }
 
     /**
      * @test
      */
-    public function disables_cache_tag_collection_when_profiler_is_not_enabled(): void
+    public function disables_data_collectors_when_profiler_is_not_enabled(): void
     {
         $container = $this->prophesize(ContainerBuilder::class);
 
@@ -31,14 +31,14 @@ final class DisableCacheTagCollectionPassTest extends TestCase
 
         $container->removeDefinition('.neusta_pimcore_http_cache.collect_tags_response_tagger')
         ->shouldHaveBeenCalledOnce();
-        $container->removeDefinition('neusta_pimcore_http_cache.cache.data_collector.cache_tag_data_collector')
+        $container->removeDefinition('neusta_pimcore_http_cache.data_collector')
         ->shouldHaveBeenCalledOnce();
     }
 
     /**
      * @test
      */
-    public function does_not_disable_cache_tag_collection_when_profiler_is_enabled(): void
+    public function does_not_disable_data_collectors_when_profiler_is_enabled(): void
     {
         $container = $this->prophesize(ContainerBuilder::class);
 
@@ -47,7 +47,7 @@ final class DisableCacheTagCollectionPassTest extends TestCase
 
         $container->removeDefinition('.neusta_pimcore_http_cache.collect_tags_response_tagger')
         ->shouldNotHaveBeenCalled();
-        $container->removeDefinition('neusta_pimcore_http_cache.cache.data_collector.cache_tag_data_collector')
+        $container->removeDefinition('neusta_pimcore_http_cache.data_collecto')
         ->shouldNotHaveBeenCalled();
     }
 }

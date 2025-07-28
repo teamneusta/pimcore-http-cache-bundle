@@ -79,4 +79,21 @@
             <p>No cache tags were collected for this request.</p>
         </div>
     {% endif %}
+    <h2>Configuration</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Type</th>
+            <th>Config</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for key, value in collector.configuration %}
+            <tr>
+                <td>{{ key }}</td>
+                <td>{{ value|json_encode }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

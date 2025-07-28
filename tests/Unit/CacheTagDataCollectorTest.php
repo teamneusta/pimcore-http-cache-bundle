@@ -1,15 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Cache\DataCollector;
+namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTypeFactory;
-use Neusta\Pimcore\HttpCacheBundle\Cache\DataCollector\CacheTagDataCollector;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\CacheTagCollectionResponseTagger;
+use Neusta\Pimcore\HttpCacheBundle\DataCollector;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 final class CacheTagDataCollectorTest extends TestCase
 {
@@ -17,14 +19,28 @@ final class CacheTagDataCollectorTest extends TestCase
 
     private CacheTagCollectionResponseTagger $collectTagsResponseTagger;
 
-    private CacheTagDataCollector $cacheDataCollector;
+    private DataCollector $cacheDataCollector;
 
     protected function setUp(): void
     {
         $tagger = $this->prophesize(ResponseTagger::class);
         $this->collectTagsResponseTagger = new CacheTagCollectionResponseTagger($tagger->reveal());
-        $this->cacheDataCollector = new CacheTagDataCollector(
+        $this->cacheDataCollector = new DataCollector(
             $this->collectTagsResponseTagger,
+            ['elements' => ['objects' => false, 'assets' => false, 'documents' => true]],
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function collect_collects_configuration(): void
+    {
+        $this->cacheDataCollector->collect(new Request(), new Response());
+
+        self::assertSame(
+            ['elements' => ['objects' => false, 'assets' => false, 'documents' => true]],
+            $this->cacheDataCollector->getConfiguration(),
         );
     }
 
@@ -48,15 +64,17 @@ final class CacheTagDataCollectorTest extends TestCase
     /**
      * @test
      */
-    public function reset_clears_collected_tags(): void
+    public function reset_clears_collected_tags_and_configuration(): void
     {
         $this->collectTagsResponseTagger->tag(new CacheTags(
             CacheTag::fromString('tag', CacheTypeFactory::createFromString('custom')),
         ));
 
+        $this->cacheDataCollector->collect(new Request(), new Response());
         $this->cacheDataCollector->lateCollect();
         $this->cacheDataCollector->reset();
 
         self::assertEmpty($this->cacheDataCollector->getTags());
+        self::assertEmpty($this->cacheDataCollector->getConfiguration());
     }
 }
