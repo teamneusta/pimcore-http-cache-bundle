@@ -64,17 +64,15 @@ final class CacheTagDataCollectorTest extends TestCase
     /**
      * @test
      */
-    public function reset_clears_collected_tags_and_configuration(): void
+    public function reset_clears_collected_tags(): void
     {
         $this->collectTagsResponseTagger->tag(new CacheTags(
             CacheTag::fromString('tag', CacheTypeFactory::createFromString('custom')),
         ));
 
-        $this->cacheDataCollector->collect(new Request(), new Response());
         $this->cacheDataCollector->lateCollect();
         $this->cacheDataCollector->reset();
 
         self::assertEmpty($this->cacheDataCollector->getTags());
-        self::assertEmpty($this->cacheDataCollector->getConfiguration());
     }
 }

@@ -10,12 +10,14 @@ use Symfony\Component\HttpKernel\DataCollector\LateDataCollectorInterface;
 
 final class DataCollector extends BaseDataCollector implements LateDataCollectorInterface
 {
+    /**
+     * @param array<string, mixed> $configuration
+     */
     public function __construct(
         private readonly CacheTagCollectionResponseTagger $cacheTagCollector,
-        /** @var array<string, mixed> */
-        private readonly array $configuration = [],
+        array $configuration = [],
     ) {
-        $this->data['configuration'] = $this->configuration;
+        $this->data['configuration'] = $configuration;
     }
 
     public function collect(Request $request, Response $response, ?\Throwable $exception = null): void
@@ -55,6 +57,5 @@ final class DataCollector extends BaseDataCollector implements LateDataCollector
     public function reset(): void
     {
         $this->data['tags'] = [];
-        $this->data['configuration'] = [];
     }
 }
