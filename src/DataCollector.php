@@ -22,6 +22,7 @@ final class DataCollector extends BaseDataCollector implements LateDataCollector
 
     public function collect(Request $request, Response $response, ?\Throwable $exception = null): void
     {
+        // no action needed here, as tags are collected in lateCollect
     }
 
     public function lateCollect(): void
@@ -57,5 +58,6 @@ final class DataCollector extends BaseDataCollector implements LateDataCollector
     public function reset(): void
     {
         $this->data['tags'] = [];
+        $this->cacheTagCollector->reset();
     }
 }

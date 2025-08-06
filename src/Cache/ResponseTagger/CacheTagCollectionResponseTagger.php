@@ -21,4 +21,9 @@ final class CacheTagCollectionResponseTagger implements ResponseTagger
         $this->collectedTags = $this->collectedTags->with($tags);
         $this->inner->tag($tags);
     }
+
+    public function reset(): void
+    {
+        $this->collectedTags = new CacheTags();
+    }
 }

@@ -28,7 +28,7 @@ final class CacheTagCollectionResponseTaggerTest extends TestCase
     /**
      * @test
      */
-    public function it_should_collect_tags(): void
+    public function tag_should_collect_tags(): void
     {
         $this->collectTagsResponseTagger->tag(
             new CacheTags(
@@ -45,7 +45,7 @@ final class CacheTagCollectionResponseTaggerTest extends TestCase
     /**
      * @test
      */
-    public function it_should_forward_tags_to_inner_tagger(): void
+    public function tag_should_forward_tags_to_inner_tagger(): void
     {
         $tags = new CacheTags(
             CacheTag::fromString('tag1'),
@@ -55,5 +55,23 @@ final class CacheTagCollectionResponseTaggerTest extends TestCase
         $this->collectTagsResponseTagger->tag($tags);
 
         $this->innerTagger->tag($tags)->shouldHaveBeenCalledOnce();
+    }
+
+    /**
+     * @test
+     */
+    public function reset_should_reset_collected_tags(): void
+    {
+        $this->collectTagsResponseTagger->tag(
+            new CacheTags(
+                CacheTag::fromString('tag1'),
+                CacheTag::fromString('tag2'),
+            ));
+
+        $this->collectTagsResponseTagger->reset();
+
+        self::assertTrue(
+            $this->collectTagsResponseTagger->collectedTags->isEmpty(),
+        );
     }
 }
