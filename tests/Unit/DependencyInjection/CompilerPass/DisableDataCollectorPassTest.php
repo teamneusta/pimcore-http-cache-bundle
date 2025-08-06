@@ -47,7 +47,7 @@ final class DisableDataCollectorPassTest extends TestCase
 
         $container->removeDefinition('.neusta_pimcore_http_cache.collect_tags_response_tagger')
         ->shouldNotHaveBeenCalled();
-        $container->removeDefinition('neusta_pimcore_http_cache.data_collecto')
+        $container->removeDefinition('neusta_pimcore_http_cache.data_collector')
         ->shouldNotHaveBeenCalled();
     }
 }
