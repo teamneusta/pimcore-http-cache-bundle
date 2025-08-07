@@ -4,6 +4,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Element;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Pimcore\Event\Model\ElementEventInterface;
+use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Element\ElementInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -21,12 +22,18 @@ final class InvalidateElementListener
             return;
         }
 
-        $this->invalidateElement($event->getElement());
+        $element = $event->getElement();
+
+        $this->invalidateElement($element);
+        $this->invalidateDependencies($element);
     }
 
     public function onDelete(ElementEventInterface $event): void
     {
-        $this->invalidateElement($event->getElement());
+        $element = $event->getElement();
+
+        $this->invalidateElement($element);
+        $this->invalidateDependencies($element);
     }
 
     private function invalidateElement(ElementInterface $element): void
@@ -39,5 +46,18 @@ final class InvalidateElementListener
         }
 
         $this->cacheInvalidator->invalidate($invalidationEvent->cacheTags());
+    }
+
+    private function invalidateDependencies(ElementInterface $element): void
+    {
+        if (!$element instanceof Concrete) {
+            return;
+        }
+
+        foreach ($element->getDependencies()->getRequiredBy() as $dependency) {
+            if ($dependency instanceof ElementInterface) {
+                $this->invalidateElement($dependency);
+            }
+        }
     }
 }

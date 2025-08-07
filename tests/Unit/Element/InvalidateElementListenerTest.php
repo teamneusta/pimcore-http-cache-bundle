@@ -14,6 +14,7 @@ use Pimcore\Event\Model\DocumentEvent;
 use Pimcore\Event\Model\ElementEventInterface;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject;
+use Pimcore\Model\Dependency;
 use Pimcore\Model\Document;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
@@ -107,6 +108,27 @@ final class InvalidateElementListenerTest extends TestCase
 
     /**
      * @test
+     */
+    public function onUpdate_should_invalidate_dependent_elements_from_objects(): void
+    {
+        $element = $this->prophesize(DataObject\TestDataObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentElement = $this->prophesize(DataObject::class);
+        $event = new DataObjectEvent($element->reveal());
+
+        $element->getId()->willReturn(42);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentElement->getId()->willReturn(23);
+        $dependency->getRequiredBy()->willReturn([$dependentElement->reveal()]);
+
+        $this->invalidateElementListener->onUpdate($event);
+
+        $this->cacheInvalidator->invalidate(Argument::which('toString', CacheTag::fromElement($dependentElement->reveal())->toString()))
+            ->shouldHaveBeenCalledOnce();
+    }
+
+    /**
+     * @test
      *
      * @dataProvider elementProvider
      */
@@ -179,6 +201,27 @@ final class InvalidateElementListenerTest extends TestCase
 
     /**
      * @test
+     */
+    public function onDelete_should_invalidate_dependent_elements_from_objects(): void
+    {
+        $element = $this->prophesize(DataObject\TestDataObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentElement = $this->prophesize(DataObject::class);
+        $event = new DataObjectEvent($element->reveal());
+
+        $element->getId()->willReturn(42);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentElement->getId()->willReturn(23);
+        $dependency->getRequiredBy()->willReturn([$dependentElement->reveal()]);
+
+        $this->invalidateElementListener->onDelete($event);
+
+        $this->cacheInvalidator->invalidate(Argument::which('toString', CacheTag::fromElement($dependentElement->reveal())->toString()))
+            ->shouldHaveBeenCalledOnce();
+    }
+
+    /**
+     * @test
      *
      * @dataProvider elementProvider
      */
@@ -232,7 +275,10 @@ final class InvalidateElementListenerTest extends TestCase
         yield 'Document' => ['event' => new DocumentEvent($document->reveal())];
 
         $dataObject = $this->prophesize(DataObject::class);
+        $dependency = $this->prophesize(Dependency::class);
         $dataObject->getId()->willReturn(42);
+        $dataObject->getDependencies()->willReturn($dependency->reveal());
+        $dependency->getRequiredBy()->willReturn([]);
         yield 'Object' => ['event' => new DataObjectEvent($dataObject->reveal())];
     }
 }
