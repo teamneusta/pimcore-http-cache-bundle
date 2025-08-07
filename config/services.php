@@ -91,7 +91,8 @@ return static function (ContainerConfigurator $configurator) {
 
     $services->set('neusta_pimcore_http_cache.element.invalidate_listener', InvalidateElementListener::class)
         ->arg('$cacheInvalidator', service('neusta_pimcore_http_cache.cache_invalidator'))
-        ->arg('$dispatcher', service('event_dispatcher'));
+        ->arg('$dispatcher', service('event_dispatcher'))
+        ->arg('$elementRepository', service('.neusta_pimcore_http_cache.element.repository'));
 
     $services->set('neusta_pimcore_http_cache.data_collector', DataCollector::class)
         ->arg('$cacheTagCollector', service('.neusta_pimcore_http_cache.collect_tags_response_tagger'))
