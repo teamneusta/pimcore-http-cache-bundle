@@ -13,7 +13,7 @@ use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class CacheTagDataCollectorTest extends TestCase
+final class DataCollectorTest extends TestCase
 {
     use ProphecyTrait;
 
@@ -34,7 +34,7 @@ final class CacheTagDataCollectorTest extends TestCase
     /**
      * @test
      */
-    public function collect_collects_configuration(): void
+    public function it_collects_configuration_data(): void
     {
         $this->cacheDataCollector->collect(new Request(), new Response());
 
@@ -74,20 +74,5 @@ final class CacheTagDataCollectorTest extends TestCase
         $this->cacheDataCollector->reset();
 
         self::assertEmpty($this->cacheDataCollector->getTags());
-    }
-
-    /**
-     * @test
-     */
-    public function reset_resets_collected_tags_from_response_tagger(): void
-    {
-        $this->collectTagsResponseTagger->tag(new CacheTags(
-            CacheTag::fromString('tag', CacheTypeFactory::createFromString('custom')),
-        ));
-
-        $this->cacheDataCollector->lateCollect();
-        $this->cacheDataCollector->reset();
-
-        self::assertTrue($this->collectTagsResponseTagger->collectedTags->isEmpty());
     }
 }

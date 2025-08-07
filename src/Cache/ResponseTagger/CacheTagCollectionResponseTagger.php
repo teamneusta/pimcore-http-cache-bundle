@@ -5,8 +5,9 @@ namespace Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
+use Symfony\Contracts\Service\ResetInterface;
 
-final class CacheTagCollectionResponseTagger implements ResponseTagger
+final class CacheTagCollectionResponseTagger implements ResponseTagger, ResetInterface
 {
     public CacheTags $collectedTags;
 

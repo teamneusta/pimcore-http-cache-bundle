@@ -58,6 +58,5 @@ final class DataCollector extends BaseDataCollector implements LateDataCollector
     public function reset(): void
     {
         $this->data['tags'] = [];
-        $this->cacheTagCollector->reset();
     }
 }
