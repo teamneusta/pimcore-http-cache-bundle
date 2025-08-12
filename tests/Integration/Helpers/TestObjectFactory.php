@@ -5,6 +5,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers;
 use Pimcore\Model\DataObject;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\TestDataObject;
+use Pimcore\Model\DataObject\TestObject;
 
 final class TestObjectFactory
 {
@@ -13,6 +14,18 @@ final class TestObjectFactory
         $object = new TestDataObject();
         $object->setId(42);
         $object->setKey('test_object');
+        $object->setContent('Test content');
+        $object->setPublished(true);
+        $object->setParentId(1);
+
+        return $object;
+    }
+
+    public static function testObject(int $id): TestObject
+    {
+        $object = new TestObject();
+        $object->setId($id);
+        $object->setKey('test_object_1' . $id);
         $object->setContent('Test content');
         $object->setPublished(true);
         $object->setParentId(1);

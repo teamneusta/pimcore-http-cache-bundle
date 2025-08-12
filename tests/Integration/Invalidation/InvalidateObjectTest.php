@@ -60,6 +60,32 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
+            'objects' => [
+                'enabled' => true,
+                'types' => [
+                    'variant' => true,
+                ],
+            ],
+        ],
+    ])]
+    public function dependent_element_is_invalidated_on_update(): void
+    {
+        $object1 = self::arrange(fn () => TestObjectFactory::testObject(12)->save());
+        $object2 = self::arrange(fn () => TestObjectFactory::testObject(24)->save());
+
+        self::arrange(fn () => $object1->setRelated([$object2])->save());
+
+        $object2->setContent('Updated content')->save();
+
+        $this->cacheManager->invalidateTags(['o12'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['o24'])->shouldHaveBeenCalledTimes(1);
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
             'objects' => true,
         ],
     ])]

@@ -4,7 +4,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Element;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Pimcore\Event\Model\ElementEventInterface;
-use Pimcore\Model\DataObject\Concrete;
+use Pimcore\Model\Dependency;
 use Pimcore\Model\Element\ElementInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -13,6 +13,7 @@ final class InvalidateElementListener
     public function __construct(
         private readonly CacheInvalidator $cacheInvalidator,
         private readonly EventDispatcherInterface $dispatcher,
+        private readonly ElementRepository $elementRepository,
     ) {
     }
 
@@ -25,7 +26,8 @@ final class InvalidateElementListener
         $element = $event->getElement();
 
         $this->invalidateElement($element);
-        $this->invalidateDependencies($element);
+
+        $this->invalidateDependencies($element->getDependencies());
     }
 
     public function onDelete(ElementEventInterface $event): void
@@ -33,7 +35,7 @@ final class InvalidateElementListener
         $element = $event->getElement();
 
         $this->invalidateElement($element);
-        $this->invalidateDependencies($element);
+        $this->invalidateDependencies($element->getDependencies());
     }
 
     private function invalidateElement(ElementInterface $element): void
@@ -48,15 +50,23 @@ final class InvalidateElementListener
         $this->cacheInvalidator->invalidate($invalidationEvent->cacheTags());
     }
 
-    private function invalidateDependencies(ElementInterface $element): void
+    private function invalidateDependencies(Dependency $dependency): void
     {
-        if (!$element instanceof Concrete) {
-            return;
-        }
+        $requiredBy = $dependency->getRequiredBy();
+        foreach ($requiredBy as $required) {
+            if (!isset($required['id'], $required['type'])) {
+                continue;
+            }
 
-        foreach ($element->getDependencies()->getRequiredBy() as $dependency) {
-            if ($dependency instanceof ElementInterface) {
-                $this->invalidateElement($dependency);
+            $element = match (ElementType::tryFrom($required['type'])) {
+                ElementType::Object => $this->elementRepository->findObject($required['id']),
+                ElementType::Document => $this->elementRepository->findDocument($required['id']),
+                ElementType::Asset => $this->elementRepository->findAsset($required['id']),
+                default => null,
+            };
+
+            if ($element) {
+                $this->invalidateElement($element);
             }
         }
     }
