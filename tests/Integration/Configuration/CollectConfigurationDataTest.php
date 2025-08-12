@@ -40,7 +40,7 @@ final class CollectConfigurationDataTest extends ConfigurableWebTestcase
     ])]
     public function collects_configuration_data(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simplePage())->save();
+        self::arrange(fn () => TestDocumentFactory::simplePage(5))->save();
 
         $this->client->request('GET', '/test_document_page');
         $this->client->enableProfiler();
@@ -65,7 +65,7 @@ final class CollectConfigurationDataTest extends ConfigurableWebTestcase
     ])]
     public function does_not_collect_configuration_data_when_profiler_is_disabled(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simplePage())->save();
+        self::arrange(fn () => TestDocumentFactory::simplePage(5))->save();
 
         $this->client->request('GET', '/test_document_page');
         $this->client->enableProfiler();

@@ -36,10 +36,10 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
         $this->cacheManager->invalidateTags(Argument::any())->willReturn($this->cacheManager->reveal());
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
 
-        $this->document = self::arrange(fn () => TestDocumentFactory::simplePage()->save());
-        $this->hardlink = self::arrange(fn () => TestDocumentFactory::simpleHardLink()->save());
-        $this->email = self::arrange(fn () => TestDocumentFactory::simpleEmail()->save());
-        $this->folder = self::arrange(fn () => TestDocumentFactory::simpleFolder()->save());
+        $this->document = self::arrange(fn () => TestDocumentFactory::simplePage(5)->save());
+        $this->hardlink = self::arrange(fn () => TestDocumentFactory::simpleHardLink(12)->save());
+        $this->email = self::arrange(fn () => TestDocumentFactory::simpleEmail(29)->save());
+        $this->folder = self::arrange(fn () => TestDocumentFactory::simpleFolder(70)->save());
     }
 
     /**
@@ -54,7 +54,7 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
     {
         $this->document->setKey('updated_test_document_page')->save();
 
-        $this->cacheManager->invalidateTags(['d42'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['d5'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -69,7 +69,7 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
     {
         $this->document->delete();
 
-        $this->cacheManager->invalidateTags(['d42'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['d5'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**

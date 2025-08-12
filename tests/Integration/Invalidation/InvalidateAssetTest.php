@@ -34,9 +34,9 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
         $this->cacheManager->invalidateTags(Argument::any())->willReturn($this->cacheManager->reveal());
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
 
-        $this->asset = self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
-        $this->folder = self::arrange(fn () => TestAssetFactory::simpleFolder()->save());
-        $this->image = self::arrange(fn () => TestAssetFactory::simpleImage()->save());
+        $this->asset = self::arrange(fn () => TestAssetFactory::simpleAsset(5)->save());
+        $this->folder = self::arrange(fn () => TestAssetFactory::simpleFolder(12)->save());
+        $this->image = self::arrange(fn () => TestAssetFactory::simpleImage(29)->save());
     }
 
     /**
@@ -51,7 +51,7 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
     {
         $this->asset->setData('Updated test content')->save();
 
-        $this->cacheManager->invalidateTags(['a42'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['a5'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -66,7 +66,7 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
     {
         $this->asset->delete();
 
-        $this->cacheManager->invalidateTags(['a42'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['a5'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**

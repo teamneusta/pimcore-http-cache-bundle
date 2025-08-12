@@ -45,7 +45,7 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
     ])]
     public function cancel_invalidation_on_object_update(): void
     {
-        $object = self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+        $object = self::arrange(fn () => TestObjectFactory::simpleObject(42)->save());
 
         $object->setContent('Updated test content')->save();
 
@@ -62,7 +62,7 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
     ])]
     public function cancel_invalidation_on_document_update(): void
     {
-        $document = self::arrange(fn () => TestDocumentFactory::simplePage()->save());
+        $document = self::arrange(fn () => TestDocumentFactory::simplePage(5)->save());
 
         $document->setKey('updated_test_document_page')->save();
 
@@ -79,7 +79,7 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
     ])]
     public function cancel_invalidation_on_asset_update(): void
     {
-        $asset = self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
+        $asset = self::arrange(fn () => TestAssetFactory::simpleAsset(5)->save());
 
         $asset->setData('Updated test content')->save();
 
@@ -96,7 +96,7 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
     ])]
     public function cancel_invalidation_on_object_delete(): void
     {
-        $object = self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+        $object = self::arrange(fn () => TestObjectFactory::simpleObject(42)->save());
 
         $object->delete();
 
@@ -113,7 +113,7 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
     ])]
     public function cancel_invalidation_on_document_delete(): void
     {
-        $document = self::arrange(fn () => TestDocumentFactory::simplePage()->save());
+        $document = self::arrange(fn () => TestDocumentFactory::simplePage(5)->save());
 
         $document->delete();
 
@@ -130,7 +130,7 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
     ])]
     public function cancel_invalidation_on_asset_delete(): void
     {
-        $asset = self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
+        $asset = self::arrange(fn () => TestAssetFactory::simpleAsset(5)->save());
 
         $asset->delete();
 
