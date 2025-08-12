@@ -10,6 +10,7 @@ use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
 use Neusta\Pimcore\TestingFramework\Test\ConfigurableKernelTestCase;
 use Pimcore\Model\DataObject;
 use Pimcore\Model\DataObject\TestDataObject;
+use Pimcore\Model\DataObject\TestObject;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -23,7 +24,9 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
     /** @var ObjectProphecy<CacheManager> */
     private ObjectProphecy $cacheManager;
 
-    private TestDataObject $object;
+    private TestObject $object;
+
+    private TestObject $otherObject;
 
     private TestDataObject $variant;
 
@@ -34,10 +37,10 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
         $this->cacheManager = $this->prophesize(CacheManager::class);
         $this->cacheManager->invalidateTags(Argument::any())->willReturn($this->cacheManager->reveal());
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
-
-        $this->object = self::arrange(fn () => TestObjectFactory::simpleObject()->save());
-        $this->folder = self::arrange(fn () => TestObjectFactory::simpleFolder()->save());
-        $this->variant = self::arrange(fn () => TestObjectFactory::simpleVariant()->save());
+        $this->object = self::arrange(fn () => TestObjectFactory::simpleObject(5)->save());
+        $this->otherObject = self::arrange(fn () => TestObjectFactory::simpleObject(12, 'other_test_object', [$this->object])->save());
+        $this->folder = self::arrange(fn () => TestObjectFactory::simpleFolder(29)->save());
+        $this->variant = self::arrange(fn () => TestObjectFactory::simpleVariant(70)->save());
     }
 
     /**
@@ -52,7 +55,7 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
     {
         $this->object->setContent('Updated test content')->save();
 
-        $this->cacheManager->invalidateTags(['o42'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['o5'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -70,15 +73,10 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
     ])]
     public function dependent_element_is_invalidated_on_update(): void
     {
-        $object1 = self::arrange(fn () => TestObjectFactory::testObject(12)->save());
-        $object2 = self::arrange(fn () => TestObjectFactory::testObject(24)->save());
+        $this->otherObject->setContent('Updated content')->save();
 
-        self::arrange(fn () => $object1->setRelated([$object2])->save());
-
-        $object2->setContent('Updated content')->save();
-
+        $this->cacheManager->invalidateTags(['o5'])->shouldHaveBeenCalledTimes(1);
         $this->cacheManager->invalidateTags(['o12'])->shouldHaveBeenCalledTimes(1);
-        $this->cacheManager->invalidateTags(['o24'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -93,7 +91,7 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
     {
         $this->object->delete();
 
-        $this->cacheManager->invalidateTags(['o42'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['o5'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**

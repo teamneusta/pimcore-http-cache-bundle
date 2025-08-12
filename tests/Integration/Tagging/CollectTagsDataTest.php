@@ -46,7 +46,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_document_route.php')]
     public function collect_tags_for_type_document(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simplePage())->save();
+        self::arrange(fn () => TestDocumentFactory::simplePage(5))->save();
 
         $this->client->request('GET', '/test_document_page');
         $this->client->enableProfiler();
@@ -55,7 +55,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
 
         self::assertInstanceOf(DataCollector::class, $dataCollector);
         self::assertSame(
-            [['tag' => 'd1', 'type' => 'document'], ['tag' => 'd42', 'type' => 'document']],
+            [['tag' => 'd1', 'type' => 'document'], ['tag' => 'd5', 'type' => 'document']],
             $dataCollector->getTags(),
         );
     }
@@ -71,16 +71,16 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
     public function collect_tags_for_type_object(): void
     {
-        self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+        self::arrange(fn () => TestObjectFactory::simpleObject(5)->save());
 
-        $this->client->request('GET', '/get-object?id=42');
+        $this->client->request('GET', '/get-object?id=5');
         $this->client->enableProfiler();
 
         $dataCollector = $this->client->getProfile()->getCollector('pimcore_http_cache');
 
         self::assertInstanceOf(DataCollector::class, $dataCollector);
         self::assertSame(
-            [['tag' => 'o42', 'type' => 'object']],
+            [['tag' => 'o5', 'type' => 'object']],
             $dataCollector->getTags(),
         );
     }
@@ -96,16 +96,16 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_asset_route.php')]
     public function collect_tags_of_type_asset(): void
     {
-        self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
+        self::arrange(fn () => TestAssetFactory::simpleAsset(5)->save());
 
-        $this->client->request('GET', '/get-asset?id=42');
+        $this->client->request('GET', '/get-asset?id=5');
         $this->client->enableProfiler();
 
         $dataCollector = $this->client->getProfile()->getCollector('pimcore_http_cache');
 
         self::assertInstanceOf(DataCollector::class, $dataCollector);
         self::assertSame(
-            [['tag' => 'a42', 'type' => 'asset']],
+            [['tag' => 'a5', 'type' => 'asset']],
             $dataCollector->getTags(),
         );
     }
@@ -124,7 +124,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
     public function collect_tags_of_type_custom(): void
     {
-        self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+        self::arrange(fn () => TestObjectFactory::simpleObject(5)->save());
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
@@ -133,7 +133,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
             ),
         );
 
-        $this->client->request('GET', '/get-object?id=42');
+        $this->client->request('GET', '/get-object?id=5');
         $this->client->enableProfiler();
 
         $dataCollector = $this->client->getProfile()->getCollector('pimcore_http_cache');
@@ -156,9 +156,9 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
     public function does_not_collect_tags_when_type_is_disabled(): void
     {
-        self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+        self::arrange(fn () => TestObjectFactory::simpleObject(5)->save());
 
-        $this->client->request('GET', '/get-object?id=42');
+        $this->client->request('GET', '/get-object?id=5');
         $this->client->enableProfiler();
 
         $dataCollector = $this->client->getProfile()->getCollector('pimcore_http_cache');
@@ -178,10 +178,10 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
     public function does_not_collect_tags_when_caching_is_disabled(): void
     {
-        self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+        self::arrange(fn () => TestObjectFactory::simpleObject(5)->save());
         self::getContainer()->get(CacheActivator::class)->deactivateCaching();
 
-        $this->client->request('GET', '/get-object?id=42');
+        $this->client->request('GET', '/get-object?id=5');
         $this->client->enableProfiler();
 
         $dataCollector = $this->client->getProfile()->getCollector('pimcore_http_cache');
@@ -206,9 +206,9 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
     public function does_not_collect_tags_when_object_type_is_disabled(): void
     {
-        self::arrange(fn () => TestObjectFactory::simpleVariant()->save());
+        self::arrange(fn () => TestObjectFactory::simpleVariant(5)->save());
 
-        $this->client->request('GET', '/get-object?id=42');
+        $this->client->request('GET', '/get-object?id=5');
         $this->client->enableProfiler();
 
         $dataCollector = $this->client->getProfile()->getCollector('pimcore_http_cache');
@@ -233,9 +233,9 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
     public function does_not_collect_tags_when_object_class_is_disabled(): void
     {
-        self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+        self::arrange(fn () => TestObjectFactory::simpleObject(5)->save());
 
-        $this->client->request('GET', '/get-object?id=42');
+        $this->client->request('GET', '/get-object?id=5');
         $this->client->enableProfiler();
 
         $dataCollector = $this->client->getProfile()->getCollector('pimcore_http_cache');
@@ -261,9 +261,9 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
     public function does_not_collect_tags_when_profiler_is_disabled(): void
     {
-        self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+        self::arrange(fn () => TestObjectFactory::simpleObject(5)->save());
 
-        $this->client->request('GET', '/get-object?id=42');
+        $this->client->request('GET', '/get-object?id=5');
         $this->client->enableProfiler();
 
         self::assertFalse($this->client->getProfile());
@@ -278,9 +278,9 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
     public function does_not_collect_tags_when_collect_is_disabled(): void
     {
-        self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+        self::arrange(fn () => TestObjectFactory::simpleObject(5)->save());
 
-        $this->client->request('GET', '/get-object?id=42');
+        $this->client->request('GET', '/get-object?id=5');
         $this->client->enableProfiler();
 
         $dataCollector = $this->client->getProfile()->getCollector('pimcore_http_cache');

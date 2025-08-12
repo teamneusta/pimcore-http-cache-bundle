@@ -9,35 +9,27 @@ use Pimcore\Model\DataObject\TestObject;
 
 final class TestObjectFactory
 {
-    public static function simpleObject(): TestDataObject
-    {
-        $object = new TestDataObject();
-        $object->setId(42);
-        $object->setKey('test_object');
-        $object->setContent('Test content');
-        $object->setPublished(true);
-        $object->setParentId(1);
-
-        return $object;
-    }
-
-    public static function testObject(int $id): TestObject
+    /**
+     * @param list<TestObject> $related
+     */
+    public static function simpleObject(int $id, string $key = 'test_object', array $related = []): TestObject
     {
         $object = new TestObject();
         $object->setId($id);
-        $object->setKey('test_object_1' . $id);
+        $object->setKey($key);
         $object->setContent('Test content');
+        $object->setRelated($related);
         $object->setPublished(true);
         $object->setParentId(1);
 
         return $object;
     }
 
-    public static function simpleVariant(): TestDataObject
+    public static function simpleVariant(int $id, string $key = 'simple_variant'): TestDataObject
     {
         $object = new TestDataObject();
-        $object->setId(17);
-        $object->setKey('test_variant');
+        $object->setId($id);
+        $object->setKey($key);
         $object->setContent('Test content');
         $object->setPublished(true);
         $object->setParentId(1);
@@ -46,11 +38,11 @@ final class TestObjectFactory
         return $object;
     }
 
-    public static function simpleFolder(): DataObject\Folder
+    public static function simpleFolder(int $id, string $key = 'simple_folder'): DataObject\Folder
     {
         $folder = new DataObject\Folder();
-        $folder->setId(23);
-        $folder->setKey('test_folder');
+        $folder->setId($id);
+        $folder->setKey($key);
         $folder->setParentId(1);
 
         return $folder;
