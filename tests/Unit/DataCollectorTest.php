@@ -47,7 +47,7 @@ final class DataCollectorTest extends TestCase
     /**
      * @test
      */
-    public function lateCollect_collect_tag_data(): void
+    public function lateCollect_collects_tag_data(): void
     {
         $this->collectTagsResponseTagger->tag(new CacheTags(
             CacheTag::fromString('tag', CacheTypeFactory::createFromString('custom')),
