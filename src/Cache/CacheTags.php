@@ -10,7 +10,7 @@ use Pimcore\Model\Element\ElementInterface;
 final class CacheTags implements \IteratorAggregate
 {
     /**
-     * @var list<CacheTag>
+     * @var array<string, CacheTag>
      */
     private readonly array $tags;
 
@@ -19,7 +19,12 @@ final class CacheTags implements \IteratorAggregate
      */
     public function __construct(CacheTag ...$tags)
     {
-        $this->tags = $tags;
+        $indexedTags = [];
+        foreach ($tags as $tag) {
+            $indexedTags[$tag->toString()] = $tag;
+        }
+
+        $this->tags = $indexedTags;
     }
 
     public static function fromString(string $tag, ?CacheType $type = null): self
@@ -53,12 +58,12 @@ final class CacheTags implements \IteratorAggregate
      */
     public function getIterator(): \ArrayIterator
     {
-        return new \ArrayIterator($this->tags);
+        return new \ArrayIterator(array_values($this->tags));
     }
 
     public function with(CacheTag|self ...$tags): self
     {
-        $newTags = $this->tags;
+        $newTags = array_values($this->tags);
         foreach ($tags as $tag) {
             if ($tag instanceof self) {
                 $newTags = [...$newTags, ...$tag->tags];
@@ -80,7 +85,10 @@ final class CacheTags implements \IteratorAggregate
      */
     public function toArray(): array
     {
-        $tags = array_map(static fn (CacheTag $tag): string => $tag->toString(), $this->tags);
+        $tags = array_map(
+            static fn (CacheTag $tag): string => $tag->toString(), array_values($this->tags),
+        );
+
         natsort($tags);
 
         return $tags;

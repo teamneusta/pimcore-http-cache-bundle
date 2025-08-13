@@ -12,14 +12,17 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\Element\ObjectCacheTagC
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\ElementCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\StaticCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
+use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\CacheTagCollectionResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\OnlyWhenActiveResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\RemoveDisabledTagsResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
+use Neusta\Pimcore\HttpCacheBundle\DataCollector;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
 use Neusta\Pimcore\HttpCacheBundle\Element\TagElementListener;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\abstract_arg;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 return static function (ContainerConfigurator $configurator) {
@@ -51,6 +54,10 @@ return static function (ContainerConfigurator $configurator) {
     $services->set(null, OnlyWhenActiveResponseTagger::class)
         ->decorate('neusta_pimcore_http_cache.response_tagger', null, -100)
         ->args([service('.inner'), service('neusta_pimcore_http_cache.cache_activator')]);
+
+    $services->set('.neusta_pimcore_http_cache.collect_tags_response_tagger', CacheTagCollectionResponseTagger::class)
+        ->decorate('neusta_pimcore_http_cache.response_tagger', null, 1)
+        ->args([service('.inner')]);
 
     $services->alias(ResponseTagger::class, 'neusta_pimcore_http_cache.response_tagger');
 
@@ -85,4 +92,13 @@ return static function (ContainerConfigurator $configurator) {
     $services->set('neusta_pimcore_http_cache.element.invalidate_listener', InvalidateElementListener::class)
         ->arg('$cacheInvalidator', service('neusta_pimcore_http_cache.cache_invalidator'))
         ->arg('$dispatcher', service('event_dispatcher'));
+
+    $services->set('neusta_pimcore_http_cache.data_collector', DataCollector::class)
+        ->arg('$cacheTagCollector', service('.neusta_pimcore_http_cache.collect_tags_response_tagger'))
+        ->arg('$configuration', param('neusta_pimcore_http_cache.config'))
+        ->tag('data_collector', [
+            'template' => '@NeustaPimcoreHttpCache/profiler.html.twig',
+            'id' => 'pimcore_http_cache',
+            'priority' => 255,
+        ]);
 };

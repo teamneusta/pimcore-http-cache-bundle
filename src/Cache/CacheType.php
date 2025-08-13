@@ -9,4 +9,6 @@ interface CacheType
     public function toString(): string;
 
     public function isEmpty(): bool;
+
+    public function identifier(): string;
 }

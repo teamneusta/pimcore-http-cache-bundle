@@ -20,4 +20,9 @@ final class EmptyCacheType implements CacheType
     {
         return true;
     }
+
+    public function identifier(): string
+    {
+        return 'empty';
+    }
 }

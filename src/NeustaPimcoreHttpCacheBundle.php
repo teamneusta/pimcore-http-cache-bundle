@@ -3,10 +3,12 @@
 namespace Neusta\Pimcore\HttpCacheBundle;
 
 use FOS\HttpCacheBundle\FOSHttpCacheBundle;
+use Neusta\Pimcore\HttpCacheBundle\DependencyInjection\CompilerPass\DisableDataCollectorPass;
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
 use Pimcore\Extension\Bundle\Traits\PackageVersionTrait;
 use Pimcore\HttpKernel\Bundle\DependentBundleInterface;
 use Pimcore\HttpKernel\BundleCollection\BundleCollection;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 final class NeustaPimcoreHttpCacheBundle extends AbstractPimcoreBundle implements DependentBundleInterface
 {
@@ -20,5 +22,11 @@ final class NeustaPimcoreHttpCacheBundle extends AbstractPimcoreBundle implement
     public static function registerDependentBundles(BundleCollection $collection): void
     {
         $collection->addBundle(FOSHttpCacheBundle::class);
+    }
+
+    public function build(ContainerBuilder $container): void
+    {
+        parent::build($container);
+        $container->addCompilerPass(new DisableDataCollectorPass());
     }
 }
