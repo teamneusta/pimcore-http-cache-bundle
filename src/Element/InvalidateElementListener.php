@@ -52,8 +52,7 @@ final class InvalidateElementListener
 
     private function invalidateDependencies(Dependency $dependency): void
     {
-        $requiredBy = $dependency->getRequiredBy();
-        foreach ($requiredBy as $required) {
+        foreach ($dependency->getRequiredBy() as $required) {
             if (!isset($required['id'], $required['type'])) {
                 continue;
             }

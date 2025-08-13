@@ -6,7 +6,7 @@
  *
  * Fields Summary:
  * - content [input]
- * - related [manyToManyObjectRelation]
+ * - related [manyToManyRelation]
  */
 
 return Pimcore\Model\DataObject\ClassDefinition::__set_state([
@@ -15,7 +15,7 @@ return Pimcore\Model\DataObject\ClassDefinition::__set_state([
     'name' => 'TestObject',
     'description' => '',
     'creationDate' => 0,
-    'modificationDate' => 1754659392,
+    'modificationDate' => 1755079708,
     'userOwner' => 58,
     'userModification' => 58,
     'parentClass' => '',
@@ -85,7 +85,7 @@ return Pimcore\Model\DataObject\ClassDefinition::__set_state([
                         'showCharCount' => false,
                         'defaultValueGenerator' => '',
                     ]),
-                    1 => Pimcore\Model\DataObject\ClassDefinition\Data\ManyToManyObjectRelation::__set_state([
+                    1 => Pimcore\Model\DataObject\ClassDefinition\Data\ManyToManyRelation::__set_state([
                         'name' => 'related',
                         'title' => 'Related',
                         'tooltip' => '',
@@ -96,7 +96,7 @@ return Pimcore\Model\DataObject\ClassDefinition::__set_state([
                         'style' => '',
                         'permissions' => null,
                         'datatype' => 'data',
-                        'fieldtype' => 'manyToManyObjectRelation',
+                        'fieldtype' => 'manyToManyRelation',
                         'relationType' => true,
                         'invisible' => false,
                         'visibleGridView' => false,
@@ -112,13 +112,21 @@ return Pimcore\Model\DataObject\ClassDefinition::__set_state([
                         'width' => '',
                         'height' => '',
                         'maxItems' => null,
-                        'visibleFields' => [
+                        'assetUploadPath' => '',
+                        'objectsAllowed' => true,
+                        'assetsAllowed' => true,
+                        'assetTypes' => [
+                            0 => [
+                                'assetTypes' => 'image',
+                            ],
                         ],
-                        'allowToCreateNewObject' => false,
-                        'optimizedAdminLoading' => false,
+                        'documentsAllowed' => true,
+                        'documentTypes' => [
+                            0 => [
+                                'documentTypes' => 'page',
+                            ],
+                        ],
                         'enableTextSelection' => false,
-                        'visibleFieldDefinitions' => [
-                        ],
                     ]),
                 ],
                 'locked' => false,

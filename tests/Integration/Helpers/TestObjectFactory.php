@@ -2,15 +2,16 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers;
 
+use Pimcore\Image;
 use Pimcore\Model\DataObject;
 use Pimcore\Model\DataObject\AbstractObject;
-use Pimcore\Model\DataObject\TestDataObject;
 use Pimcore\Model\DataObject\TestObject;
+use Pimcore\Model\Document\Page;
 
 final class TestObjectFactory
 {
     /**
-     * @param list<TestObject> $related
+     * @param list<TestObject|Page|Image> $related
      */
     public static function simpleObject(int $id, string $key = 'test_object', array $related = []): TestObject
     {
@@ -25,9 +26,9 @@ final class TestObjectFactory
         return $object;
     }
 
-    public static function simpleVariant(int $id, string $key = 'simple_variant'): TestDataObject
+    public static function simpleVariant(int $id, string $key = 'simple_variant'): TestObject
     {
-        $object = new TestDataObject();
+        $object = new TestObject();
         $object->setId($id);
         $object->setKey($key);
         $object->setContent('Test content');
