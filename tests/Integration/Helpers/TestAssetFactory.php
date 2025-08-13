@@ -6,11 +6,11 @@ use Pimcore\Model\Asset;
 
 final class TestAssetFactory
 {
-    public static function simpleAsset(): Asset
+    public static function simpleAsset(int $id, string $fileName = 'test-asset.txt'): Asset
     {
         $asset = new Asset();
-        $asset->setId(42);
-        $asset->setFilename('test-asset.txt');
+        $asset->setId($id);
+        $asset->setFilename($fileName);
         $asset->setParentId(1);
         $asset->setData('This is the content of the test asset.');
         $asset->setMimetype('text/plain');
@@ -18,22 +18,22 @@ final class TestAssetFactory
         return $asset;
     }
 
-    public static function simpleImage(): Asset\Image
+    public static function simpleImage(int $id, string $fileName = 'test-asset.jpg'): Asset\Image
     {
         $image = new Asset\Image();
-        $image->setId(17);
-        $image->setFilename('test-asset.jpg');
+        $image->setId($id);
+        $image->setFilename($fileName);
         $image->setParentId(1);
         $image->setMimetype('image/jpeg');
 
         return $image;
     }
 
-    public static function simpleFolder(): Asset\Folder
+    public static function simpleFolder(int $id, string $key = 'test-asset-folder'): Asset\Folder
     {
         $folder = new Asset\Folder();
-        $folder->setKey('test-asset-folder');
-        $folder->setId(23);
+        $folder->setId($id);
+        $folder->setKey($key);
         $folder->setParentId(1);
 
         return $folder;

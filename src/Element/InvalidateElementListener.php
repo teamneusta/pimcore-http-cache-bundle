@@ -4,6 +4,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Element;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Pimcore\Event\Model\ElementEventInterface;
+use Pimcore\Model\Dependency;
 use Pimcore\Model\Element\ElementInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -12,6 +13,7 @@ final class InvalidateElementListener
     public function __construct(
         private readonly CacheInvalidator $cacheInvalidator,
         private readonly EventDispatcherInterface $dispatcher,
+        private readonly ElementRepository $elementRepository,
     ) {
     }
 
@@ -21,12 +23,19 @@ final class InvalidateElementListener
             return;
         }
 
-        $this->invalidateElement($event->getElement());
+        $element = $event->getElement();
+
+        $this->invalidateElement($element);
+
+        $this->invalidateDependencies($element->getDependencies());
     }
 
     public function onDelete(ElementEventInterface $event): void
     {
-        $this->invalidateElement($event->getElement());
+        $element = $event->getElement();
+
+        $this->invalidateElement($element);
+        $this->invalidateDependencies($element->getDependencies());
     }
 
     private function invalidateElement(ElementInterface $element): void
@@ -39,5 +48,25 @@ final class InvalidateElementListener
         }
 
         $this->cacheInvalidator->invalidate($invalidationEvent->cacheTags());
+    }
+
+    private function invalidateDependencies(Dependency $dependency): void
+    {
+        foreach ($dependency->getRequiredBy() as $required) {
+            if (!isset($required['id'], $required['type'])) {
+                continue;
+            }
+
+            $element = match (ElementType::tryFrom($required['type'])) {
+                ElementType::Object => $this->elementRepository->findObject($required['id']),
+                ElementType::Document => $this->elementRepository->findDocument($required['id']),
+                ElementType::Asset => $this->elementRepository->findAsset($required['id']),
+                default => null,
+            };
+
+            if ($element) {
+                $this->invalidateElement($element);
+            }
+        }
     }
 }

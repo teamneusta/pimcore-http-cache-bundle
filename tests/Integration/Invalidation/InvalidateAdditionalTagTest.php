@@ -53,7 +53,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function invalidate_additional_tag_on_object_update(): void
     {
-        $object = self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+        $object = self::arrange(fn () => TestObjectFactory::simpleObject(42)->save());
 
         $object->setContent('Updated test content')->save();
 
@@ -73,7 +73,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function does_not_invalidate_additional_tag_on_object_update_when_cache_type_is_disabled(): void
     {
-        $object = self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+        $object = self::arrange(fn () => TestObjectFactory::simpleObject(42)->save());
 
         $object->setKey('updated_test_object')->save();
 
@@ -93,11 +93,11 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function invalidate_additional_tag_on_document_update(): void
     {
-        $document = self::arrange(fn () => TestDocumentFactory::simplePage()->save());
+        $document = self::arrange(fn () => TestDocumentFactory::simplePage(5)->save());
 
         $document->setKey('updated_test_document_page')->save();
 
-        $this->cacheManager->invalidateTags(['d42', 'foo-bar'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['d5', 'foo-bar'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -113,11 +113,11 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function does_not_invalidate_additional_tag_on_document_update_when_cache_type_is_disabled(): void
     {
-        $document = self::arrange(fn () => TestDocumentFactory::simplePage()->save());
+        $document = self::arrange(fn () => TestDocumentFactory::simplePage(5)->save());
 
         $document->setKey('updated_test_document_page')->save();
 
-        $this->cacheManager->invalidateTags(['d42', 'foo-bar'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(['d5', 'foo-bar'])->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -133,11 +133,11 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function invalidate_additional_tag_on_asset_update(): void
     {
-        $asset = self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
+        $asset = self::arrange(fn () => TestAssetFactory::simpleAsset(5)->save());
 
         $asset->setData('Updated test content')->save();
 
-        $this->cacheManager->invalidateTags(['a42', 'foo-bar'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['a5', 'foo-bar'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -153,11 +153,11 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function does_not_invalidate_additional_tag_on_asset_update_when_cache_type_is_disabled(): void
     {
-        $asset = self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
+        $asset = self::arrange(fn () => TestAssetFactory::simpleAsset(5)->save());
 
         $asset->setData('Updated test content')->save();
 
-        $this->cacheManager->invalidateTags(['a42', 'foo-bar'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(['a5', 'foo-bar'])->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -173,7 +173,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function invalidate_additional_tag_on_object_deletion(): void
     {
-        $object = self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+        $object = self::arrange(fn () => TestObjectFactory::simpleObject(42)->save());
 
         $object->delete();
 
@@ -193,7 +193,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function does_not_invalidate_additional_tag_on_object_deletion_when_cache_type_is_disabled(): void
     {
-        $object = self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+        $object = self::arrange(fn () => TestObjectFactory::simpleObject(42)->save());
 
         $object->delete();
 
@@ -213,11 +213,11 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function invalidate_additional_tag_on_asset_deletion(): void
     {
-        $asset = self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
+        $asset = self::arrange(fn () => TestAssetFactory::simpleAsset(5)->save());
 
         $asset->delete();
 
-        $this->cacheManager->invalidateTags(['a42', 'foo-bar'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['a5', 'foo-bar'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -233,11 +233,11 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function does_not_invalidate_additional_tag_on_asset_deletion_when_cache_type_is_disabled(): void
     {
-        $asset = self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
+        $asset = self::arrange(fn () => TestAssetFactory::simpleAsset(5)->save());
 
         $asset->delete();
 
-        $this->cacheManager->invalidateTags(['a42', 'foo-bar'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(['a5', 'foo-bar'])->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -253,11 +253,11 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function invalidate_additional_tag_on_document_deletion(): void
     {
-        $document = self::arrange(fn () => TestDocumentFactory::simplePage()->save());
+        $document = self::arrange(fn () => TestDocumentFactory::simplePage(5)->save());
 
         $document->delete();
 
-        $this->cacheManager->invalidateTags(['d42', 'foo-bar'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['d5', 'foo-bar'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -273,10 +273,10 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function does_not_invalidate_additional_tag_on_document_deletion_when_cache_type_was_disabled(): void
     {
-        $document = self::arrange(fn () => TestDocumentFactory::simplePage()->save());
+        $document = self::arrange(fn () => TestDocumentFactory::simplePage(5)->save());
 
         $document->delete();
 
-        $this->cacheManager->invalidateTags(['d42', 'foo-bar'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(['d5', 'foo-bar'])->shouldNotHaveBeenCalled();
     }
 }
