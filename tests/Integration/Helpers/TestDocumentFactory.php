@@ -2,6 +2,8 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers;
 
+use Pimcore\Model\DataObject\TestObject;
+use Pimcore\Model\Document\Editable\Relation;
 use Pimcore\Model\Document\Email;
 use Pimcore\Model\Document\Folder;
 use Pimcore\Model\Document\Hardlink;
@@ -10,13 +12,25 @@ use Pimcore\Model\Document\Snippet;
 
 final class TestDocumentFactory
 {
-    public static function simplePage(int $id, string $key = 'test_document_page'): Page
+    public static function simplePage(int $id, string $key = 'test_document_page', ?TestObject $relatedObject = null): Page
     {
         $page = new Page();
         $page->setId($id);
         $page->setKey($key);
         $page->setPublished(true);
         $page->setParentId(1);
+
+        if (null !== $relatedObject) {
+            $objectRelation = new Relation();
+            $objectRelation->setName('relatedObject');
+            $objectRelation->setDataFromResource([
+                'id' => $relatedObject->getId(),
+                'type' => 'object',
+                'subtype' => 'object',
+            ]);
+
+            $page->setEditable($objectRelation);
+        }
 
         return $page;
     }
