@@ -27,7 +27,9 @@ final class InvalidateElementListener
 
         $this->invalidateElement($element);
 
-        $this->invalidateDependencies($element->getDependencies());
+        if (ElementType::Object === ElementType::tryFrom($element->getType())) {
+            $this->invalidateDependencies($element->getDependencies());
+        }
     }
 
     public function onDelete(ElementEventInterface $event): void
@@ -35,7 +37,10 @@ final class InvalidateElementListener
         $element = $event->getElement();
 
         $this->invalidateElement($element);
-        $this->invalidateDependencies($element->getDependencies());
+
+        if (ElementType::Object === ElementType::tryFrom($element->getType())) {
+            $this->invalidateDependencies($element->getDependencies());
+        }
     }
 
     private function invalidateElement(ElementInterface $element): void

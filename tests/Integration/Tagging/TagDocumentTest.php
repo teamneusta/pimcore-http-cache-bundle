@@ -83,7 +83,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
         $this->client->request('GET', '/get-document?id=29');
 
         $response = $this->client->getResponse();
-        self::assertSame('Document with key: test_document_link', $response->getContent());
+        self::assertSame('Document with key: test_document_email', $response->getContent());
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));

@@ -142,7 +142,7 @@ final class TagObjectTest extends ConfigurableWebTestcase
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertSame('o17', $response->headers->get('X-Cache-Tags'));
+        self::assertSame('o12', $response->headers->get('X-Cache-Tags'));
     }
 
     /**
@@ -152,7 +152,7 @@ final class TagObjectTest extends ConfigurableWebTestcase
         'elements' => [
             'objects' => [
                 'classes' => [
-                    'TestDataObject' => false,
+                    'TestObject' => false,
                 ],
                 'enabled' => true,
             ],
@@ -179,7 +179,7 @@ final class TagObjectTest extends ConfigurableWebTestcase
         'elements' => [
             'objects' => [
                 'classes' => [
-                    'TestDataObject' => true,
+                    'TestObject' => true,
                 ],
                 'enabled' => true,
             ],

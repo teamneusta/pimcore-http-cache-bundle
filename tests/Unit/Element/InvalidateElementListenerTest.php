@@ -7,6 +7,7 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementInvalidationEvent;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
+use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Event\Model\AssetEvent;
@@ -115,9 +116,10 @@ final class InvalidateElementListenerTest extends TestCase
     /**
      * @test
      */
-    public function onUpdate_should_invalidate_dependent_elements(): void
+    public function onUpdate_should_invalidate_dependencies(): void
     {
-        $element = $this->prophesize(DataObject\TestDataObject::class);
+        $element = $this->prophesize(DataObject\TestObject::class);
+        $element->getType()->willReturn(ElementType::Object->value);
         $dependency = $this->prophesize(Dependency::class);
         $dependentElement = $this->prophesize(DataObject::class);
         $event = new DataObjectEvent($element->reveal());
@@ -132,6 +134,41 @@ final class InvalidateElementListenerTest extends TestCase
 
         $this->cacheInvalidator->invalidate(Argument::which('toString', CacheTag::fromElement($dependentElement->reveal())->toString()))
             ->shouldHaveBeenCalledOnce();
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider notObjectElementProvider
+     */
+    public function onUpdate_should_not_invalidate_dependencies_when_element_is_not_an_object(
+        ElementEventInterface $event,
+    ): void {
+        $this->invalidateElementListener->onUpdate($event);
+
+        $this->cacheInvalidator->invalidate(Argument::any())
+            ->shouldHaveBeenCalledOnce();
+        $this->elementRepository->findObject(Argument::any())
+            ->shouldNotHaveBeenCalled();
+    }
+
+    public function notObjectElementProvider(): iterable
+    {
+        $asset = $this->prophesize(Asset::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $asset->getId()->willReturn(42);
+        $asset->getType()->willReturn(ElementType::Asset->value);
+        $asset->getDependencies()->willReturn($dependency->reveal());
+        $dependency->getRequiredBy()->willReturn(['id' => 23, 'type' => 'object']);
+        yield 'Asset' => ['event' => new AssetEvent($asset->reveal())];
+
+        $document = $this->prophesize(Document::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $document->getId()->willReturn(42);
+        $document->getType()->willReturn(ElementType::Document->value);
+        $document->getDependencies()->willReturn($dependency->reveal());
+        $dependency->getRequiredBy()->willReturn(['id' => 23, 'type' => 'object']);
+        yield 'Document' => ['event' => new DocumentEvent($document->reveal())];
     }
 
     /**
@@ -211,7 +248,8 @@ final class InvalidateElementListenerTest extends TestCase
      */
     public function onDelete_should_invalidate_dependent_elements(): void
     {
-        $element = $this->prophesize(DataObject\TestDataObject::class);
+        $element = $this->prophesize(DataObject\TestObject::class);
+        $element->getType()->willReturn(ElementType::Object->value);
         $dependency = $this->prophesize(Dependency::class);
         $dependentElement = $this->prophesize(DataObject::class);
         $event = new DataObjectEvent($element->reveal());
@@ -279,17 +317,20 @@ final class InvalidateElementListenerTest extends TestCase
         $asset = $this->prophesize(Asset::class);
         $asset->getId()->willReturn(42);
         $asset->getDependencies()->willReturn($dependency->reveal());
+        $asset->getType()->willReturn(ElementType::Asset->value);
         yield 'Asset' => ['event' => new AssetEvent($asset->reveal())];
 
         $document = $this->prophesize(Document::class);
         $document->getId()->willReturn(42);
         $document->getDependencies()->willReturn($dependency->reveal());
+        $document->getType()->willReturn(ElementType::Document->value);
         yield 'Document' => ['event' => new DocumentEvent($document->reveal())];
 
         $dataObject = $this->prophesize(DataObject::class);
         $dataObject->getId()->willReturn(42);
         $dataObject->getDependencies()->willReturn($dependency->reveal());
         $dependency->getRequiredBy()->willReturn([]);
+        $dataObject->getType()->willReturn(ElementType::Object->value);
         yield 'Object' => ['event' => new DataObjectEvent($dataObject->reveal())];
     }
 }
