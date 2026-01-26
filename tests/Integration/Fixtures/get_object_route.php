@@ -3,7 +3,7 @@
 use App\Controller\GetObjectController;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
-return function (RoutingConfigurator $routes) {
+return static function (RoutingConfigurator $routes) {
     $routes->add('get_object', '/get-object')
         ->controller(GetObjectController::class);
 };

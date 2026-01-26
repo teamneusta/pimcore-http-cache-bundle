@@ -36,10 +36,10 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
         $this->cacheManager->invalidateTags(Argument::any())->willReturn($this->cacheManager->reveal());
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
 
-        $this->document = self::arrange(fn () => TestDocumentFactory::simplePage()->save());
-        $this->hardlink = self::arrange(fn () => TestDocumentFactory::simpleHardLink()->save());
-        $this->email = self::arrange(fn () => TestDocumentFactory::simpleEmail()->save());
-        $this->folder = self::arrange(fn () => TestDocumentFactory::simpleFolder()->save());
+        $this->document = self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
+        $this->hardlink = self::arrange(static fn () => TestDocumentFactory::simpleHardLink()->save());
+        $this->email = self::arrange(static fn () => TestDocumentFactory::simpleEmail()->save());
+        $this->folder = self::arrange(static fn () => TestDocumentFactory::simpleFolder()->save());
     }
 
     /**

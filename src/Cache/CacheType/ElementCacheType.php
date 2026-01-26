@@ -18,7 +18,7 @@ final class ElementCacheType implements CacheType
     public static function isReserved(string $value): bool
     {
         static $prefixes;
-        $prefixes ??= array_map(fn (string $value) => $value[0], array_column(ElementType::cases(), 'value'));
+        $prefixes ??= array_map(static fn (string $value) => $value[0], array_column(ElementType::cases(), 'value'));
 
         return \in_array($value, $prefixes, true);
     }

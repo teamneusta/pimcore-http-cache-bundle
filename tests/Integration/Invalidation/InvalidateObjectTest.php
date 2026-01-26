@@ -35,9 +35,9 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
         $this->cacheManager->invalidateTags(Argument::any())->willReturn($this->cacheManager->reveal());
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
 
-        $this->object = self::arrange(fn () => TestObjectFactory::simpleObject()->save());
-        $this->folder = self::arrange(fn () => TestObjectFactory::simpleFolder()->save());
-        $this->variant = self::arrange(fn () => TestObjectFactory::simpleVariant()->save());
+        $this->object = self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
+        $this->folder = self::arrange(static fn () => TestObjectFactory::simpleFolder()->save());
+        $this->variant = self::arrange(static fn () => TestObjectFactory::simpleVariant()->save());
     }
 
     /**
