@@ -59,6 +59,10 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
 
+      - name: Allow insecure packages for lowest dependencies (there's no secure Pimcore 10 version available)
+        run: composer config audit.block-insecure false
+        if: matrix.dependencies == 'lowest'
+
       - name: Install dependencies
         uses: ramsey/composer-install@v3
         with:
