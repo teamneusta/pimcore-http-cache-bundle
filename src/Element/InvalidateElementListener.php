@@ -21,17 +21,17 @@ final class InvalidateElementListener
             return;
         }
 
-        $this->invalidateElement($event->getElement());
+        $this->invalidateElement($event->getElement(), EventType::Update);
     }
 
     public function onDelete(ElementEventInterface $event): void
     {
-        $this->invalidateElement($event->getElement());
+        $this->invalidateElement($event->getElement(), EventType::Delete);
     }
 
-    private function invalidateElement(ElementInterface $element): void
+    private function invalidateElement(ElementInterface $element, EventType $type): void
     {
-        $invalidationEvent = $this->dispatcher->dispatch(ElementInvalidationEvent::fromElement($element));
+        $invalidationEvent = $this->dispatcher->dispatch(ElementInvalidationEvent::fromElement($element, $type));
         \assert($invalidationEvent instanceof ElementInvalidationEvent);
 
         if ($invalidationEvent->cancel) {
