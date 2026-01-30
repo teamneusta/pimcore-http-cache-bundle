@@ -12,7 +12,7 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\Element\ObjectCacheTagC
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\ElementCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\StaticCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
-use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\CacheTagCollectionResponseTagger;
+use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\TraceableResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\OnlyWhenActiveResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\RemoveDisabledTagsResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
@@ -55,9 +55,10 @@ return static function (ContainerConfigurator $configurator) {
         ->decorate('neusta_pimcore_http_cache.response_tagger', null, -100)
         ->args([service('.inner'), service('neusta_pimcore_http_cache.cache_activator')]);
 
-    $services->set('.neusta_pimcore_http_cache.collect_tags_response_tagger', CacheTagCollectionResponseTagger::class)
-        ->decorate('neusta_pimcore_http_cache.response_tagger', null, 1)
-        ->args([service('.inner')]);
+    $services->set('.neusta_pimcore_http_cache.response_tagger.traceable', TraceableResponseTagger::class)
+        ->decorate('neusta_pimcore_http_cache.response_tagger', null, 100)
+        ->args([service('.inner')])
+        ->tag('kernel.reset', ['method' => 'reset']);
 
     $services->alias(ResponseTagger::class, 'neusta_pimcore_http_cache.response_tagger');
 
@@ -94,7 +95,7 @@ return static function (ContainerConfigurator $configurator) {
         ->arg('$dispatcher', service('event_dispatcher'));
 
     $services->set('neusta_pimcore_http_cache.data_collector', DataCollector::class)
-        ->arg('$cacheTagCollector', service('.neusta_pimcore_http_cache.collect_tags_response_tagger'))
+        ->arg('$cacheTagCollector', service('.neusta_pimcore_http_cache.response_tagger.traceable'))
         ->arg('$configuration', param('neusta_pimcore_http_cache.config'))
         ->tag('data_collector', [
             'template' => '@NeustaPimcoreHttpCache/profiler.html.twig',

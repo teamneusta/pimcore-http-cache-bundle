@@ -6,7 +6,7 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTypeFactory;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
-use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\CacheTagCollectionResponseTagger;
+use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\TraceableResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\DataCollector;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
@@ -17,16 +17,16 @@ final class DataCollectorTest extends TestCase
 {
     use ProphecyTrait;
 
-    private CacheTagCollectionResponseTagger $collectTagsResponseTagger;
+    private TraceableResponseTagger $traceableResponseTagger;
 
     private DataCollector $cacheDataCollector;
 
     protected function setUp(): void
     {
         $tagger = $this->prophesize(ResponseTagger::class);
-        $this->collectTagsResponseTagger = new CacheTagCollectionResponseTagger($tagger->reveal());
+        $this->traceableResponseTagger = new TraceableResponseTagger($tagger->reveal());
         $this->cacheDataCollector = new DataCollector(
-            $this->collectTagsResponseTagger,
+            $this->traceableResponseTagger,
             ['elements' => ['objects' => false, 'assets' => false, 'documents' => true]],
         );
     }
@@ -49,7 +49,7 @@ final class DataCollectorTest extends TestCase
      */
     public function lateCollect_collects_tag_data(): void
     {
-        $this->collectTagsResponseTagger->tag(new CacheTags(
+        $this->traceableResponseTagger->tag(new CacheTags(
             CacheTag::fromString('tag', CacheTypeFactory::createFromString('custom')),
         ));
 
@@ -66,7 +66,7 @@ final class DataCollectorTest extends TestCase
      */
     public function reset_clears_collected_tags(): void
     {
-        $this->collectTagsResponseTagger->tag(new CacheTags(
+        $this->traceableResponseTagger->tag(new CacheTags(
             CacheTag::fromString('tag', CacheTypeFactory::createFromString('custom')),
         ));
 
