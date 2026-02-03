@@ -95,7 +95,7 @@ return static function (ContainerConfigurator $configurator) {
         ->arg('$dispatcher', service('event_dispatcher'));
 
     $services->set('neusta_pimcore_http_cache.data_collector', DataCollector::class)
-        ->arg('$cacheTagCollector', service('.neusta_pimcore_http_cache.response_tagger.traceable'))
+        ->arg('$traceableResponseTagger', service('.neusta_pimcore_http_cache.response_tagger.traceable'))
         ->arg('$configuration', param('neusta_pimcore_http_cache.config'))
         ->tag('data_collector', [
             'template' => '@NeustaPimcoreHttpCache/profiler.html.twig',
