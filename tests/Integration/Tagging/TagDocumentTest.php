@@ -34,7 +34,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_expected_tags_when_page_is_loaded(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simplePage()->save());
+        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
 
         $this->client->request('GET', '/test_document_page');
 
@@ -56,7 +56,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_expected_tags_when_snippet_is_loaded(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simpleSnippet()->save());
+        self::arrange(static fn () => TestDocumentFactory::simpleSnippet()->save());
 
         $this->client->request('GET', '/get-document?id=23');
 
@@ -78,7 +78,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_document_type_is_email(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simpleEmail()->save());
+        self::arrange(static fn () => TestDocumentFactory::simpleEmail()->save());
 
         $this->client->request('GET', '/get-document?id=17');
 
@@ -100,7 +100,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_document_type_is_hard_link(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simpleHardLink()->save());
+        self::arrange(static fn () => TestDocumentFactory::simpleHardLink()->save());
 
         $this->client->request('GET', '/get-document?id=33');
 
@@ -122,7 +122,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_document_type_is_folder(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simpleFolder()->save());
+        self::arrange(static fn () => TestDocumentFactory::simpleFolder()->save());
 
         $this->client->request('GET', '/get-document?id=97');
 
@@ -144,7 +144,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_documents_is_not_enabled(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simplePage()->save());
+        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
 
         $this->client->request('GET', '/test_document_page');
 
@@ -166,7 +166,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_caching_is_deactivated(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simplePage()->save());
+        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
         self::getContainer()->get(CacheActivator::class)->deactivateCaching();
 
         $this->client->request('GET', '/test_document_page');
@@ -189,7 +189,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_root_document_tag_when_loaded(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simplePage()->save());
+        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
 
         $this->client->request('GET', '/test_document_page');
 
@@ -215,7 +215,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_type_is_disabled(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simplePage()->save());
+        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
 
         $this->client->request('GET', '/test_document_page');
 

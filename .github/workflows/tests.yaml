@@ -46,6 +46,9 @@ jobs:
           - php-version: "8.2"
             dependencies: "highest" # Pimcore 11.*
             tests: --fail-on-risky
+          - php-version: "8.3"
+            dependencies: "highest" # Pimcore 11.*
+            tests: --fail-on-risky
 
     steps:
       - name: Git Checkout
@@ -55,6 +58,10 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
+
+      - name: Allow insecure packages for lowest dependencies (there's no secure Pimcore 10 version available)
+        run: composer config audit.block-insecure false
+        if: matrix.dependencies == 'lowest'
 
       - name: Install dependencies
         uses: ramsey/composer-install@v3

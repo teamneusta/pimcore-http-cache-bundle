@@ -34,7 +34,7 @@ final class TagAssetTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_expected_tags_when_asset_is_loaded(): void
     {
-        self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
+        self::arrange(static fn () => TestAssetFactory::simpleAsset()->save());
 
         $this->client->request('GET', '/get-asset?id=42');
 
@@ -56,7 +56,7 @@ final class TagAssetTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_assets_is_not_enabled(): void
     {
-        self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
+        self::arrange(static fn () => TestAssetFactory::simpleAsset()->save());
 
         $this->client->request('GET', '/get-asset?id=42');
 
@@ -78,7 +78,7 @@ final class TagAssetTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_caching_is_deactivated(): void
     {
-        self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
+        self::arrange(static fn () => TestAssetFactory::simpleAsset()->save());
         self::getContainer()->get(CacheActivator::class)->deactivateCaching();
 
         $this->client->request('GET', '/get-asset?id=42');
@@ -101,7 +101,7 @@ final class TagAssetTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_asset_is_of_type_folder(): void
     {
-        self::arrange(fn () => TestAssetFactory::simpleFolder()->save());
+        self::arrange(static fn () => TestAssetFactory::simpleFolder()->save());
 
         $this->client->request('GET', '/get-asset?id=23');
 
@@ -128,7 +128,7 @@ final class TagAssetTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_for_specified_asset_type(): void
     {
-        self::arrange(fn () => TestAssetFactory::simpleImage()->save());
+        self::arrange(static fn () => TestAssetFactory::simpleImage()->save());
 
         $this->client->request('GET', '/get-asset?id=17');
 

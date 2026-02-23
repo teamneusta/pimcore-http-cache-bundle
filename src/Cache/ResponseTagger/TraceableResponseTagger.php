@@ -7,24 +7,24 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
 use Symfony\Contracts\Service\ResetInterface;
 
-final class CacheTagCollectionResponseTagger implements ResponseTagger, ResetInterface
+final class TraceableResponseTagger implements ResponseTagger, ResetInterface
 {
-    public CacheTags $collectedTags;
+    public CacheTags $recordedTags;
 
     public function __construct(
         private readonly ResponseTagger $inner,
     ) {
-        $this->collectedTags = new CacheTags();
+        $this->recordedTags = new CacheTags();
     }
 
     public function tag(CacheTags $tags): void
     {
-        $this->collectedTags = $this->collectedTags->with($tags);
+        $this->recordedTags = $this->recordedTags->with($tags);
         $this->inner->tag($tags);
     }
 
     public function reset(): void
     {
-        $this->collectedTags = new CacheTags();
+        $this->recordedTags = new CacheTags();
     }
 }

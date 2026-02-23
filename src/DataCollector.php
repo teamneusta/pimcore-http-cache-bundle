@@ -2,7 +2,7 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle;
 
-use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\CacheTagCollectionResponseTagger;
+use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\TraceableResponseTagger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector as BaseDataCollector;
@@ -14,7 +14,7 @@ final class DataCollector extends BaseDataCollector implements LateDataCollector
      * @param array<string, mixed> $configuration
      */
     public function __construct(
-        private readonly CacheTagCollectionResponseTagger $cacheTagCollector,
+        private readonly TraceableResponseTagger $traceableResponseTagger,
         array $configuration = [],
     ) {
         $this->data['configuration'] = $configuration;
@@ -27,7 +27,7 @@ final class DataCollector extends BaseDataCollector implements LateDataCollector
 
     public function lateCollect(): void
     {
-        foreach ($this->cacheTagCollector->collectedTags as $tag) {
+        foreach ($this->traceableResponseTagger->recordedTags as $tag) {
             $this->data['tags'][] = [
                 'tag' => $tag->toString(), 'type' => $tag->type->identifier(),
             ];

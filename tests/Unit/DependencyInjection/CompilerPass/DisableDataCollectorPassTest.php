@@ -29,7 +29,7 @@ final class DisableDataCollectorPassTest extends TestCase
 
         $this->disableCacheTagCollectionPass->process($container->reveal());
 
-        $container->removeDefinition('.neusta_pimcore_http_cache.collect_tags_response_tagger')
+        $container->removeDefinition('.neusta_pimcore_http_cache.response_tagger.traceable')
         ->shouldHaveBeenCalledOnce();
         $container->removeDefinition('neusta_pimcore_http_cache.data_collector')
         ->shouldHaveBeenCalledOnce();
@@ -45,7 +45,7 @@ final class DisableDataCollectorPassTest extends TestCase
         $container->hasDefinition('profiler')->willReturn(true);
         $this->disableCacheTagCollectionPass->process($container->reveal());
 
-        $container->removeDefinition('.neusta_pimcore_http_cache.collect_tags_response_tagger')
+        $container->removeDefinition('.neusta_pimcore_http_cache.response_tagger.traceable')
         ->shouldNotHaveBeenCalled();
         $container->removeDefinition('neusta_pimcore_http_cache.data_collector')
         ->shouldNotHaveBeenCalled();
