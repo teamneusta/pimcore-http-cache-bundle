@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**teamneusta/pimcore-http-cache-bundle** — A Symfony/Pimcore bundle that adds active HTTP cache invalidation via cache tags. It extends FOSHttpCacheBundle for Pimcore, automatically tagging responses and invalidating caches when Pimcore elements (documents, assets, data objects) change.
+**teamneusta/pimcore-http-cache-bundle** — A Symfony/Pimcore bundle that adds automatic HTTP cache invalidation via cache tags. It extends FOSHttpCacheBundle for Pimcore, automatically tagging responses when elements are loaded and invalidating caches when elements (documents, assets, data objects) are saved or deleted. Works with reverse proxies like Varnish and Fastly.
 
 ## Quick Reference
 
@@ -34,7 +34,7 @@ src/                              # Main source (Neusta\Pimcore\HttpCacheBundle\
 │   ├── CacheType/                # Cache type strategy implementations
 │   └── ResponseTagger/           # Response tagging decorator chain
 ├── DependencyInjection/          # Symfony DI extension + compiler passes
-├── Element/                      # Pimcore element handling
+├── Element/                      # Pimcore element handling, events, listeners
 ├── Exception/                    # Custom exceptions
 └── NeustaPimcoreHttpCacheBundle.php
 tests/
@@ -44,30 +44,49 @@ tests/
 config/services.php               # Symfony DI service definitions
 ```
 
+## How the Bundle Works
+
+**Tagging**: When a Pimcore element is loaded during a request, the response is automatically tagged (`a{id}` for assets, `d{id}` for documents, `o{id}` for objects). Tags end up in the `X-Cache-Tags` header.
+
+**Invalidation**: When an element is saved or deleted, the corresponding cache tags are invalidated via the reverse proxy. Skipped for `saveVersionOnly` and `autoSave`.
+
+**Events**: `ElementTaggingEvent` and `ElementInvalidationEvent` let users add extra tags or cancel operations.
+
+**Public API** (autowired services): `CacheActivator`, `CacheInvalidator`, `ResponseTagger`
+**Value objects**: `CacheTags`, `CacheTag`, `CacheTypeFactory`
+
+See `.claude/rules/bundle-usage.md` for detailed usage guide with examples.
+
 ## Coding Conventions
 
-- **PHP**: 8.1 / 8.2; every file starts with `declare(strict_types=1);`
+- **PHP**: 8.1 / 8.2; every file starts with `<?php declare(strict_types=1);`
 - **Style**: Symfony coding standards via PHP CS Fixer (`@Symfony`, `@Symfony:risky`)
 - **Static analysis**: PHPStan level 8
-- **Indentation**: 4 spaces for PHP; 2 spaces for JSON/YAML; tabs for .neon
-- **Line endings**: LF
+- **Classes**: `final` by default, constructor property promotion with `readonly`
+- **Interfaces**: clean names, no `Interface` suffix
 - **Namespace**: `Neusta\Pimcore\HttpCacheBundle\` (PSR-4 → `src/`)
 - **Tests namespace**: `Neusta\Pimcore\HttpCacheBundle\Tests\` (PSR-4 → `tests/`)
+
+See `.claude/rules/code-style.md` for full conventions with examples.
 
 ## Architecture & Patterns
 
 - **Decorator pattern**: Services are heavily decorated (e.g., `ResponseTagger` chain: base → `RemoveDisabledTagsResponseTagger` → `OnlyWhenActiveResponseTagger` → `CacheTagCollectionResponseTagger`)
-- **Immutable value objects**: `CacheTags` (collection) and `CacheTag` use `with()` methods / readonly properties
-- **Event-driven**: Listens to Pimcore element lifecycle events; dispatches `ElementTaggingEvent` and `ElementInvalidationEvent`
+- **Immutable value objects**: `CacheTags` and `CacheTag` — use `with()` / static factories, never mutate
+- **Event-driven**: Listens to Pimcore lifecycle events; dispatches custom events for extensibility
 - **Single-method interfaces**: `CacheInvalidator::invalidate(CacheTags)` and `ResponseTagger::tag(CacheTags)`
-- **Cache tag format**: Assets `a{id}`, Documents `d{id}`, Objects `o{id}`
+- **Named exception factories**: `InvalidArgumentException::becauseCacheTagIsEmpty()`
+
+See `.claude/rules/architecture.md` for details.
 
 ## Testing
 
 - **PHPUnit 9.6** with Prophecy for mocking and `dg/bypass-finals` for final classes
-- Integration tests use `teamneusta/pimcore-testing-framework` with a MariaDB service
-- Test attributes: `#[ConfigureExtension]`, `#[ConfigureRoute]`
+- `@test` annotation with **snake_case** method names describing behavior
+- Integration tests use `teamneusta/pimcore-testing-framework` with MariaDB
 - CI matrix: PHP 8.1 (lowest + highest deps), PHP 8.2 (highest deps)
+
+See `.claude/rules/testing.md` for full conventions with examples.
 
 ## Key Dependencies
 
@@ -80,3 +99,5 @@ config/services.php               # Symfony DI service definitions
 GitHub Actions runs two workflows:
 - **tests.yaml**: PHPUnit across PHP version matrix with MariaDB
 - **qa.yaml**: composer validate, PHP CS Fixer check, PHPStan
+
+See `.claude/rules/static-analysis.md` for PHPStan rules.
