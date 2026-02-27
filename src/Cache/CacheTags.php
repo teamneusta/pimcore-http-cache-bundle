@@ -37,7 +37,7 @@ final class CacheTags implements \IteratorAggregate
      */
     public static function fromStrings(array $tags, ?CacheType $type = null): self
     {
-        return new self(...array_map(fn ($tag) => CacheTag::fromString($tag, $type), $tags));
+        return new self(...array_map(static fn ($tag) => CacheTag::fromString($tag, $type), $tags));
     }
 
     public static function fromElement(ElementInterface $element): self

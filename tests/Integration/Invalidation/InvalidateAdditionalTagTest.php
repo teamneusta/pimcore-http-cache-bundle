@@ -34,7 +34,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementInvalidationEvent::class,
-            fn (ElementInvalidationEvent $event) => $event->addTag(
+            static fn (ElementInvalidationEvent $event) => $event->addTag(
                 CacheTag::fromString('bar', new CustomCacheType('foo')),
             ),
         );
@@ -53,7 +53,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function invalidate_additional_tag_on_object_update(): void
     {
-        $object = self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+        $object = self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
 
         $object->setContent('Updated test content')->save();
 
@@ -73,7 +73,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function does_not_invalidate_additional_tag_on_object_update_when_cache_type_is_disabled(): void
     {
-        $object = self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+        $object = self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
 
         $object->setKey('updated_test_object')->save();
 
@@ -93,7 +93,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function invalidate_additional_tag_on_document_update(): void
     {
-        $document = self::arrange(fn () => TestDocumentFactory::simplePage()->save());
+        $document = self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
 
         $document->setKey('updated_test_document_page')->save();
 
@@ -113,7 +113,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function does_not_invalidate_additional_tag_on_document_update_when_cache_type_is_disabled(): void
     {
-        $document = self::arrange(fn () => TestDocumentFactory::simplePage()->save());
+        $document = self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
 
         $document->setKey('updated_test_document_page')->save();
 
@@ -133,7 +133,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function invalidate_additional_tag_on_asset_update(): void
     {
-        $asset = self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
+        $asset = self::arrange(static fn () => TestAssetFactory::simpleAsset()->save());
 
         $asset->setData('Updated test content')->save();
 
@@ -153,7 +153,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function does_not_invalidate_additional_tag_on_asset_update_when_cache_type_is_disabled(): void
     {
-        $asset = self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
+        $asset = self::arrange(static fn () => TestAssetFactory::simpleAsset()->save());
 
         $asset->setData('Updated test content')->save();
 
@@ -173,7 +173,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function invalidate_additional_tag_on_object_deletion(): void
     {
-        $object = self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+        $object = self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
 
         $object->delete();
 
@@ -193,7 +193,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function does_not_invalidate_additional_tag_on_object_deletion_when_cache_type_is_disabled(): void
     {
-        $object = self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+        $object = self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
 
         $object->delete();
 
@@ -213,7 +213,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function invalidate_additional_tag_on_asset_deletion(): void
     {
-        $asset = self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
+        $asset = self::arrange(static fn () => TestAssetFactory::simpleAsset()->save());
 
         $asset->delete();
 
@@ -233,7 +233,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function does_not_invalidate_additional_tag_on_asset_deletion_when_cache_type_is_disabled(): void
     {
-        $asset = self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
+        $asset = self::arrange(static fn () => TestAssetFactory::simpleAsset()->save());
 
         $asset->delete();
 
@@ -253,7 +253,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function invalidate_additional_tag_on_document_deletion(): void
     {
-        $document = self::arrange(fn () => TestDocumentFactory::simplePage()->save());
+        $document = self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
 
         $document->delete();
 
@@ -273,7 +273,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
     ])]
     public function does_not_invalidate_additional_tag_on_document_deletion_when_cache_type_was_disabled(): void
     {
-        $document = self::arrange(fn () => TestDocumentFactory::simplePage()->save());
+        $document = self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
 
         $document->delete();
 

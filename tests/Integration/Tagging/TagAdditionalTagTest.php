@@ -17,11 +17,9 @@ use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureRoute;
 use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
-#[
-    ConfigureRoute(__DIR__ . '/../Fixtures/get_asset_route.php'),
-    ConfigureRoute(__DIR__ . '/../Fixtures/get_document_route.php'),
-    ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php'),
-]
+#[ConfigureRoute(__DIR__ . '/../Fixtures/get_asset_route.php')]
+#[ConfigureRoute(__DIR__ . '/../Fixtures/get_document_route.php')]
+#[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
 final class TagAdditionalTagTest extends ConfigurableWebTestcase
 {
     use ArrangeCacheTest;
@@ -44,12 +42,12 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_additional_tag_when_asset_is_loaded(): void
     {
-        self::arrange(fn () => TestAssetFactory::simpleAsset()->save());
-        self::arrange(fn () => TestAssetFactory::simpleImage()->save());
+        self::arrange(static fn () => TestAssetFactory::simpleAsset()->save());
+        self::arrange(static fn () => TestAssetFactory::simpleImage()->save());
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
-            fn (ElementTaggingEvent $event) => $event->addTag(
+            static fn (ElementTaggingEvent $event) => $event->addTag(
                 CacheTag::fromString('17', new ElementCacheType(ElementType::Asset)),
             ),
         );
@@ -74,12 +72,12 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_additional_tag_when_document_is_loaded(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simplePage()->save());
-        self::arrange(fn () => TestDocumentFactory::simpleSnippet()->save());
+        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
+        self::arrange(static fn () => TestDocumentFactory::simpleSnippet()->save());
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
-            fn (ElementTaggingEvent $event) => $event->addTag(
+            static fn (ElementTaggingEvent $event) => $event->addTag(
                 CacheTag::fromString('23', new ElementCacheType(ElementType::Document)),
             ),
         );
@@ -104,12 +102,12 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_additional_tag_when_object_is_loaded(): void
     {
-        self::arrange(fn () => TestObjectFactory::simpleObject()->save());
-        self::arrange(fn () => TestObjectFactory::simpleVariant()->save());
+        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
+        self::arrange(static fn () => TestObjectFactory::simpleVariant()->save());
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
-            fn (ElementTaggingEvent $event) => $event->addTag(
+            static fn (ElementTaggingEvent $event) => $event->addTag(
                 CacheTag::fromString('17', new ElementCacheType(ElementType::Object)),
             ),
         );
@@ -137,11 +135,11 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_custom_tag_when_element_is_loaded(): void
     {
-        self::arrange(fn () => TestObjectFactory::simpleObject()->save());
+        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
-            fn (ElementTaggingEvent $event) => $event->addTag(
+            static fn (ElementTaggingEvent $event) => $event->addTag(
                 CacheTag::fromString('bar', new CustomCacheType('foo')),
             ),
         );

@@ -91,7 +91,7 @@
         {% for key, value in collector.configuration %}
             <tr>
                 <td>{{ key }}</td>
-                <td>{{ value|json_encode }}</td>
+                <td><pre>{{ value|json_encode(constant('JSON_PRETTY_PRINT') b-or constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_UNESCAPED_UNICODE')) }}</pre></td>
             </tr>
         {% endfor %}
         </tbody>
