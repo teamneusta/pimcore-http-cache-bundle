@@ -104,7 +104,7 @@ For grouping tags beyond the built-in element types:
 3. Invalidate by type:
    ```php
    $cacheInvalidator->invalidate(
-       CacheTags::fromStrings(['42'], new CustomCacheType('product_category'))
+       CacheTags::fromStrings(['42'], type: new CustomCacheType('product_category'))
    );
    ```
 

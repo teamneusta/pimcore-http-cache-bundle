@@ -32,7 +32,8 @@ CLAUDE.md                          # Project overview, quick reference, conventi
 │   ├── code-review/               # /code-review — handle review feedback
 │   ├── web-search/                # /web-search — web search via inference.sh
 │   ├── writing-skills/            # /writing-skills — create new skills
-│   └── humanizer/                 # /humanizer — remove AI writing patterns
+│   ├── humanizer/                 # /humanizer — remove AI writing patterns
+│   └── context7/                  # /context7 — live library docs lookup
 └── settings.local.json            # Personal settings (gitignored)
 ```
 
@@ -109,13 +110,14 @@ claude: [Phase 1: Root cause investigation]
 
 | Command | When to Use |
 |---------|-------------|
-| `/review` | Review code changes before merging |
+| `/review` | Review code changes before merging (you are the reviewer) |
+| `/code-review` | Handle feedback received from external reviewers (you are the author) |
 | `/tdd` | Enforce strict test-driven development |
 | `/debug` | Systematic debugging of any issue |
 | `/brainstorm` | Turn an idea into a design and spec |
 | `/php-best-practices` | Audit code against 45+ PHP 8.x rules |
 | `/php-pro` | Senior PHP patterns (Symfony, Laravel, async) |
-| `/code-review` | Handle feedback from external reviewers |
+| `/context7` | Look up current library documentation via Context7 API |
 | `/web-search` | Search the web via inference.sh |
 | `/humanizer` | Remove AI writing patterns from text |
 | `/writing-skills` | Create new skills for the project |

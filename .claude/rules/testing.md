@@ -44,6 +44,10 @@
 
 - Use `self::assertTrue()`, `self::assertSame()`, etc. (static calls) for state verification
 - Use Prophecy expectations for interaction verification
+- Use `\assert()` for runtime type narrowing (not testing — this is production code):
+  ```php
+  \assert($taggingEvent instanceof ElementTaggingEvent);
+  ```
 
 ## Data Providers
 

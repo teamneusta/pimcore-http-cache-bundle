@@ -71,7 +71,7 @@ See `.claude/rules/code-style.md` for full conventions with examples.
 
 ## Architecture & Patterns
 
-- **Decorator pattern**: Services are heavily decorated (e.g., `ResponseTagger` chain: base → `RemoveDisabledTagsResponseTagger` → `OnlyWhenActiveResponseTagger` → `CacheTagCollectionResponseTagger`)
+- **Decorator pattern**: Services are heavily decorated (e.g., `ResponseTagger` chain by execution order: `CacheTagCollectionResponseTagger` → `OnlyWhenActiveResponseTagger` → `RemoveDisabledTagsResponseTagger` → `ResponseTaggerAdapter`)
 - **Immutable value objects**: `CacheTags` and `CacheTag` — use `with()` / static factories, never mutate
 - **Event-driven**: Listens to Pimcore lifecycle events; dispatches custom events for extensibility
 - **Single-method interfaces**: `CacheInvalidator::invalidate(CacheTags)` and `ResponseTagger::tag(CacheTags)`

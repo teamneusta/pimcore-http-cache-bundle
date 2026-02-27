@@ -87,7 +87,7 @@ describe('OrderService', function (): void {
 ```neon
 # phpstan.neon
 parameters:
-    level: 9
+    level: 9     # Maximum level; this project uses level 8
     paths:
         - src
     treatPhpDocTypesAsCertain: false
@@ -96,15 +96,17 @@ parameters:
     checkMissingIterableValueType: true
 ```
 
+Note: This project uses PHPStan level 8 and PHPUnit (not Pest). The examples below are general references for levels 8-9.
+
 ### Common PHPStan Fixes
 
 ```php
-// Level 9: generics required
+// Level 8+: generics required
 /** @var array<string, mixed> */     // not just array
 /** @return list<Order> */           // not just array
 /** @param Collection<int, User> */  // not just Collection
 
-// Level 9: strict comparisons
+// Level 8+: strict comparisons
 if ($value === null) { }             // not ==
 if (\in_array($item, $list, true))   // strict flag required
 
