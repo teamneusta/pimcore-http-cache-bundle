@@ -17,8 +17,8 @@ final class WithoutAutomaticTaggingController
 
     public function __invoke(Request $request): Response
     {
-        $id = $request->query->get('id');
-        $shouldYield = $request->query->getBoolean('yield', false);
+        $id = (int) $request->query->get('id');
+        $shouldYield = $request->query->getBoolean('manual_tag', false);
 
         $asset = $this->cacheActivator->withoutAutomaticTagging(function () use ($id, $shouldYield) {
             $asset = Asset::getById($id);

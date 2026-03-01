@@ -173,5 +173,4 @@ final class CacheActivatorTest extends TestCase
             yield 'not_a_cache_tag';
         });
     }
-
 }

@@ -54,7 +54,7 @@ final class WithoutAutomaticTaggingTest extends ConfigurableWebTestcase
     {
         self::arrange(static fn () => TestAssetFactory::simpleAsset()->save());
 
-        $this->client->request('GET', '/without-automatic-tagging?id=42&yield=true');
+        $this->client->request('GET', '/without-automatic-tagging?id=42&manual_tag=true');
 
         $response = $this->client->getResponse();
         self::assertSame(200, $response->getStatusCode());
