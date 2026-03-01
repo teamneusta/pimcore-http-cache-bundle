@@ -39,12 +39,12 @@ jobs:
       matrix:
         include:
           - php-version: "8.1"
-            dependencies: "lowest" # Pimcore 10.6.0
+            dependencies: "lowest" # Pimcore 10.6.0, Symfony 5.4, FOSHttpCacheBundle 2.*
           - php-version: "8.1"
-            dependencies: "highest" # Pimcore 11.*
+            dependencies: "highest" # Pimcore 11.*, Symfony 6.4, FOSHttpCacheBundle 3.*
             tests: --fail-on-risky
           - php-version: "8.2"
-            dependencies: "highest" # Pimcore 11.*
+            dependencies: "highest" # Pimcore 11.*, Symfony 6.4, FOSHttpCacheBundle 3.*
             tests: --fail-on-risky
 
     steps:
