@@ -118,16 +118,6 @@ final class CacheActivatorTest extends TestCase
     /**
      * @test
      */
-    public function without_automatic_tagging_does_not_call_tag_when_closure_yields_nothing(): void
-    {
-        $this->cacheActivator->withoutAutomaticTagging(static fn () => null);
-
-        $this->responseTagger->tag(Argument::any())->shouldNotHaveBeenCalled();
-    }
-
-    /**
-     * @test
-     */
     public function without_automatic_tagging_tags_a_yielded_cache_tag(): void
     {
         $tag = CacheTag::fromString('42');

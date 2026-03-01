@@ -70,9 +70,7 @@ final class CacheActivator
             }
         } finally {
             $this->isCachingActive = $previous;
-            if (!$tags->isEmpty()) {
-                ($this->responseTagger)()->tag($tags);
-            }
+            ($this->responseTagger)()->tag($tags);
         }
 
         return $result;
