@@ -179,14 +179,12 @@ final class CacheActivatorTest extends TestCase
      */
     public function without_automatic_tagging_does_not_apply_partial_tags_when_invalid_yield_encountered(): void
     {
-        try {
-            $this->cacheActivator->withoutAutomaticTagging(static function () {
-                yield CacheTag::fromString('42');
-                yield 'not_a_cache_tag';
-            });
-        } catch (\LogicException) {
-        }
+        $this->responseTagger->tag(Argument::any())->shouldNotBeCalled();
+        $this->expectException(\LogicException::class);
 
-        $this->responseTagger->tag(Argument::any())->shouldNotHaveBeenCalled();
+        $this->cacheActivator->withoutAutomaticTagging(static function () {
+            yield CacheTag::fromString('42');
+            yield 'not_a_cache_tag';
+        });
     }
 }
