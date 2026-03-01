@@ -48,19 +48,19 @@ final class CacheActivator
 
             if ($result instanceof \Generator) {
                 $position = 0;
-                foreach ($result as $key => $yielded) {
-                    if (!$yielded instanceof CacheTag && !$yielded instanceof CacheTags) {
+                foreach ($result as $key => $value) {
+                    if (!$value instanceof CacheTag && !$value instanceof CacheTags) {
                         throw new \LogicException(\sprintf(
                             'Invalid yielded value at position %d (key: %s): Expected only "%s" or "%s", got "%s".',
                             $position,
                             \is_int($key) || \is_string($key) ? $key : get_debug_type($key),
                             CacheTag::class,
                             CacheTags::class,
-                            get_debug_type($yielded),
+                            get_debug_type($value),
                         ));
                     }
 
-                    $tags = $tags->with($yielded);
+                    $tags = $tags->with($value);
                     ++$position;
                 }
                 $result = $result->getReturn();
