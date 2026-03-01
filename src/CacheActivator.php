@@ -47,7 +47,6 @@ final class CacheActivator
             $result = $fn();
 
             if ($result instanceof \Generator) {
-                $accumulated = new CacheTags();
                 foreach ($result as $key => $yielded) {
                     if (!$yielded instanceof CacheTag && !$yielded instanceof CacheTags) {
                         throw new \LogicException(\sprintf(
@@ -59,10 +58,8 @@ final class CacheActivator
                         ));
                     }
 
-                    $accumulated = $accumulated->with($yielded);
+                    $tags = $tags->with($yielded);
                 }
-
-                $tags = $accumulated;
                 $result = $result->getReturn();
             }
         } finally {
