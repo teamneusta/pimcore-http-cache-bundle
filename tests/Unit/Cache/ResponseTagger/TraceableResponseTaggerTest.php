@@ -38,7 +38,7 @@ final class TraceableResponseTaggerTest extends TestCase
 
         self::assertSame(
             'tag1,tag2',
-            $this->collectTagsResponseTagger->getRecordedTags()->toString(),
+            $this->collectTagsResponseTagger->recordedTags->toString(),
         );
     }
 
@@ -71,7 +71,7 @@ final class TraceableResponseTaggerTest extends TestCase
         $this->collectTagsResponseTagger->reset();
 
         self::assertTrue(
-            $this->collectTagsResponseTagger->getRecordedTags()->isEmpty(),
+            $this->collectTagsResponseTagger->recordedTags->isEmpty(),
         );
     }
 }

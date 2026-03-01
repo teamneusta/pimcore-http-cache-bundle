@@ -27,7 +27,7 @@ final class DataCollector extends BaseDataCollector implements LateDataCollector
 
     public function lateCollect(): void
     {
-        foreach ($this->traceableResponseTagger->getRecordedTags() as $tag) {
+        foreach ($this->traceableResponseTagger->recordedTags as $tag) {
             $this->data['tags'][] = [
                 'tag' => $tag->toString(), 'type' => $tag->type->identifier(),
             ];

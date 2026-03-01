@@ -8,7 +8,7 @@ use Symfony\Contracts\Service\ResetInterface;
 
 final class TraceableResponseTagger implements ResponseTagger, ResetInterface
 {
-    private CacheTags $recordedTags;
+    public CacheTags $recordedTags;
 
     public function __construct(
         private readonly ResponseTagger $inner,
@@ -20,11 +20,6 @@ final class TraceableResponseTagger implements ResponseTagger, ResetInterface
     {
         $this->recordedTags = $this->recordedTags->with($tags);
         $this->inner->tag($tags);
-    }
-
-    public function getRecordedTags(): CacheTags
-    {
-        return $this->recordedTags;
     }
 
     public function reset(): void
