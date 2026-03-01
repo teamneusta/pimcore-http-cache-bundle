@@ -14,7 +14,7 @@ final class TraceableResponseTaggerTest extends TestCase
 {
     use ProphecyTrait;
 
-    private TraceableResponseTagger $collectTagsResponseTagger;
+    private TraceableResponseTagger $traceableResponseTagger;
 
     /** @var ObjectProphecy<ResponseTagger> */
     private ObjectProphecy $innerTagger;
