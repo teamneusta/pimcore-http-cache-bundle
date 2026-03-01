@@ -32,7 +32,7 @@ final class CacheActivator
     /**
      * @template T
      *
-     * @param \Closure(): (T|\Generator<int, CacheTag|CacheTags, null, T>) $fn
+     * @param \Closure(): (T|\Generator<array-key, CacheTag|CacheTags, null, T>) $fn
      *
      * @return T
      */
@@ -47,10 +47,9 @@ final class CacheActivator
             $result = $fn();
 
             if ($result instanceof \Generator) {
+                $accumulated = new CacheTags();
                 $index = 0;
                 foreach ($result as $key => $yielded) {
-                    ++$index;
-
                     if (!$yielded instanceof CacheTag && !$yielded instanceof CacheTags) {
                         throw new \LogicException(\sprintf(
                             'Invalid yielded value at index %d (key: %s): Expected only "%s" or "%s", got "%s".',
@@ -62,14 +61,18 @@ final class CacheActivator
                         ));
                     }
 
-                    $tags = $tags->with($yielded);
+                    $accumulated = $accumulated->with($yielded);
+                    ++$index;
                 }
 
+                $tags = $accumulated;
                 $result = $result->getReturn();
             }
         } finally {
             $this->isCachingActive = $previous;
-            ($this->responseTagger)()->tag($tags);
+            if (!$tags->isEmpty()) {
+                ($this->responseTagger)()->tag($tags);
+            }
         }
 
         return $result;
