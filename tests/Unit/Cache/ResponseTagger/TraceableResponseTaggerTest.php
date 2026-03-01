@@ -14,7 +14,7 @@ final class TraceableResponseTaggerTest extends TestCase
 {
     use ProphecyTrait;
 
-    private TraceableResponseTagger $collectTagsResponseTagger;
+    private TraceableResponseTagger $traceableResponseTagger;
 
     /** @var ObjectProphecy<ResponseTagger> */
     private ObjectProphecy $innerTagger;
@@ -38,7 +38,7 @@ final class TraceableResponseTaggerTest extends TestCase
 
         self::assertSame(
             'tag1,tag2',
-            $this->collectTagsResponseTagger->recordedTags->toString(),
+            $this->collectTagsResponseTagger->getRecordedTags()->toString(),
         );
     }
 
@@ -71,7 +71,7 @@ final class TraceableResponseTaggerTest extends TestCase
         $this->collectTagsResponseTagger->reset();
 
         self::assertTrue(
-            $this->collectTagsResponseTagger->recordedTags->isEmpty(),
+            $this->collectTagsResponseTagger->getRecordedTags()->isEmpty(),
         );
     }
 }
