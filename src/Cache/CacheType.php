@@ -2,9 +2,6 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Cache;
 
-/**
- * @internal
- */
 interface CacheType
 {
     public function applyTo(string $tag): string;
