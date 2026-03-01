@@ -167,7 +167,7 @@ final class CacheActivatorTest extends TestCase
     public function without_automatic_tagging_throws_logic_exception_for_invalid_yield(): void
     {
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessageMatches('/Invalid yielded value at position 0 \(key: 0\)/');
+        $this->expectExceptionMessageMatches('/Invalid yielded value at position 1 \(key: 0\)/');
 
         $this->cacheActivator->withoutAutomaticTagging(static function () {
             yield 'not_a_cache_tag';
