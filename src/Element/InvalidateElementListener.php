@@ -10,10 +10,12 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 final class InvalidateElementListener
 {
+    /** @param array<mixed> $config */
     public function __construct(
         private readonly CacheInvalidator $cacheInvalidator,
         private readonly EventDispatcherInterface $dispatcher,
         private readonly ElementRepository $elementRepository,
+        private readonly array $config,
     ) {
     }
 
@@ -27,8 +29,9 @@ final class InvalidateElementListener
 
         $this->invalidateElement($element);
 
-        if (ElementType::Object === ElementType::tryFrom($element->getType())) {
-            $this->invalidateDependencies($element->getDependencies());
+        $type = ElementType::tryFrom($element->getType());
+        if ($type !== null && $this->isDependencyTraversalEnabled($type)) {
+            $this->invalidateDependencies($element->getDependencies(), $type);
         }
     }
 
@@ -38,8 +41,9 @@ final class InvalidateElementListener
 
         $this->invalidateElement($element);
 
-        if (ElementType::Object === ElementType::tryFrom($element->getType())) {
-            $this->invalidateDependencies($element->getDependencies());
+        $type = ElementType::tryFrom($element->getType());
+        if ($type !== null && $this->isDependencyTraversalEnabled($type)) {
+            $this->invalidateDependencies($element->getDependencies(), $type);
         }
     }
 
@@ -55,23 +59,43 @@ final class InvalidateElementListener
         $this->cacheInvalidator->invalidate($invalidationEvent->cacheTags());
     }
 
-    private function invalidateDependencies(Dependency $dependency): void
+    private function isDependencyTraversalEnabled(ElementType $type): bool
     {
+        return $this->config[$this->configKey($type)]['invalidate_dependencies']['enabled'] ?? false;
+    }
+
+    private function invalidateDependencies(Dependency $dependency, ElementType $sourceType): void
+    {
+        $typesConfig = $this->config[$this->configKey($sourceType)]['invalidate_dependencies']['types'] ?? [];
+
         foreach ($dependency->getRequiredBy() as $required) {
             if (!isset($required['id'], $required['type'])) {
                 continue;
             }
 
-            $element = match (ElementType::tryFrom($required['type'])) {
+            $dependentType = ElementType::tryFrom($required['type']);
+            if ($dependentType === null || !($typesConfig[$this->configKey($dependentType)] ?? false)) {
+                continue;
+            }
+
+            $element = match ($dependentType) {
                 ElementType::Object => $this->elementRepository->findObject($required['id']),
                 ElementType::Document => $this->elementRepository->findDocument($required['id']),
                 ElementType::Asset => $this->elementRepository->findAsset($required['id']),
-                default => null,
             };
 
             if ($element) {
                 $this->invalidateElement($element);
             }
         }
+    }
+
+    private function configKey(ElementType $type): string
+    {
+        return match ($type) {
+            ElementType::Asset => 'assets',
+            ElementType::Document => 'documents',
+            ElementType::Object => 'objects',
+        };
     }
 }

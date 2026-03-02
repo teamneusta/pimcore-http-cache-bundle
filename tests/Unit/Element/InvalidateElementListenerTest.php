@@ -47,6 +47,7 @@ final class InvalidateElementListenerTest extends TestCase
             $this->cacheInvalidator->reveal(),
             $this->eventDispatcher->reveal(),
             $this->elementRepository->reveal(),
+            [],
         );
 
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
@@ -118,6 +119,13 @@ final class InvalidateElementListenerTest extends TestCase
      */
     public function onUpdate_should_invalidate_dependencies(): void
     {
+        $listener = new InvalidateElementListener(
+            $this->cacheInvalidator->reveal(),
+            $this->eventDispatcher->reveal(),
+            $this->elementRepository->reveal(),
+            ['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]],
+        );
+
         $element = $this->prophesize(DataObject\TestObject::class);
         $element->getType()->willReturn(ElementType::Object->value);
         $dependency = $this->prophesize(Dependency::class);
@@ -130,7 +138,7 @@ final class InvalidateElementListenerTest extends TestCase
         $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
         $this->elementRepository->findObject(23)->willReturn($dependentElement->reveal());
 
-        $this->invalidateElementListener->onUpdate($event);
+        $listener->onUpdate($event);
 
         $this->cacheInvalidator->invalidate(Argument::which('toString', CacheTag::fromElement($dependentElement->reveal())->toString()))
             ->shouldHaveBeenCalledOnce();
@@ -248,6 +256,13 @@ final class InvalidateElementListenerTest extends TestCase
      */
     public function onDelete_should_invalidate_dependent_elements(): void
     {
+        $listener = new InvalidateElementListener(
+            $this->cacheInvalidator->reveal(),
+            $this->eventDispatcher->reveal(),
+            $this->elementRepository->reveal(),
+            ['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]],
+        );
+
         $element = $this->prophesize(DataObject\TestObject::class);
         $element->getType()->willReturn(ElementType::Object->value);
         $dependency = $this->prophesize(Dependency::class);
@@ -260,7 +275,7 @@ final class InvalidateElementListenerTest extends TestCase
         $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
         $this->elementRepository->findObject(23)->willReturn($dependentElement->reveal());
 
-        $this->invalidateElementListener->onDelete($event);
+        $listener->onDelete($event);
 
         $this->cacheInvalidator->invalidate(Argument::which('toString', CacheTag::fromElement($dependentElement->reveal())->toString()))
             ->shouldHaveBeenCalledOnce();

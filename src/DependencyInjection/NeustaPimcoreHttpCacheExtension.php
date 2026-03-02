@@ -71,6 +71,9 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
                 ->addTag('kernel.event_listener', ['event' => DataObjectEvents::PRE_DELETE, 'method' => 'onDelete']);
         }
 
+        $container->getDefinition('neusta_pimcore_http_cache.element.invalidate_listener')
+            ->setArgument('$config', $config);
+
         $container->setParameter('neusta_pimcore_http_cache.config', $config);
     }
 }

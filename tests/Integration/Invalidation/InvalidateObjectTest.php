@@ -62,7 +62,15 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'objects' => true,
+            'objects' => [
+                'enabled' => true,
+                'invalidate_dependencies' => [
+                    'enabled' => true,
+                    'types' => [
+                        'objects' => true,
+                    ],
+                ],
+            ],
         ],
     ])]
     public function dependent_object_is_invalidated_on_object_update(): void
@@ -98,7 +106,15 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'objects' => true,
+            'objects' => [
+                'enabled' => true,
+                'invalidate_dependencies' => [
+                    'enabled' => true,
+                    'types' => [
+                        'objects' => true,
+                    ],
+                ],
+            ],
         ],
     ])]
     public function dependent_object_is_invalidated_on_object_deletion(): void

@@ -64,7 +64,15 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'objects' => true,
+            'objects' => [
+                'enabled' => true,
+                'invalidate_dependencies' => [
+                    'enabled' => true,
+                    'types' => [
+                        'documents' => true,
+                    ],
+                ],
+            ],
             'documents' => true,
         ],
     ])]
@@ -103,7 +111,15 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'objects' => true,
+            'objects' => [
+                'enabled' => true,
+                'invalidate_dependencies' => [
+                    'enabled' => true,
+                    'types' => [
+                        'documents' => true,
+                    ],
+                ],
+            ],
             'documents' => true,
         ],
     ])]
