@@ -25,20 +25,16 @@ final class InvalidateElementListener
             return;
         }
 
-        $element = $event->getElement();
-
-        $this->invalidateElement($element);
-
-        $type = ElementType::tryFrom($element->getType());
-        if ($type !== null && $this->isDependencyTraversalEnabled($type)) {
-            $this->invalidateDependencies($element->getDependencies(), $type);
-        }
+        $this->invalidateWithDependencies($event->getElement());
     }
 
     public function onDelete(ElementEventInterface $event): void
     {
-        $element = $event->getElement();
+        $this->invalidateWithDependencies($event->getElement());
+    }
 
+    private function invalidateWithDependencies(ElementInterface $element): void
+    {
         $this->invalidateElement($element);
 
         $type = ElementType::tryFrom($element->getType());

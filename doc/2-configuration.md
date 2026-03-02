@@ -12,14 +12,15 @@ neusta_pimcore_http_cache:
                 archive: false
                 unknown: false
 
-            # Invalidate dependent elements when an asset changes (disabled by default)
+            # Invalidate dependent elements when an asset changes (disabled by default).
+            # Note: a dependent element type must also be enabled above for invalidation to take effect.
             invalidate_dependencies:
                 enabled: true
                 types:
                     objects: true
                     documents: true
 
-            # Unless you disable assets completely
+            # Or disable assets completely (mutually exclusive with the options above)
             enabled: false
 
         documents:
@@ -27,13 +28,14 @@ neusta_pimcore_http_cache:
             types:
                 link: false
 
-            # Invalidate dependent elements when a document changes (disabled by default)
+            # Invalidate dependent elements when a document changes (disabled by default).
+            # Note: a dependent element type must also be enabled above for invalidation to take effect.
             invalidate_dependencies:
                 enabled: true
                 types:
                     objects: true
 
-            # Unless you disable documents completely
+            # Or disable documents completely (mutually exclusive with the options above)
             enabled: false
 
         objects:
@@ -45,7 +47,8 @@ neusta_pimcore_http_cache:
             classes:
                 MyDataObjectClass: false
 
-            # Invalidate dependent elements when an object changes (disabled by default)
+            # Invalidate dependent elements when an object changes (disabled by default).
+            # Note: a dependent element type must also be enabled above for invalidation to take effect.
             invalidate_dependencies:
                 enabled: true
                 types:
@@ -53,7 +56,7 @@ neusta_pimcore_http_cache:
                     documents: true
                     assets: true
 
-            # Unless you disable data objects completely
+            # Or disable data objects completely (mutually exclusive with the options above)
             enabled: false
 
     # Enable/disable cache handling for custom cache types
