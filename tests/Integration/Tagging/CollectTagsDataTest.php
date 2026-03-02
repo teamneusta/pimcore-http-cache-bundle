@@ -46,7 +46,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_document_route.php')]
     public function collect_tags_for_type_document(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simplePage(5))->save();
+        self::arrange(fn () => TestDocumentFactory::simplePage(5)->save());
 
         $this->client->request('GET', '/test_document_page');
         $this->client->enableProfiler();
