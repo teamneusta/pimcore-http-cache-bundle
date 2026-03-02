@@ -81,3 +81,58 @@ neusta_pimcore_http_cache:
             classes:
                 MyDataObjectClass: false
 ```
+
+## Dependent Element Invalidation
+
+When a Pimcore element is updated or deleted, other elements that reference it may also serve stale content.
+For example, a document that embeds a data object will be outdated as soon as that object changes.
+
+By default, the bundle only invalidates the cache tag of the element that was directly changed.
+Dependent element invalidation — traversing Pimcore's dependency graph to also purge referencing elements — is **disabled by default** and must be opted in via configuration.
+
+The dependency graph is one level deep: only elements that directly reference the changed element are invalidated, not transitive dependencies.
+
+### Enable dependent invalidation for objects
+
+The most common use case is invalidating documents and other objects that reference a changed data object:
+
+```yaml
+neusta_pimcore_http_cache:
+    elements:
+        objects:
+            invalidate_dependencies:
+                enabled: true
+                types:
+                    documents: true  # invalidate documents that reference the object
+                    objects: true    # invalidate objects that reference the object
+                    assets: false    # leave assets out (default)
+```
+
+### Enable dependent invalidation for assets
+
+If an asset (e.g. an image) is referenced by objects or documents, those can be invalidated when the asset changes:
+
+```yaml
+neusta_pimcore_http_cache:
+    elements:
+        assets:
+            invalidate_dependencies:
+                enabled: true
+                types:
+                    objects: true    # invalidate objects that reference the asset
+                    documents: true  # invalidate documents that reference the asset
+```
+
+### Enable dependent invalidation for documents
+
+If a document is referenced by other elements (e.g. an object with a document relation field), those elements can be invalidated when the document changes:
+
+```yaml
+neusta_pimcore_http_cache:
+    elements:
+        documents:
+            invalidate_dependencies:
+                enabled: true
+                types:
+                    objects: true  # invalidate objects that reference the document
+```
