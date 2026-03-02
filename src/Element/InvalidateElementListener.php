@@ -65,7 +65,6 @@ final class InvalidateElementListener
             $element = match (ElementType::tryFrom($required['type'])) {
                 ElementType::Object => $this->elementRepository->findObject($required['id']),
                 ElementType::Document => $this->elementRepository->findDocument($required['id']),
-                ElementType::Asset => $this->elementRepository->findAsset($required['id']),
                 default => null,
             };
 
