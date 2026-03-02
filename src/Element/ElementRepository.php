@@ -6,8 +6,12 @@ use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject;
 use Pimcore\Model\Document;
 
-/** @internal */
-final class ElementRepository
+/**
+ * @internal
+ *
+ * @final
+ */
+class ElementRepository
 {
     public function findAsset(int $id): ?Asset
     {
