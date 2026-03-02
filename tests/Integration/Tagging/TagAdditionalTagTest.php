@@ -121,7 +121,7 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertStringContainsString('o5', $response->headers->get('X-Cache-Tags'));
+        self::assertStringContainsString('o12', $response->headers->get('X-Cache-Tags'));
     }
 
     /**
