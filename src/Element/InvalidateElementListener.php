@@ -39,7 +39,7 @@ final class InvalidateElementListener
             return;
         }
 
-        $type = ElementType::tryFrom($element->getType());
+        $type = ElementType::tryFromElement($element);
         if ($type !== null && $this->isDependencyTraversalEnabled($type)) {
             $this->invalidateDependencies($element->getDependencies(), $type);
         }
