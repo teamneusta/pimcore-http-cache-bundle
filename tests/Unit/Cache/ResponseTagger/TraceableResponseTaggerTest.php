@@ -14,7 +14,7 @@ final class TraceableResponseTaggerTest extends TestCase
 {
     use ProphecyTrait;
 
-    private TraceableResponseTagger $collectTagsResponseTagger;
+    private TraceableResponseTagger $traceableResponseTagger;
 
     /** @var ObjectProphecy<ResponseTagger> */
     private ObjectProphecy $innerTagger;
@@ -22,7 +22,7 @@ final class TraceableResponseTaggerTest extends TestCase
     protected function setUp(): void
     {
         $this->innerTagger = $this->prophesize(ResponseTagger::class);
-        $this->collectTagsResponseTagger = new TraceableResponseTagger($this->innerTagger->reveal());
+        $this->traceableResponseTagger = new TraceableResponseTagger($this->innerTagger->reveal());
     }
 
     /**
@@ -30,7 +30,7 @@ final class TraceableResponseTaggerTest extends TestCase
      */
     public function tag_should_collect_tags(): void
     {
-        $this->collectTagsResponseTagger->tag(
+        $this->traceableResponseTagger->tag(
             new CacheTags(
                 CacheTag::fromString('tag1'),
                 CacheTag::fromString('tag2'),
@@ -38,7 +38,7 @@ final class TraceableResponseTaggerTest extends TestCase
 
         self::assertSame(
             'tag1,tag2',
-            $this->collectTagsResponseTagger->recordedTags->toString(),
+            $this->traceableResponseTagger->recordedTags->toString(),
         );
     }
 
@@ -52,7 +52,7 @@ final class TraceableResponseTaggerTest extends TestCase
             CacheTag::fromString('tag2'),
         );
 
-        $this->collectTagsResponseTagger->tag($tags);
+        $this->traceableResponseTagger->tag($tags);
 
         $this->innerTagger->tag($tags)->shouldHaveBeenCalledOnce();
     }
@@ -62,16 +62,16 @@ final class TraceableResponseTaggerTest extends TestCase
      */
     public function reset_should_reset_collected_tags(): void
     {
-        $this->collectTagsResponseTagger->tag(
+        $this->traceableResponseTagger->tag(
             new CacheTags(
                 CacheTag::fromString('tag1'),
                 CacheTag::fromString('tag2'),
             ));
 
-        $this->collectTagsResponseTagger->reset();
+        $this->traceableResponseTagger->reset();
 
         self::assertTrue(
-            $this->collectTagsResponseTagger->recordedTags->isEmpty(),
+            $this->traceableResponseTagger->recordedTags->isEmpty(),
         );
     }
 }

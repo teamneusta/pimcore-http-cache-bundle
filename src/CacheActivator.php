@@ -32,7 +32,7 @@ final class CacheActivator
     /**
      * @template T
      *
-     * @param \Closure(): (T|\Generator<int, CacheTag|CacheTags, null, T>) $fn
+     * @param \Closure(): (T|\Generator<array-key, CacheTag|CacheTags, null, T>) $fn
      *
      * @return T
      */
@@ -64,7 +64,6 @@ final class CacheActivator
 
                     $tags = $tags->with($yielded);
                 }
-
                 $result = $result->getReturn();
             }
         } finally {
