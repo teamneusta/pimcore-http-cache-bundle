@@ -253,6 +253,30 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
     /**
      * @test
      */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'objects' => true,
+            'documents' => true,
+        ],
+    ])]
+    public function dependency_traversal_is_not_triggered_when_document_is_updated(): void
+    {
+        $object = self::arrange(
+            fn () => TestObjectFactory::simpleObject(12)->save(),
+        );
+        $document = self::arrange(
+            fn () => TestDocumentFactory::simplePage(96, 'other_test_document_page', $object)->save(),
+        );
+
+        $document->setKey('updated_other_test_document_page')->save();
+
+        $this->cacheManager->invalidateTags([CacheTag::fromElement($object)->toString()])
+            ->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     */
     public function response_is_not_invalidated_when_documents_are_disabled_on_update(): void
     {
         $this->document->setKey('updated_test_document_page')->save();

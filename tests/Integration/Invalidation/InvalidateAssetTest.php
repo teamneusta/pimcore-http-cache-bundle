@@ -3,8 +3,10 @@
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Invalidation;
 
 use FOS\HttpCacheBundle\CacheManager;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestAssetFactory;
+use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestObjectFactory;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
 use Neusta\Pimcore\TestingFramework\Test\ConfigurableKernelTestCase;
@@ -135,6 +137,27 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
         $this->image->delete();
 
         $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'objects' => true,
+            'assets' => true,
+        ],
+    ])]
+    public function dependency_traversal_is_not_triggered_when_asset_is_updated(): void
+    {
+        $object = self::arrange(
+            fn () => TestObjectFactory::simpleObject(12, 'test_object_with_asset', [$this->asset])->save(),
+        );
+
+        $this->asset->setData('Updated test content')->save();
+
+        $this->cacheManager->invalidateTags([CacheTag::fromElement($object)->toString()])
+            ->shouldNotHaveBeenCalled();
     }
 
     /**
