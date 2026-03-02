@@ -109,7 +109,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertStringNotContainsString('d29', $response->headers->get('X-Cache-Tags'));
+        self::assertStringNotContainsString('d12', $response->headers->get('X-Cache-Tags'));
     }
 
     /**
