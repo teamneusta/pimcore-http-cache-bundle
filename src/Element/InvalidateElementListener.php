@@ -35,7 +35,9 @@ final class InvalidateElementListener
 
     private function invalidateWithDependencies(ElementInterface $element): void
     {
-        $this->invalidateElement($element);
+        if (!$this->invalidateElement($element)) {
+            return;
+        }
 
         $type = ElementType::tryFrom($element->getType());
         if ($type !== null && $this->isDependencyTraversalEnabled($type)) {
@@ -43,16 +45,18 @@ final class InvalidateElementListener
         }
     }
 
-    private function invalidateElement(ElementInterface $element): void
+    private function invalidateElement(ElementInterface $element): bool
     {
         $invalidationEvent = $this->dispatcher->dispatch(ElementInvalidationEvent::fromElement($element));
         \assert($invalidationEvent instanceof ElementInvalidationEvent);
 
         if ($invalidationEvent->cancel) {
-            return;
+            return false;
         }
 
         $this->cacheInvalidator->invalidate($invalidationEvent->cacheTags());
+
+        return true;
     }
 
     private function isDependencyTraversalEnabled(ElementType $type): bool

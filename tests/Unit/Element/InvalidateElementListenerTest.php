@@ -146,6 +146,34 @@ final class InvalidateElementListenerTest extends TestCase
 
     /**
      * @test
+     */
+    public function onUpdate_should_not_invalidate_dependencies_when_source_invalidation_is_canceled(): void
+    {
+        $listener = new InvalidateElementListener(
+            $this->cacheInvalidator->reveal(),
+            $this->eventDispatcher->reveal(),
+            $this->elementRepository->reveal(),
+            ['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]],
+        );
+
+        $element = $this->prophesize(DataObject\TestObject::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getId()->willReturn(42);
+        $event = new DataObjectEvent($element->reveal());
+
+        $invalidationEvent = ElementInvalidationEvent::fromElement($element->reveal());
+        $invalidationEvent->cancel = true;
+        $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
+            ->willReturn($invalidationEvent);
+
+        $listener->onUpdate($event);
+
+        $this->elementRepository->findObject(Argument::any())->shouldNotHaveBeenCalled();
+        $this->cacheInvalidator->invalidate(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
      *
      * @dataProvider notObjectElementProvider
      */
