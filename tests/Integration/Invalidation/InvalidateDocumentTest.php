@@ -271,6 +271,64 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
+            'documents' => [
+                'enabled' => true,
+                'invalidate_dependencies' => [
+                    'enabled' => true,
+                    'types' => [
+                        'objects' => true,
+                    ],
+                ],
+            ],
+            'objects' => true,
+        ],
+    ])]
+    public function dependent_object_is_invalidated_on_document_update(): void
+    {
+        $object = self::arrange(
+            fn () => TestObjectFactory::simpleObject(12, 'test_object_with_page', [$this->document])->save(),
+        );
+
+        $this->document->setKey('updated_test_document_page')->save();
+
+        $this->cacheManager->invalidateTags([CacheTag::fromElement($object)->toString()])
+            ->shouldHaveBeenCalledTimes(1);
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'documents' => [
+                'enabled' => true,
+                'invalidate_dependencies' => [
+                    'enabled' => true,
+                    'types' => [
+                        'objects' => true,
+                    ],
+                ],
+            ],
+            'objects' => true,
+        ],
+    ])]
+    public function dependent_object_is_invalidated_on_document_deletion(): void
+    {
+        $object = self::arrange(
+            fn () => TestObjectFactory::simpleObject(12, 'test_object_with_page', [$this->document])->save(),
+        );
+
+        $this->document->delete();
+
+        $this->cacheManager->invalidateTags([CacheTag::fromElement($object)->toString()])
+            ->shouldHaveBeenCalledTimes(1);
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
             'objects' => true,
             'documents' => true,
         ],

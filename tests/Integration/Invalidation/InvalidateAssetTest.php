@@ -144,6 +144,64 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
+            'assets' => [
+                'enabled' => true,
+                'invalidate_dependencies' => [
+                    'enabled' => true,
+                    'types' => [
+                        'objects' => true,
+                    ],
+                ],
+            ],
+            'objects' => true,
+        ],
+    ])]
+    public function dependent_object_is_invalidated_on_asset_update(): void
+    {
+        $object = self::arrange(
+            fn () => TestObjectFactory::simpleObject(12, 'test_object_with_image', [$this->image])->save(),
+        );
+
+        $this->image->setMimeType('image/png')->save();
+
+        $this->cacheManager->invalidateTags([CacheTag::fromElement($object)->toString()])
+            ->shouldHaveBeenCalledTimes(1);
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
+            'assets' => [
+                'enabled' => true,
+                'invalidate_dependencies' => [
+                    'enabled' => true,
+                    'types' => [
+                        'objects' => true,
+                    ],
+                ],
+            ],
+            'objects' => true,
+        ],
+    ])]
+    public function dependent_object_is_invalidated_on_asset_deletion(): void
+    {
+        $object = self::arrange(
+            fn () => TestObjectFactory::simpleObject(12, 'test_object_with_image', [$this->image])->save(),
+        );
+
+        $this->image->delete();
+
+        $this->cacheManager->invalidateTags([CacheTag::fromElement($object)->toString()])
+            ->shouldHaveBeenCalledTimes(1);
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'elements' => [
             'objects' => true,
             'assets' => true,
         ],

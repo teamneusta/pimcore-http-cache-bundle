@@ -149,7 +149,7 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider notObjectElementProvider
      */
-    public function onUpdate_should_not_invalidate_dependencies_when_element_is_not_an_object(
+    public function onUpdate_should_not_invalidate_dependencies_when_traversal_is_disabled(
         ElementEventInterface $event,
     ): void {
         $this->invalidateElementListener->onUpdate($event);

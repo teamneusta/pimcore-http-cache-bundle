@@ -79,9 +79,9 @@ final class InvalidateElementListener
             }
 
             $element = match ($dependentType) {
-                ElementType::Object => $this->elementRepository->findObject($required['id']),
-                ElementType::Document => $this->elementRepository->findDocument($required['id']),
-                ElementType::Asset => $this->elementRepository->findAsset($required['id']),
+                ElementType::Object => $this->elementRepository->findObject((int) $required['id']),
+                ElementType::Document => $this->elementRepository->findDocument((int) $required['id']),
+                ElementType::Asset => $this->elementRepository->findAsset((int) $required['id']),
             };
 
             if ($element) {
