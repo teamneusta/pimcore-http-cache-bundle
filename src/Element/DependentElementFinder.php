@@ -21,8 +21,8 @@ final class DependentElementFinder
      */
     public function findFor(ElementInterface $source): array
     {
-        $type = ElementType::tryFromElement($source);
-        if ($type === null || !$this->config->isDependentElementsEnabled($type)) {
+        $sourceType = ElementType::tryFromElement($source);
+        if ($sourceType === null || !$this->config->isDependentElementsEnabled($sourceType)) {
             return [];
         }
 
@@ -38,13 +38,8 @@ final class DependentElementFinder
                 continue;
             }
 
-            $enabled = match ($dependentType) {
-                ElementType::Asset => $this->config->isDependentAssetInvalidationEnabled($type),
-                ElementType::Document => $this->config->isDependentDocumentInvalidationEnabled($type),
-                ElementType::Object => $this->config->isDependentObjectInvalidationEnabled($type),
-            };
-
-            if (!$enabled) {
+            $depConfig = $this->config->getDependentTypeConfig($sourceType, $dependentType);
+            if (!$depConfig->isEnabled()) {
                 continue;
             }
 
@@ -54,7 +49,7 @@ final class DependentElementFinder
                 ElementType::Object => $this->elementRepository->findObject((int) $required['id']),
             };
 
-            if ($element && $this->isElementEnabled($dependentType, $element)) {
+            if ($element && $this->isElementEnabled($dependentType, $depConfig, $element)) {
                 $elements[] = $element;
             }
         }
@@ -62,14 +57,21 @@ final class DependentElementFinder
         return $elements;
     }
 
-    private function isElementEnabled(ElementType $type, ElementInterface $element): bool
+    private function isElementEnabled(ElementType $type, DependentTypeConfig $depConfig, ElementInterface $element): bool
     {
+        // Global config check
         if (!$this->config->isTypeEnabled($type, $element->getType())) {
             return false;
         }
 
+        // Dependent-specific config check
+        if (!$depConfig->isTypeEnabled($element->getType())) {
+            return false;
+        }
+
         if ($type === ElementType::Object && $element instanceof Concrete) {
-            return $this->config->isClassEnabled($element->getClassName());
+            return $this->config->isClassEnabled($element->getClassName())
+                && $depConfig->isClassEnabled($element->getClassName());
         }
 
         return true;

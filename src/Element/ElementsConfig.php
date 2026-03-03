@@ -6,27 +6,30 @@ final readonly class ElementsConfig
 {
     /**
      * @param array<string, bool> $assetTypes
-     * @param array<string, bool> $assetDependentElementTypes
      * @param array<string, bool> $documentTypes
-     * @param array<string, bool> $documentDependentElementTypes
      * @param array<string, bool> $objectTypes
      * @param array<string, bool> $objectClasses
-     * @param array<string, bool> $objectDependentElementTypes
      */
     public function __construct(
         private bool $assetsEnabled,
         private array $assetTypes,
         private bool $assetDependentElementsEnabled,
-        private array $assetDependentElementTypes,
+        private DependentTypeConfig $assetDependentAssetConfig,
+        private DependentTypeConfig $assetDependentDocumentConfig,
+        private DependentTypeConfig $assetDependentObjectConfig,
         private bool $documentsEnabled,
         private array $documentTypes,
         private bool $documentDependentElementsEnabled,
-        private array $documentDependentElementTypes,
+        private DependentTypeConfig $documentDependentAssetConfig,
+        private DependentTypeConfig $documentDependentDocumentConfig,
+        private DependentTypeConfig $documentDependentObjectConfig,
         private bool $objectsEnabled,
         private array $objectTypes,
         private array $objectClasses,
         private bool $objectDependentElementsEnabled,
-        private array $objectDependentElementTypes,
+        private DependentTypeConfig $objectDependentAssetConfig,
+        private DependentTypeConfig $objectDependentDocumentConfig,
+        private DependentTypeConfig $objectDependentObjectConfig,
     ) {
     }
 
@@ -37,16 +40,22 @@ final readonly class ElementsConfig
             assetsEnabled: $config['assets']['enabled'] ?? false,
             assetTypes: $config['assets']['types'] ?? [],
             assetDependentElementsEnabled: $config['assets']['invalidate_dependent_elements']['enabled'] ?? false,
-            assetDependentElementTypes: $config['assets']['invalidate_dependent_elements']['types'] ?? [],
+            assetDependentAssetConfig: DependentTypeConfig::fromArray($config['assets']['invalidate_dependent_elements']['types']['assets'] ?? []),
+            assetDependentDocumentConfig: DependentTypeConfig::fromArray($config['assets']['invalidate_dependent_elements']['types']['documents'] ?? []),
+            assetDependentObjectConfig: DependentTypeConfig::fromArray($config['assets']['invalidate_dependent_elements']['types']['objects'] ?? []),
             documentsEnabled: $config['documents']['enabled'] ?? false,
             documentTypes: $config['documents']['types'] ?? [],
             documentDependentElementsEnabled: $config['documents']['invalidate_dependent_elements']['enabled'] ?? false,
-            documentDependentElementTypes: $config['documents']['invalidate_dependent_elements']['types'] ?? [],
+            documentDependentAssetConfig: DependentTypeConfig::fromArray($config['documents']['invalidate_dependent_elements']['types']['assets'] ?? []),
+            documentDependentDocumentConfig: DependentTypeConfig::fromArray($config['documents']['invalidate_dependent_elements']['types']['documents'] ?? []),
+            documentDependentObjectConfig: DependentTypeConfig::fromArray($config['documents']['invalidate_dependent_elements']['types']['objects'] ?? []),
             objectsEnabled: $config['objects']['enabled'] ?? false,
             objectTypes: $config['objects']['types'] ?? [],
             objectClasses: $config['objects']['classes'] ?? [],
             objectDependentElementsEnabled: $config['objects']['invalidate_dependent_elements']['enabled'] ?? false,
-            objectDependentElementTypes: $config['objects']['invalidate_dependent_elements']['types'] ?? [],
+            objectDependentAssetConfig: DependentTypeConfig::fromArray($config['objects']['invalidate_dependent_elements']['types']['assets'] ?? []),
+            objectDependentDocumentConfig: DependentTypeConfig::fromArray($config['objects']['invalidate_dependent_elements']['types']['documents'] ?? []),
+            objectDependentObjectConfig: DependentTypeConfig::fromArray($config['objects']['invalidate_dependent_elements']['types']['objects'] ?? []),
         );
     }
 
@@ -84,28 +93,24 @@ final readonly class ElementsConfig
         };
     }
 
-    public function isDependentAssetInvalidationEnabled(ElementType $source): bool
-    {
-        return $this->dependentElementTypes($source)[ElementType::Asset->configKey()] ?? false;
-    }
-
-    public function isDependentDocumentInvalidationEnabled(ElementType $source): bool
-    {
-        return $this->dependentElementTypes($source)[ElementType::Document->configKey()] ?? false;
-    }
-
-    public function isDependentObjectInvalidationEnabled(ElementType $source): bool
-    {
-        return $this->dependentElementTypes($source)[ElementType::Object->configKey()] ?? false;
-    }
-
-    /** @return array<string, bool> */
-    private function dependentElementTypes(ElementType $source): array
+    public function getDependentTypeConfig(ElementType $source, ElementType $dependent): DependentTypeConfig
     {
         return match ($source) {
-            ElementType::Asset => $this->assetDependentElementTypes,
-            ElementType::Document => $this->documentDependentElementTypes,
-            ElementType::Object => $this->objectDependentElementTypes,
+            ElementType::Asset => match ($dependent) {
+                ElementType::Asset => $this->assetDependentAssetConfig,
+                ElementType::Document => $this->assetDependentDocumentConfig,
+                ElementType::Object => $this->assetDependentObjectConfig,
+            },
+            ElementType::Document => match ($dependent) {
+                ElementType::Asset => $this->documentDependentAssetConfig,
+                ElementType::Document => $this->documentDependentDocumentConfig,
+                ElementType::Object => $this->documentDependentObjectConfig,
+            },
+            ElementType::Object => match ($dependent) {
+                ElementType::Asset => $this->objectDependentAssetConfig,
+                ElementType::Document => $this->objectDependentDocumentConfig,
+                ElementType::Object => $this->objectDependentObjectConfig,
+            },
         };
     }
 }

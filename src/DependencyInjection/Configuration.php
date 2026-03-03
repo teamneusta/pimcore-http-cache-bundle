@@ -2,6 +2,7 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\DependencyInjection;
 
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -46,9 +47,9 @@ final class Configuration implements ConfigurationInterface
                                             ->info('Enable/disable invalidation of dependent element types.')
                                             ->addDefaultsIfNotSet()
                                             ->children()
-                                                ->booleanNode('assets')->defaultFalse()->end()
-                                                ->booleanNode('documents')->defaultFalse()->end()
-                                                ->booleanNode('objects')->defaultFalse()->end()
+                                                ->append($this->buildDependentTypeNode('assets'))
+                                                ->append($this->buildDependentTypeNode('documents'))
+                                                ->append($this->buildDependentTypeNode('objects', withClasses: true))
                                             ->end()
                                         ->end()
                                     ->end()
@@ -79,9 +80,9 @@ final class Configuration implements ConfigurationInterface
                                             ->info('Enable/disable invalidation of dependent element types.')
                                             ->addDefaultsIfNotSet()
                                             ->children()
-                                                ->booleanNode('assets')->defaultFalse()->end()
-                                                ->booleanNode('documents')->defaultFalse()->end()
-                                                ->booleanNode('objects')->defaultFalse()->end()
+                                                ->append($this->buildDependentTypeNode('assets'))
+                                                ->append($this->buildDependentTypeNode('documents'))
+                                                ->append($this->buildDependentTypeNode('objects', withClasses: true))
                                             ->end()
                                         ->end()
                                     ->end()
@@ -120,9 +121,9 @@ final class Configuration implements ConfigurationInterface
                                             ->info('Enable/disable invalidation of dependent element types.')
                                             ->addDefaultsIfNotSet()
                                             ->children()
-                                                ->booleanNode('assets')->defaultFalse()->end()
-                                                ->booleanNode('documents')->defaultFalse()->end()
-                                                ->booleanNode('objects')->defaultFalse()->end()
+                                                ->append($this->buildDependentTypeNode('assets'))
+                                                ->append($this->buildDependentTypeNode('documents'))
+                                                ->append($this->buildDependentTypeNode('objects', withClasses: true))
                                             ->end()
                                         ->end()
                                     ->end()
@@ -140,5 +141,41 @@ final class Configuration implements ConfigurationInterface
             ->end();
 
         return $treeBuilder;
+    }
+
+    private function buildDependentTypeNode(string $name, bool $withClasses = false): ArrayNodeDefinition
+    {
+        $builder = new TreeBuilder($name);
+        /** @var ArrayNodeDefinition $node */
+        $node = $builder->getRootNode();
+
+        $node
+            ->beforeNormalization()
+                ->ifTrue(fn ($v) => is_bool($v))
+                ->then(fn ($v) => ['enabled' => $v])
+            ->end()
+            ->canBeEnabled()
+            ->addDefaultsIfNotSet();
+
+        $children = $node->children();
+        $children
+            ->arrayNode('types')
+                ->normalizeKeys(false)
+                ->useAttributeAsKey('type')
+                ->defaultValue([])
+                ->booleanPrototype()->end()
+            ->end();
+
+        if ($withClasses) {
+            $children
+                ->arrayNode('classes')
+                    ->normalizeKeys(false)
+                    ->useAttributeAsKey('class')
+                    ->defaultValue([])
+                    ->booleanPrototype()->end()
+                ->end();
+        }
+
+        return $node;
     }
 }

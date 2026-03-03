@@ -369,4 +369,53 @@ final class DependentElementFinderTest extends TestCase
 
         self::assertSame([], $result);
     }
+
+    /**
+     * @test
+     */
+    public function findFor_skips_dependent_object_with_subtype_disabled_in_dependent_config(): void
+    {
+        $finder = new DependentElementFinder(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['objects' => ['enabled' => true, 'types' => ['folder' => false]]]]]]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentFolder = $this->prophesize(DataObject::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentFolder->getType()->willReturn('folder');
+        $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
+        $this->elementRepository->findObject(23)->willReturn($dependentFolder->reveal());
+
+        $result = $finder->findFor($element->reveal());
+
+        self::assertSame([], $result);
+    }
+
+    /**
+     * @test
+     */
+    public function findFor_skips_dependent_object_with_class_disabled_in_dependent_config(): void
+    {
+        $finder = new DependentElementFinder(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['objects' => ['enabled' => true, 'classes' => ['IgnoredClass' => false]]]]]]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentObject = $this->prophesize(Concrete::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentObject->getType()->willReturn('object');
+        $dependentObject->getClassName()->willReturn('IgnoredClass');
+        $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
+        $this->elementRepository->findObject(23)->willReturn($dependentObject->reveal());
+
+        $result = $finder->findFor($element->reveal());
+
+        self::assertSame([], $result);
+    }
 }
