@@ -4,7 +4,6 @@ namespace Neusta\Pimcore\HttpCacheBundle\Element;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Pimcore\Event\Model\ElementEventInterface;
-use Pimcore\Model\Dependency;
 use Pimcore\Model\Element\ElementInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -13,8 +12,7 @@ final class InvalidateElementListener
     public function __construct(
         private readonly CacheInvalidator $cacheInvalidator,
         private readonly EventDispatcherInterface $dispatcher,
-        private readonly ElementRepository $elementRepository,
-        private readonly ElementsConfig $config,
+        private readonly DependencyInvalidator $dependencyInvalidator,
     ) {
     }
 
@@ -43,10 +41,7 @@ final class InvalidateElementListener
             return;
         }
 
-        $type = ElementType::tryFromElement($element);
-        if ($type !== null && $this->config->isDependencyTraversalEnabled($type)) {
-            $this->invalidateDependencies($element->getDependencies(), $type);
-        }
+        $this->dependencyInvalidator->invalidate($element, fn ($e) => $this->invalidateElement($e));
     }
 
     private function invalidateElement(ElementInterface $element): bool
@@ -61,33 +56,5 @@ final class InvalidateElementListener
         $this->cacheInvalidator->invalidate($invalidationEvent->cacheTags());
 
         return true;
-    }
-
-    /**
-     * Invalidates dependent elements one level deep.
-     * Dependencies of dependent elements are intentionally not traversed to prevent cycles.
-     */
-    private function invalidateDependencies(Dependency $dependency, ElementType $sourceType): void
-    {
-        foreach ($dependency->getRequiredBy() as $required) {
-            if (!isset($required['id'], $required['type'])) {
-                continue;
-            }
-
-            $dependentType = ElementType::tryFrom($required['type']);
-            if ($dependentType === null || !$this->config->isDependentTypeEnabled($sourceType, $dependentType)) {
-                continue;
-            }
-
-            $element = match ($dependentType) {
-                ElementType::Object => $this->elementRepository->findObject((int) $required['id']),
-                ElementType::Document => $this->elementRepository->findDocument((int) $required['id']),
-                ElementType::Asset => $this->elementRepository->findAsset((int) $required['id']),
-            };
-
-            if ($element) {
-                $this->invalidateElement($element);
-            }
-        }
     }
 }

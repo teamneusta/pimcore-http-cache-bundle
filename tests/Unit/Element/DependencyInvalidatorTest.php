@@ -1,0 +1,224 @@
+<?php declare(strict_types=1);
+
+namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Element;
+
+use Neusta\Pimcore\HttpCacheBundle\Element\DependencyInvalidator;
+use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
+use Neusta\Pimcore\HttpCacheBundle\Element\ElementsConfig;
+use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
+use PHPUnit\Framework\TestCase;
+use Pimcore\Model\Asset;
+use Pimcore\Model\DataObject;
+use Pimcore\Model\DataObject\TestObject;
+use Pimcore\Model\Dependency;
+use Pimcore\Model\Document;
+use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Prophecy\Prophecy\ObjectProphecy;
+
+final class DependencyInvalidatorTest extends TestCase
+{
+    use ProphecyTrait;
+
+    /** @var ObjectProphecy<ElementRepository> */
+    private ObjectProphecy $elementRepository;
+
+    protected function setUp(): void
+    {
+        $this->elementRepository = $this->prophesize(ElementRepository::class);
+    }
+
+    /**
+     * @test
+     */
+    public function invalidate_does_nothing_when_traversal_is_disabled_for_source_type(): void
+    {
+        $invalidator = new DependencyInvalidator(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray([]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+
+        $called = false;
+        $invalidator->invalidate($element->reveal(), function () use (&$called) { $called = true; });
+
+        self::assertFalse($called);
+        $this->elementRepository->findObject(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     */
+    public function invalidate_skips_entries_without_id_or_type(): void
+    {
+        $invalidator = new DependencyInvalidator(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependency->getRequiredBy()->willReturn([
+            ['type' => 'object'],    // missing id
+            ['id' => 23],            // missing type
+            [],                      // missing both
+        ]);
+
+        $called = false;
+        $invalidator->invalidate($element->reveal(), function () use (&$called) { $called = true; });
+
+        self::assertFalse($called);
+        $this->elementRepository->findObject(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     */
+    public function invalidate_skips_entries_with_unknown_type(): void
+    {
+        $invalidator = new DependencyInvalidator(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'unknown']]);
+
+        $called = false;
+        $invalidator->invalidate($element->reveal(), function () use (&$called) { $called = true; });
+
+        self::assertFalse($called);
+        $this->elementRepository->findObject(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     */
+    public function invalidate_skips_entries_when_dependent_type_is_disabled(): void
+    {
+        $invalidator = new DependencyInvalidator(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => false]]]]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
+
+        $called = false;
+        $invalidator->invalidate($element->reveal(), function () use (&$called) { $called = true; });
+
+        self::assertFalse($called);
+        $this->elementRepository->findObject(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     */
+    public function invalidate_skips_dependent_element_when_not_found(): void
+    {
+        $invalidator = new DependencyInvalidator(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
+        $this->elementRepository->findObject(23)->willReturn(null);
+
+        $called = false;
+        $invalidator->invalidate($element->reveal(), function () use (&$called) { $called = true; });
+
+        self::assertFalse($called);
+    }
+
+    /**
+     * @test
+     */
+    public function invalidate_calls_callable_for_each_dependent_object(): void
+    {
+        $invalidator = new DependencyInvalidator(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentElement = $this->prophesize(DataObject::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentElement->getId()->willReturn(23);
+        $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
+        $this->elementRepository->findObject(23)->willReturn($dependentElement->reveal());
+
+        $received = [];
+        $invalidator->invalidate($element->reveal(), function ($e) use (&$received) { $received[] = $e; });
+
+        self::assertCount(1, $received);
+        self::assertSame($dependentElement->reveal(), $received[0]);
+    }
+
+    /**
+     * @test
+     */
+    public function invalidate_calls_callable_for_dependent_document(): void
+    {
+        $invalidator = new DependencyInvalidator(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['documents' => true]]]]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentDocument = $this->prophesize(Document::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentDocument->getId()->willReturn(5);
+        $dependency->getRequiredBy()->willReturn([['id' => 5, 'type' => 'document']]);
+        $this->elementRepository->findDocument(5)->willReturn($dependentDocument->reveal());
+
+        $received = [];
+        $invalidator->invalidate($element->reveal(), function ($e) use (&$received) { $received[] = $e; });
+
+        self::assertCount(1, $received);
+        self::assertSame($dependentDocument->reveal(), $received[0]);
+    }
+
+    /**
+     * @test
+     */
+    public function invalidate_calls_callable_for_dependent_asset(): void
+    {
+        $invalidator = new DependencyInvalidator(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['assets' => true]]]]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentAsset = $this->prophesize(Asset::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentAsset->getId()->willReturn(7);
+        $dependency->getRequiredBy()->willReturn([['id' => 7, 'type' => 'asset']]);
+        $this->elementRepository->findAsset(7)->willReturn($dependentAsset->reveal());
+
+        $received = [];
+        $invalidator->invalidate($element->reveal(), function ($e) use (&$received) { $received[] = $e; });
+
+        self::assertCount(1, $received);
+        self::assertSame($dependentAsset->reveal(), $received[0]);
+    }
+}

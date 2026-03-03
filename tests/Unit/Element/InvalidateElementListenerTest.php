@@ -5,10 +5,9 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Element;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
+use Neusta\Pimcore\HttpCacheBundle\Element\DependencyInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementInvalidationEvent;
-use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
-use Neusta\Pimcore\HttpCacheBundle\Element\ElementsConfig;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Event\Model\AssetEvent;
@@ -17,7 +16,6 @@ use Pimcore\Event\Model\DocumentEvent;
 use Pimcore\Event\Model\ElementEventInterface;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject;
-use Pimcore\Model\Dependency;
 use Pimcore\Model\Document;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
@@ -36,23 +34,23 @@ final class InvalidateElementListenerTest extends TestCase
     /** @var ObjectProphecy<EventDispatcherInterface> */
     private $eventDispatcher;
 
-    /** @var ObjectProphecy<ElementRepository> */
-    private $elementRepository;
+    /** @var ObjectProphecy<DependencyInvalidator> */
+    private $dependencyInvalidator;
 
     protected function setUp(): void
     {
         $this->cacheInvalidator = $this->prophesize(CacheInvalidator::class);
         $this->eventDispatcher = $this->prophesize(EventDispatcherInterface::class);
-        $this->elementRepository = $this->prophesize(ElementRepository::class);
+        $this->dependencyInvalidator = $this->prophesize(DependencyInvalidator::class);
         $this->invalidateElementListener = new InvalidateElementListener(
             $this->cacheInvalidator->reveal(),
             $this->eventDispatcher->reveal(),
-            $this->elementRepository->reveal(),
-            ElementsConfig::fromArray([]),
+            $this->dependencyInvalidator->reveal(),
         );
 
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
             ->willReturnArgument();
+        $this->dependencyInvalidator->invalidate(Argument::cetera());
     }
 
     /**
@@ -117,163 +115,37 @@ final class InvalidateElementListenerTest extends TestCase
 
     /**
      * @test
+     *
+     * @dataProvider elementProvider
      */
-    public function onUpdate_should_invalidate_dependencies(): void
+    public function onUpdate_should_call_dependency_invalidator(ElementEventInterface $event): void
     {
-        $listener = new InvalidateElementListener(
-            $this->cacheInvalidator->reveal(),
-            $this->eventDispatcher->reveal(),
-            $this->elementRepository->reveal(),
-            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]]),
-        );
+        $element = $event->getElement();
 
-        $element = $this->prophesize(DataObject\TestObject::class);
-        $element->getType()->willReturn(ElementType::Object->value);
-        $dependency = $this->prophesize(Dependency::class);
-        $dependentElement = $this->prophesize(DataObject::class);
-        $event = new DataObjectEvent($element->reveal());
+        $this->invalidateElementListener->onUpdate($event);
 
-        $element->getId()->willReturn(42);
-        $element->getDependencies()->willReturn($dependency->reveal());
-        $dependentElement->getId()->willReturn(23);
-        $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
-        $this->elementRepository->findObject(23)->willReturn($dependentElement->reveal());
-
-        $listener->onUpdate($event);
-
-        $this->cacheInvalidator->invalidate(Argument::which('toString', CacheTag::fromElement($dependentElement->reveal())->toString()))
+        $this->dependencyInvalidator->invalidate($element, Argument::type('callable'))
             ->shouldHaveBeenCalledOnce();
-    }
-
-    /**
-     * @test
-     */
-    public function onUpdate_should_not_invalidate_dependencies_when_source_invalidation_is_canceled(): void
-    {
-        $listener = new InvalidateElementListener(
-            $this->cacheInvalidator->reveal(),
-            $this->eventDispatcher->reveal(),
-            $this->elementRepository->reveal(),
-            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]]),
-        );
-
-        $element = $this->prophesize(DataObject\TestObject::class);
-        $element->getType()->willReturn(ElementType::Object->value);
-        $element->getId()->willReturn(42);
-        $event = new DataObjectEvent($element->reveal());
-
-        $invalidationEvent = ElementInvalidationEvent::fromElement($element->reveal());
-        $invalidationEvent->cancel = true;
-        $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
-            ->willReturn($invalidationEvent);
-
-        $listener->onUpdate($event);
-
-        $this->elementRepository->findObject(Argument::any())->shouldNotHaveBeenCalled();
-        $this->cacheInvalidator->invalidate(Argument::any())->shouldNotHaveBeenCalled();
-    }
-
-    /**
-     * @test
-     */
-    public function onUpdate_should_not_invalidate_dependencies_when_dependent_type_is_disabled(): void
-    {
-        $listener = new InvalidateElementListener(
-            $this->cacheInvalidator->reveal(),
-            $this->eventDispatcher->reveal(),
-            $this->elementRepository->reveal(),
-            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => false]]]]),
-        );
-
-        $element = $this->prophesize(DataObject\TestObject::class);
-        $element->getType()->willReturn(ElementType::Object->value);
-        $dependency = $this->prophesize(Dependency::class);
-        $event = new DataObjectEvent($element->reveal());
-
-        $element->getId()->willReturn(42);
-        $element->getDependencies()->willReturn($dependency->reveal());
-        $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
-
-        $listener->onUpdate($event);
-
-        $this->elementRepository->findObject(Argument::any())->shouldNotHaveBeenCalled();
-    }
-
-    /**
-     * @test
-     */
-    public function onUpdate_should_not_invalidate_dependent_element_when_its_invalidation_is_canceled(): void
-    {
-        $listener = new InvalidateElementListener(
-            $this->cacheInvalidator->reveal(),
-            $this->eventDispatcher->reveal(),
-            $this->elementRepository->reveal(),
-            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]]),
-        );
-
-        $element = $this->prophesize(DataObject\TestObject::class);
-        $element->getType()->willReturn(ElementType::Object->value);
-        $dependency = $this->prophesize(Dependency::class);
-        $dependentElement = $this->prophesize(DataObject::class);
-        $event = new DataObjectEvent($element->reveal());
-
-        $element->getId()->willReturn(42);
-        $element->getDependencies()->willReturn($dependency->reveal());
-        $dependentElement->getId()->willReturn(23);
-        $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
-        $this->elementRepository->findObject(23)->willReturn($dependentElement->reveal());
-
-        $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
-            ->will(function (array $args) {
-                $event = $args[0];
-                if ($event->element->getId() === 23) {
-                    $event->cancel = true;
-                }
-
-                return $event;
-            });
-
-        $listener->onUpdate($event);
-
-        $this->cacheInvalidator->invalidate(Argument::which('toString', CacheTag::fromElement($element->reveal())->toString()))
-            ->shouldHaveBeenCalledOnce();
-        $this->cacheInvalidator->invalidate(Argument::which('toString', CacheTag::fromElement($dependentElement->reveal())->toString()))
-            ->shouldNotHaveBeenCalled();
     }
 
     /**
      * @test
      *
-     * @dataProvider notObjectElementProvider
+     * @dataProvider elementProvider
      */
-    public function onUpdate_should_not_invalidate_dependencies_when_traversal_is_disabled(
+    public function onUpdate_should_not_call_dependency_invalidator_when_source_invalidation_is_canceled(
         ElementEventInterface $event,
     ): void {
+        $element = $event->getElement();
+        $invalidationEvent = ElementInvalidationEvent::fromElement($element);
+        $invalidationEvent->cancel = true;
+
+        $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
+            ->willReturn($invalidationEvent);
+
         $this->invalidateElementListener->onUpdate($event);
 
-        $this->cacheInvalidator->invalidate(Argument::any())
-            ->shouldHaveBeenCalledOnce();
-        $this->elementRepository->findObject(Argument::any())
-            ->shouldNotHaveBeenCalled();
-    }
-
-    public function notObjectElementProvider(): iterable
-    {
-        $asset = $this->prophesize(Asset::class);
-        $dependency = $this->prophesize(Dependency::class);
-        $asset->getId()->willReturn(42);
-        $asset->getType()->willReturn(ElementType::Asset->value);
-        $asset->getDependencies()->willReturn($dependency->reveal());
-        $dependency->getRequiredBy()->willReturn(['id' => 23, 'type' => 'object']);
-        yield 'Asset' => ['event' => new AssetEvent($asset->reveal())];
-
-        $document = $this->prophesize(Document::class);
-        $dependency = $this->prophesize(Dependency::class);
-        $document->getId()->willReturn(42);
-        $document->getType()->willReturn(ElementType::Document->value);
-        $document->getDependencies()->willReturn($dependency->reveal());
-        $dependency->getRequiredBy()->willReturn(['id' => 23, 'type' => 'object']);
-        yield 'Document' => ['event' => new DocumentEvent($document->reveal())];
+        $this->dependencyInvalidator->invalidate(Argument::cetera())->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -350,31 +222,16 @@ final class InvalidateElementListenerTest extends TestCase
 
     /**
      * @test
+     *
+     * @dataProvider elementProvider
      */
-    public function onDelete_should_invalidate_dependent_elements(): void
+    public function onDelete_should_call_dependency_invalidator(ElementEventInterface $event): void
     {
-        $listener = new InvalidateElementListener(
-            $this->cacheInvalidator->reveal(),
-            $this->eventDispatcher->reveal(),
-            $this->elementRepository->reveal(),
-            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]]),
-        );
+        $element = $event->getElement();
 
-        $element = $this->prophesize(DataObject\TestObject::class);
-        $element->getType()->willReturn(ElementType::Object->value);
-        $dependency = $this->prophesize(Dependency::class);
-        $dependentElement = $this->prophesize(DataObject::class);
-        $event = new DataObjectEvent($element->reveal());
+        $this->invalidateElementListener->onDelete($event);
 
-        $element->getId()->willReturn(42);
-        $element->getDependencies()->willReturn($dependency->reveal());
-        $dependentElement->getId()->willReturn(23);
-        $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
-        $this->elementRepository->findObject(23)->willReturn($dependentElement->reveal());
-
-        $listener->onDelete($event);
-
-        $this->cacheInvalidator->invalidate(Argument::which('toString', CacheTag::fromElement($dependentElement->reveal())->toString()))
+        $this->dependencyInvalidator->invalidate($element, Argument::type('callable'))
             ->shouldHaveBeenCalledOnce();
     }
 
@@ -424,24 +281,18 @@ final class InvalidateElementListenerTest extends TestCase
 
     public function elementProvider(): iterable
     {
-        $dependency = $this->prophesize(Dependency::class);
-
         $asset = $this->prophesize(Asset::class);
         $asset->getId()->willReturn(42);
-        $asset->getDependencies()->willReturn($dependency->reveal());
         $asset->getType()->willReturn(ElementType::Asset->value);
         yield 'Asset' => ['event' => new AssetEvent($asset->reveal())];
 
         $document = $this->prophesize(Document::class);
         $document->getId()->willReturn(42);
-        $document->getDependencies()->willReturn($dependency->reveal());
         $document->getType()->willReturn(ElementType::Document->value);
         yield 'Document' => ['event' => new DocumentEvent($document->reveal())];
 
         $dataObject = $this->prophesize(DataObject::class);
         $dataObject->getId()->willReturn(42);
-        $dataObject->getDependencies()->willReturn($dependency->reveal());
-        $dependency->getRequiredBy()->willReturn([]);
         $dataObject->getType()->willReturn(ElementType::Object->value);
         yield 'Object' => ['event' => new DataObjectEvent($dataObject->reveal())];
     }
