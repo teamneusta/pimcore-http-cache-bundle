@@ -35,10 +35,10 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
         $tagListener = $container->getDefinition('neusta_pimcore_http_cache.element.tag_listener');
         $invalidateListener = $container->getDefinition('neusta_pimcore_http_cache.element.invalidate_listener');
 
-        if ($config['assets']['enabled']) {
-            $container->getDefinition('neusta_pimcore_http_cache.cache_tag_checker.element.asset')
-                ->setArgument('$config', $config['assets']);
+        $container->getDefinition('neusta_pimcore_http_cache.elements_config')
+            ->setArgument('$config', $config);
 
+        if ($config['assets']['enabled']) {
             $tagListener
                 ->addTag('kernel.event_listener', ['event' => AssetEvents::POST_LOAD]);
 
@@ -48,9 +48,6 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
         }
 
         if ($config['documents']['enabled']) {
-            $container->getDefinition('neusta_pimcore_http_cache.cache_tag_checker.element.document')
-                ->setArgument('$config', $config['documents']);
-
             $tagListener
                 ->addTag('kernel.event_listener', ['event' => DocumentEvents::POST_LOAD]);
 
@@ -60,9 +57,6 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
         }
 
         if ($config['objects']['enabled']) {
-            $container->getDefinition('neusta_pimcore_http_cache.cache_tag_checker.element.object')
-                ->setArgument('$config', $config['objects']);
-
             $tagListener
                 ->addTag('kernel.event_listener', ['event' => DataObjectEvents::POST_LOAD]);
 
@@ -70,9 +64,6 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
                 ->addTag('kernel.event_listener', ['event' => DataObjectEvents::POST_UPDATE, 'method' => 'onUpdate'])
                 ->addTag('kernel.event_listener', ['event' => DataObjectEvents::PRE_DELETE, 'method' => 'onDelete']);
         }
-
-        $container->getDefinition('neusta_pimcore_http_cache.element.invalidate_listener')
-            ->setArgument('$config', $config);
 
         $container->setParameter('neusta_pimcore_http_cache.config', $config);
     }

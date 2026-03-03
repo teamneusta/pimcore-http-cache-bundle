@@ -10,12 +10,11 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 final class InvalidateElementListener
 {
-    /** @param array<mixed> $config */
     public function __construct(
         private readonly CacheInvalidator $cacheInvalidator,
         private readonly EventDispatcherInterface $dispatcher,
         private readonly ElementRepository $elementRepository,
-        private readonly array $config,
+        private readonly ElementsConfig $config,
     ) {
     }
 
@@ -45,7 +44,7 @@ final class InvalidateElementListener
         }
 
         $type = ElementType::tryFromElement($element);
-        if ($type !== null && $this->isDependencyTraversalEnabled($type)) {
+        if ($type !== null && $this->config->isDependencyTraversalEnabled($type)) {
             $this->invalidateDependencies($element->getDependencies(), $type);
         }
     }
@@ -64,22 +63,15 @@ final class InvalidateElementListener
         return true;
     }
 
-    private function isDependencyTraversalEnabled(ElementType $type): bool
-    {
-        return $this->config[$type->configKey()]['invalidate_dependencies']['enabled'] ?? false;
-    }
-
     private function invalidateDependencies(Dependency $dependency, ElementType $sourceType): void
     {
-        $typesConfig = $this->config[$sourceType->configKey()]['invalidate_dependencies']['types'] ?? [];
-
         foreach ($dependency->getRequiredBy() as $required) {
             if (!isset($required['id'], $required['type'])) {
                 continue;
             }
 
             $dependentType = ElementType::tryFrom($required['type']);
-            if ($dependentType === null || !($typesConfig[$dependentType->configKey()] ?? false)) {
+            if ($dependentType === null || !$this->config->isDependentTypeEnabled($sourceType, $dependentType)) {
                 continue;
             }
 

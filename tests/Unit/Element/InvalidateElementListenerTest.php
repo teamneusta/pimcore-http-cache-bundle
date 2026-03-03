@@ -8,6 +8,7 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementInvalidationEvent;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
+use Neusta\Pimcore\HttpCacheBundle\Element\ElementsConfig;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Event\Model\AssetEvent;
@@ -47,7 +48,7 @@ final class InvalidateElementListenerTest extends TestCase
             $this->cacheInvalidator->reveal(),
             $this->eventDispatcher->reveal(),
             $this->elementRepository->reveal(),
-            [],
+            ElementsConfig::fromArray([]),
         );
 
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
@@ -123,7 +124,7 @@ final class InvalidateElementListenerTest extends TestCase
             $this->cacheInvalidator->reveal(),
             $this->eventDispatcher->reveal(),
             $this->elementRepository->reveal(),
-            ['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]],
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]]),
         );
 
         $element = $this->prophesize(DataObject\TestObject::class);
@@ -153,7 +154,7 @@ final class InvalidateElementListenerTest extends TestCase
             $this->cacheInvalidator->reveal(),
             $this->eventDispatcher->reveal(),
             $this->elementRepository->reveal(),
-            ['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]],
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]]),
         );
 
         $element = $this->prophesize(DataObject\TestObject::class);
@@ -288,7 +289,7 @@ final class InvalidateElementListenerTest extends TestCase
             $this->cacheInvalidator->reveal(),
             $this->eventDispatcher->reveal(),
             $this->elementRepository->reveal(),
-            ['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]],
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]]),
         );
 
         $element = $this->prophesize(DataObject\TestObject::class);

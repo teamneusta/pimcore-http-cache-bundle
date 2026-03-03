@@ -7,15 +7,13 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType\ElementCacheType;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
+use Neusta\Pimcore\HttpCacheBundle\Element\ElementsConfig;
 
 final class AssetCacheTagChecker implements CacheTagChecker
 {
-    /**
-     * @param array{enabled: bool, types: array<string, bool>} $config
-     */
     public function __construct(
         private readonly ElementRepository $repository,
-        private readonly array $config,
+        private readonly ElementsConfig $config,
     ) {
     }
 
@@ -24,7 +22,7 @@ final class AssetCacheTagChecker implements CacheTagChecker
         \assert($tag->type instanceof ElementCacheType, \sprintf('Cache type must be an instance of %s', ElementCacheType::class));
         \assert(ElementType::Asset === $tag->type->type, \sprintf('Cache type must be "%s"', ElementType::Asset->value));
 
-        if (!$this->config['enabled']) {
+        if (!$this->config->isEnabled(ElementType::Asset)) {
             return false;
         }
 
@@ -32,6 +30,6 @@ final class AssetCacheTagChecker implements CacheTagChecker
             return false;
         }
 
-        return $this->config['types'][$asset->getType()] ?? true;
+        return $this->config->isTypeEnabled(ElementType::Asset, $asset->getType());
     }
 }

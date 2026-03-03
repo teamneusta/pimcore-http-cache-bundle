@@ -5,6 +5,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Cache\CacheTagChecker\Elemen
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\Element\ObjectCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
+use Neusta\Pimcore\HttpCacheBundle\Element\ElementsConfig;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Model\DataObject;
 use Pimcore\Model\DataObject\AbstractObject;
@@ -31,7 +32,7 @@ final class ObjectCacheTagCheckerTest extends TestCase
         $object = $this->prophesize(DataObject::class);
         $elementCacheTagChecker = new ObjectCacheTagChecker(
             $this->elementRepository->reveal(),
-            config: ['enabled' => false, 'types' => [], 'classes' => []],
+            config: ElementsConfig::fromArray(['objects' => ['enabled' => false, 'types' => [], 'classes' => []]]),
         );
 
         $object->getId()->willReturn(42);
@@ -49,7 +50,7 @@ final class ObjectCacheTagCheckerTest extends TestCase
         $object = $this->prophesize(DataObject::class);
         $elementCacheTagChecker = new ObjectCacheTagChecker(
             $this->elementRepository->reveal(),
-            config: ['enabled' => true, 'types' => [], 'classes' => []],
+            config: ElementsConfig::fromArray(['objects' => ['enabled' => true, 'types' => [], 'classes' => []]]),
         );
 
         $object->getId()->willReturn(42);
@@ -68,7 +69,7 @@ final class ObjectCacheTagCheckerTest extends TestCase
         $object = $this->prophesize(DataObject::class);
         $elementCacheTagChecker = new ObjectCacheTagChecker(
             $this->elementRepository->reveal(),
-            config: ['enabled' => true, 'types' => [AbstractObject::OBJECT_TYPE_FOLDER => false], 'classes' => []],
+            config: ElementsConfig::fromArray(['objects' => ['enabled' => true, 'types' => [AbstractObject::OBJECT_TYPE_FOLDER => false], 'classes' => []]]),
         );
 
         $object->getId()->willReturn(42);
@@ -88,7 +89,7 @@ final class ObjectCacheTagCheckerTest extends TestCase
         $object = $this->prophesize(DataObject::class);
         $elementCacheTagChecker = new ObjectCacheTagChecker(
             $this->elementRepository->reveal(),
-            config: ['enabled' => true, 'types' => [AbstractObject::OBJECT_TYPE_VARIANT => true], 'classes' => []],
+            config: ElementsConfig::fromArray(['objects' => ['enabled' => true, 'types' => [AbstractObject::OBJECT_TYPE_VARIANT => true], 'classes' => []]]),
         );
 
         $object->getId()->willReturn(42);
@@ -108,7 +109,7 @@ final class ObjectCacheTagCheckerTest extends TestCase
         $object = $this->prophesize(DataObject::class);
         $elementCacheTagChecker = new ObjectCacheTagChecker(
             $this->elementRepository->reveal(),
-            config: ['enabled' => true, 'types' => [AbstractObject::OBJECT_TYPE_FOLDER => false], 'classes' => []],
+            config: ElementsConfig::fromArray(['objects' => ['enabled' => true, 'types' => [AbstractObject::OBJECT_TYPE_FOLDER => false], 'classes' => []]]),
         );
 
         $object->getId()->willReturn(42);
@@ -128,7 +129,7 @@ final class ObjectCacheTagCheckerTest extends TestCase
         $object = $this->prophesize(DataObject::class);
         $elementCacheTagChecker = new ObjectCacheTagChecker(
             $this->elementRepository->reveal(),
-            config: ['enabled' => true, 'types' => [], 'classes' => []],
+            config: ElementsConfig::fromArray(['objects' => ['enabled' => true, 'types' => [], 'classes' => []]]),
         );
 
         $object->getId()->willReturn(42);
@@ -148,7 +149,7 @@ final class ObjectCacheTagCheckerTest extends TestCase
         $object = $this->prophesize(DataObject\Concrete::class);
         $elementCacheTagChecker = new ObjectCacheTagChecker(
             $this->elementRepository->reveal(),
-            config: ['enabled' => true, 'types' => [], 'classes' => []],
+            config: ElementsConfig::fromArray(['objects' => ['enabled' => true, 'types' => [], 'classes' => []]]),
         );
 
         $object->getId()->willReturn(42);
@@ -169,7 +170,7 @@ final class ObjectCacheTagCheckerTest extends TestCase
         $object = $this->prophesize(DataObject\Concrete::class);
         $elementCacheTagChecker = new ObjectCacheTagChecker(
             $this->elementRepository->reveal(),
-            config: ['enabled' => true, 'types' => [], 'classes' => ['Foo' => false]],
+            config: ElementsConfig::fromArray(['objects' => ['enabled' => true, 'types' => [], 'classes' => ['Foo' => false]]]),
         );
 
         $object->getId()->willReturn(42);

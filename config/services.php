@@ -18,6 +18,7 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\RemoveDisabledTagsRespon
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
 use Neusta\Pimcore\HttpCacheBundle\DataCollector;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
+use Neusta\Pimcore\HttpCacheBundle\Element\ElementsConfig;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
 use Neusta\Pimcore\HttpCacheBundle\Element\TagElementListener;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -73,17 +74,21 @@ return static function (ContainerConfigurator $configurator) {
 
     $services->set('.neusta_pimcore_http_cache.element.repository', ElementRepository::class);
 
+    $services->set('neusta_pimcore_http_cache.elements_config', ElementsConfig::class)
+        ->factory([ElementsConfig::class, 'fromArray'])
+        ->arg('$config', []);
+
     $services->set('neusta_pimcore_http_cache.cache_tag_checker.element.asset', AssetCacheTagChecker::class)
         ->arg('$repository', service('.neusta_pimcore_http_cache.element.repository'))
-        ->arg('$config', ['enabled' => false, 'types' => []]);
+        ->arg('$config', service('neusta_pimcore_http_cache.elements_config'));
 
     $services->set('neusta_pimcore_http_cache.cache_tag_checker.element.document', DocumentCacheTagChecker::class)
         ->arg('$repository', service('.neusta_pimcore_http_cache.element.repository'))
-        ->arg('$config', ['enabled' => false, 'types' => []]);
+        ->arg('$config', service('neusta_pimcore_http_cache.elements_config'));
 
     $services->set('neusta_pimcore_http_cache.cache_tag_checker.element.object', ObjectCacheTagChecker::class)
         ->arg('$repository', service('.neusta_pimcore_http_cache.element.repository'))
-        ->arg('$config', ['enabled' => false, 'types' => [], 'classes' => []]);
+        ->arg('$config', service('neusta_pimcore_http_cache.elements_config'));
 
     $services->set('neusta_pimcore_http_cache.element.tag_listener', TagElementListener::class)
         ->arg('$responseTagger', service('neusta_pimcore_http_cache.response_tagger'))
@@ -93,7 +98,7 @@ return static function (ContainerConfigurator $configurator) {
         ->arg('$cacheInvalidator', service('neusta_pimcore_http_cache.cache_invalidator'))
         ->arg('$dispatcher', service('event_dispatcher'))
         ->arg('$elementRepository', service('.neusta_pimcore_http_cache.element.repository'))
-        ->arg('$config', abstract_arg('Set in the extension'));
+        ->arg('$config', service('neusta_pimcore_http_cache.elements_config'));
 
     $services->set('neusta_pimcore_http_cache.data_collector', DataCollector::class)
         ->arg('$cacheTagCollector', service('.neusta_pimcore_http_cache.collect_tags_response_tagger'))
