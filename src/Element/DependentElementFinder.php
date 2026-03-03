@@ -4,7 +4,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Element;
 
 use Pimcore\Model\Element\ElementInterface;
 
-final class DependentElementInvalidator
+final class DependentElementFinder
 {
     public function __construct(
         private readonly ElementRepository $elementRepository,
@@ -13,17 +13,19 @@ final class DependentElementInvalidator
     }
 
     /**
-     * Invalidates dependent elements one level deep.
+     * Returns dependent elements one level deep.
      * Dependencies of dependent elements are intentionally not traversed to prevent cycles.
      *
-     * @param callable(ElementInterface): mixed $invalidate
+     * @return list<ElementInterface>
      */
-    public function invalidate(ElementInterface $source, callable $invalidate): void
+    public function findFor(ElementInterface $source): array
     {
         $type = ElementType::tryFromElement($source);
         if ($type === null || !$this->config->isDependentElementsEnabled($type)) {
-            return;
+            return [];
         }
+
+        $elements = [];
 
         foreach ($source->getDependencies()->getRequiredBy() as $required) {
             if (!isset($required['id'], $required['type'])) {
@@ -52,8 +54,10 @@ final class DependentElementInvalidator
             };
 
             if ($element) {
-                $invalidate($element);
+                $elements[] = $element;
             }
         }
+
+        return $elements;
     }
 }

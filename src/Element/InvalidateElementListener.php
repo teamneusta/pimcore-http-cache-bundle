@@ -12,7 +12,7 @@ final class InvalidateElementListener
     public function __construct(
         private readonly CacheInvalidator $cacheInvalidator,
         private readonly EventDispatcherInterface $dispatcher,
-        private readonly DependentElementInvalidator $dependentElementInvalidator,
+        private readonly DependentElementFinder $dependentElementFinder,
     ) {
     }
 
@@ -41,7 +41,9 @@ final class InvalidateElementListener
             return;
         }
 
-        $this->dependentElementInvalidator->invalidate($element, fn ($e) => $this->invalidateElement($e));
+        foreach ($this->dependentElementFinder->findFor($element) as $dependent) {
+            $this->invalidateElement($dependent);
+        }
     }
 
     private function invalidateElement(ElementInterface $element): bool

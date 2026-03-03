@@ -2,7 +2,7 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Element;
 
-use Neusta\Pimcore\HttpCacheBundle\Element\DependentElementInvalidator;
+use Neusta\Pimcore\HttpCacheBundle\Element\DependentElementFinder;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementsConfig;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
@@ -16,7 +16,7 @@ use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 
-final class DependentElementInvalidatorTest extends TestCase
+final class DependentElementFinderTest extends TestCase
 {
     use ProphecyTrait;
 
@@ -31,9 +31,9 @@ final class DependentElementInvalidatorTest extends TestCase
     /**
      * @test
      */
-    public function invalidate_does_nothing_when_dependent_elements_are_disabled(): void
+    public function findFor_returns_empty_when_dependent_elements_are_disabled(): void
     {
-        $invalidator = new DependentElementInvalidator(
+        $finder = new DependentElementFinder(
             $this->elementRepository->reveal(),
             ElementsConfig::fromArray([]),
         );
@@ -41,19 +41,18 @@ final class DependentElementInvalidatorTest extends TestCase
         $element = $this->prophesize(TestObject::class);
         $element->getType()->willReturn(ElementType::Object->value);
 
-        $called = false;
-        $invalidator->invalidate($element->reveal(), function () use (&$called) { $called = true; });
+        $result = $finder->findFor($element->reveal());
 
-        self::assertFalse($called);
+        self::assertSame([], $result);
         $this->elementRepository->findObject(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     /**
      * @test
      */
-    public function invalidate_skips_entries_without_id_or_type(): void
+    public function findFor_skips_entries_without_id_or_type(): void
     {
-        $invalidator = new DependentElementInvalidator(
+        $finder = new DependentElementFinder(
             $this->elementRepository->reveal(),
             ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['objects' => true]]]]),
         );
@@ -68,19 +67,18 @@ final class DependentElementInvalidatorTest extends TestCase
             [],                      // missing both
         ]);
 
-        $called = false;
-        $invalidator->invalidate($element->reveal(), function () use (&$called) { $called = true; });
+        $result = $finder->findFor($element->reveal());
 
-        self::assertFalse($called);
+        self::assertSame([], $result);
         $this->elementRepository->findObject(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     /**
      * @test
      */
-    public function invalidate_skips_entries_with_unknown_type(): void
+    public function findFor_skips_entries_with_unknown_type(): void
     {
-        $invalidator = new DependentElementInvalidator(
+        $finder = new DependentElementFinder(
             $this->elementRepository->reveal(),
             ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['objects' => true]]]]),
         );
@@ -91,19 +89,18 @@ final class DependentElementInvalidatorTest extends TestCase
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'unknown']]);
 
-        $called = false;
-        $invalidator->invalidate($element->reveal(), function () use (&$called) { $called = true; });
+        $result = $finder->findFor($element->reveal());
 
-        self::assertFalse($called);
+        self::assertSame([], $result);
         $this->elementRepository->findObject(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     /**
      * @test
      */
-    public function invalidate_skips_entries_when_dependent_element_type_is_disabled(): void
+    public function findFor_skips_entries_when_dependent_element_type_is_disabled(): void
     {
-        $invalidator = new DependentElementInvalidator(
+        $finder = new DependentElementFinder(
             $this->elementRepository->reveal(),
             ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['objects' => false]]]]),
         );
@@ -114,19 +111,18 @@ final class DependentElementInvalidatorTest extends TestCase
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
 
-        $called = false;
-        $invalidator->invalidate($element->reveal(), function () use (&$called) { $called = true; });
+        $result = $finder->findFor($element->reveal());
 
-        self::assertFalse($called);
+        self::assertSame([], $result);
         $this->elementRepository->findObject(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     /**
      * @test
      */
-    public function invalidate_skips_dependent_element_when_not_found(): void
+    public function findFor_skips_dependent_element_when_not_found(): void
     {
-        $invalidator = new DependentElementInvalidator(
+        $finder = new DependentElementFinder(
             $this->elementRepository->reveal(),
             ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['objects' => true]]]]),
         );
@@ -138,18 +134,17 @@ final class DependentElementInvalidatorTest extends TestCase
         $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
         $this->elementRepository->findObject(23)->willReturn(null);
 
-        $called = false;
-        $invalidator->invalidate($element->reveal(), function () use (&$called) { $called = true; });
+        $result = $finder->findFor($element->reveal());
 
-        self::assertFalse($called);
+        self::assertSame([], $result);
     }
 
     /**
      * @test
      */
-    public function invalidate_calls_callable_for_each_dependent_object(): void
+    public function findFor_returns_dependent_object(): void
     {
-        $invalidator = new DependentElementInvalidator(
+        $finder = new DependentElementFinder(
             $this->elementRepository->reveal(),
             ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['objects' => true]]]]),
         );
@@ -159,23 +154,21 @@ final class DependentElementInvalidatorTest extends TestCase
         $dependentElement = $this->prophesize(DataObject::class);
         $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
-        $dependentElement->getId()->willReturn(23);
         $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
         $this->elementRepository->findObject(23)->willReturn($dependentElement->reveal());
 
-        $received = [];
-        $invalidator->invalidate($element->reveal(), function ($e) use (&$received) { $received[] = $e; });
+        $result = $finder->findFor($element->reveal());
 
-        self::assertCount(1, $received);
-        self::assertSame($dependentElement->reveal(), $received[0]);
+        self::assertCount(1, $result);
+        self::assertSame($dependentElement->reveal(), $result[0]);
     }
 
     /**
      * @test
      */
-    public function invalidate_calls_callable_for_all_dependent_elements(): void
+    public function findFor_returns_all_dependent_elements(): void
     {
-        $invalidator = new DependentElementInvalidator(
+        $finder = new DependentElementFinder(
             $this->elementRepository->reveal(),
             ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['objects' => true]]]]),
         );
@@ -186,8 +179,6 @@ final class DependentElementInvalidatorTest extends TestCase
         $dependent2 = $this->prophesize(DataObject::class);
         $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
-        $dependent1->getId()->willReturn(11);
-        $dependent2->getId()->willReturn(22);
         $dependency->getRequiredBy()->willReturn([
             ['id' => 11, 'type' => 'object'],
             ['id' => 22, 'type' => 'object'],
@@ -195,20 +186,19 @@ final class DependentElementInvalidatorTest extends TestCase
         $this->elementRepository->findObject(11)->willReturn($dependent1->reveal());
         $this->elementRepository->findObject(22)->willReturn($dependent2->reveal());
 
-        $received = [];
-        $invalidator->invalidate($element->reveal(), function ($e) use (&$received) { $received[] = $e; });
+        $result = $finder->findFor($element->reveal());
 
-        self::assertCount(2, $received);
-        self::assertSame($dependent1->reveal(), $received[0]);
-        self::assertSame($dependent2->reveal(), $received[1]);
+        self::assertCount(2, $result);
+        self::assertSame($dependent1->reveal(), $result[0]);
+        self::assertSame($dependent2->reveal(), $result[1]);
     }
 
     /**
      * @test
      */
-    public function invalidate_calls_callable_for_dependent_document(): void
+    public function findFor_returns_dependent_document(): void
     {
-        $invalidator = new DependentElementInvalidator(
+        $finder = new DependentElementFinder(
             $this->elementRepository->reveal(),
             ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['documents' => true]]]]),
         );
@@ -218,23 +208,21 @@ final class DependentElementInvalidatorTest extends TestCase
         $dependentDocument = $this->prophesize(Document::class);
         $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
-        $dependentDocument->getId()->willReturn(5);
         $dependency->getRequiredBy()->willReturn([['id' => 5, 'type' => 'document']]);
         $this->elementRepository->findDocument(5)->willReturn($dependentDocument->reveal());
 
-        $received = [];
-        $invalidator->invalidate($element->reveal(), function ($e) use (&$received) { $received[] = $e; });
+        $result = $finder->findFor($element->reveal());
 
-        self::assertCount(1, $received);
-        self::assertSame($dependentDocument->reveal(), $received[0]);
+        self::assertCount(1, $result);
+        self::assertSame($dependentDocument->reveal(), $result[0]);
     }
 
     /**
      * @test
      */
-    public function invalidate_calls_callable_for_dependent_asset(): void
+    public function findFor_returns_dependent_asset(): void
     {
-        $invalidator = new DependentElementInvalidator(
+        $finder = new DependentElementFinder(
             $this->elementRepository->reveal(),
             ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['assets' => true]]]]),
         );
@@ -244,23 +232,21 @@ final class DependentElementInvalidatorTest extends TestCase
         $dependentAsset = $this->prophesize(Asset::class);
         $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
-        $dependentAsset->getId()->willReturn(7);
         $dependency->getRequiredBy()->willReturn([['id' => 7, 'type' => 'asset']]);
         $this->elementRepository->findAsset(7)->willReturn($dependentAsset->reveal());
 
-        $received = [];
-        $invalidator->invalidate($element->reveal(), function ($e) use (&$received) { $received[] = $e; });
+        $result = $finder->findFor($element->reveal());
 
-        self::assertCount(1, $received);
-        self::assertSame($dependentAsset->reveal(), $received[0]);
+        self::assertCount(1, $result);
+        self::assertSame($dependentAsset->reveal(), $result[0]);
     }
 
     /**
      * @test
      */
-    public function invalidate_calls_callable_when_source_is_an_asset(): void
+    public function findFor_returns_dependent_element_when_source_is_an_asset(): void
     {
-        $invalidator = new DependentElementInvalidator(
+        $finder = new DependentElementFinder(
             $this->elementRepository->reveal(),
             ElementsConfig::fromArray(['assets' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['objects' => true]]]]),
         );
@@ -270,23 +256,21 @@ final class DependentElementInvalidatorTest extends TestCase
         $dependentObject = $this->prophesize(DataObject::class);
         $element->getType()->willReturn(ElementType::Asset->value);
         $element->getDependencies()->willReturn($dependency->reveal());
-        $dependentObject->getId()->willReturn(9);
         $dependency->getRequiredBy()->willReturn([['id' => 9, 'type' => 'object']]);
         $this->elementRepository->findObject(9)->willReturn($dependentObject->reveal());
 
-        $received = [];
-        $invalidator->invalidate($element->reveal(), function ($e) use (&$received) { $received[] = $e; });
+        $result = $finder->findFor($element->reveal());
 
-        self::assertCount(1, $received);
-        self::assertSame($dependentObject->reveal(), $received[0]);
+        self::assertCount(1, $result);
+        self::assertSame($dependentObject->reveal(), $result[0]);
     }
 
     /**
      * @test
      */
-    public function invalidate_calls_callable_when_source_is_a_document(): void
+    public function findFor_returns_dependent_element_when_source_is_a_document(): void
     {
-        $invalidator = new DependentElementInvalidator(
+        $finder = new DependentElementFinder(
             $this->elementRepository->reveal(),
             ElementsConfig::fromArray(['documents' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['objects' => true]]]]),
         );
@@ -296,14 +280,12 @@ final class DependentElementInvalidatorTest extends TestCase
         $dependentObject = $this->prophesize(DataObject::class);
         $element->getType()->willReturn(ElementType::Document->value);
         $element->getDependencies()->willReturn($dependency->reveal());
-        $dependentObject->getId()->willReturn(14);
         $dependency->getRequiredBy()->willReturn([['id' => 14, 'type' => 'object']]);
         $this->elementRepository->findObject(14)->willReturn($dependentObject->reveal());
 
-        $received = [];
-        $invalidator->invalidate($element->reveal(), function ($e) use (&$received) { $received[] = $e; });
+        $result = $finder->findFor($element->reveal());
 
-        self::assertCount(1, $received);
-        self::assertSame($dependentObject->reveal(), $received[0]);
+        self::assertCount(1, $result);
+        self::assertSame($dependentObject->reveal(), $result[0]);
     }
 }

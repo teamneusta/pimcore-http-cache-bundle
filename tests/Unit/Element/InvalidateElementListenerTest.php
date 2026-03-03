@@ -5,7 +5,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Element;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
-use Neusta\Pimcore\HttpCacheBundle\Element\DependentElementInvalidator;
+use Neusta\Pimcore\HttpCacheBundle\Element\DependentElementFinder;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementInvalidationEvent;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
@@ -34,23 +34,23 @@ final class InvalidateElementListenerTest extends TestCase
     /** @var ObjectProphecy<EventDispatcherInterface> */
     private $eventDispatcher;
 
-    /** @var ObjectProphecy<DependentElementInvalidator> */
-    private $dependentElementInvalidator;
+    /** @var ObjectProphecy<DependentElementFinder> */
+    private $dependentElementFinder;
 
     protected function setUp(): void
     {
         $this->cacheInvalidator = $this->prophesize(CacheInvalidator::class);
         $this->eventDispatcher = $this->prophesize(EventDispatcherInterface::class);
-        $this->dependentElementInvalidator = $this->prophesize(DependentElementInvalidator::class);
+        $this->dependentElementFinder = $this->prophesize(DependentElementFinder::class);
         $this->invalidateElementListener = new InvalidateElementListener(
             $this->cacheInvalidator->reveal(),
             $this->eventDispatcher->reveal(),
-            $this->dependentElementInvalidator->reveal(),
+            $this->dependentElementFinder->reveal(),
         );
 
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
             ->willReturnArgument();
-        $this->dependentElementInvalidator->invalidate(Argument::cetera());
+        $this->dependentElementFinder->findFor(Argument::any())->willReturn([]);
     }
 
     /**
@@ -118,13 +118,13 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function onUpdate_should_call_dependent_element_invalidator(ElementEventInterface $event): void
+    public function onUpdate_should_call_dependent_element_finder(ElementEventInterface $event): void
     {
         $element = $event->getElement();
 
         $this->invalidateElementListener->onUpdate($event);
 
-        $this->dependentElementInvalidator->invalidate($element, Argument::type('callable'))
+        $this->dependentElementFinder->findFor($element)
             ->shouldHaveBeenCalledOnce();
     }
 
@@ -145,7 +145,7 @@ final class InvalidateElementListenerTest extends TestCase
 
         $this->invalidateElementListener->onUpdate($event);
 
-        $this->dependentElementInvalidator->invalidate(Argument::cetera())->shouldNotHaveBeenCalled();
+        $this->dependentElementFinder->findFor(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -225,13 +225,13 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function onDelete_should_call_dependent_element_invalidator(ElementEventInterface $event): void
+    public function onDelete_should_call_dependent_element_finder(ElementEventInterface $event): void
     {
         $element = $event->getElement();
 
         $this->invalidateElementListener->onDelete($event);
 
-        $this->dependentElementInvalidator->invalidate($element, Argument::type('callable'))
+        $this->dependentElementFinder->findFor($element)
             ->shouldHaveBeenCalledOnce();
     }
 
@@ -252,7 +252,7 @@ final class InvalidateElementListenerTest extends TestCase
 
         $this->invalidateElementListener->onDelete($event);
 
-        $this->dependentElementInvalidator->invalidate(Argument::cetera())->shouldNotHaveBeenCalled();
+        $this->dependentElementFinder->findFor(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     /**
