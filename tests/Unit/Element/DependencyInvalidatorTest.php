@@ -173,6 +173,39 @@ final class DependencyInvalidatorTest extends TestCase
     /**
      * @test
      */
+    public function invalidate_calls_callable_for_all_dependents(): void
+    {
+        $invalidator = new DependencyInvalidator(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependent1 = $this->prophesize(DataObject::class);
+        $dependent2 = $this->prophesize(DataObject::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependent1->getId()->willReturn(11);
+        $dependent2->getId()->willReturn(22);
+        $dependency->getRequiredBy()->willReturn([
+            ['id' => 11, 'type' => 'object'],
+            ['id' => 22, 'type' => 'object'],
+        ]);
+        $this->elementRepository->findObject(11)->willReturn($dependent1->reveal());
+        $this->elementRepository->findObject(22)->willReturn($dependent2->reveal());
+
+        $received = [];
+        $invalidator->invalidate($element->reveal(), function ($e) use (&$received) { $received[] = $e; });
+
+        self::assertCount(2, $received);
+        self::assertSame($dependent1->reveal(), $received[0]);
+        self::assertSame($dependent2->reveal(), $received[1]);
+    }
+
+    /**
+     * @test
+     */
     public function invalidate_calls_callable_for_dependent_document(): void
     {
         $invalidator = new DependencyInvalidator(

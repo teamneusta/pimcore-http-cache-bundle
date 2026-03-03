@@ -16,7 +16,7 @@ final class DependencyInvalidator
      * Invalidates dependent elements one level deep.
      * Dependencies of dependent elements are intentionally not traversed to prevent cycles.
      *
-     * @param callable(ElementInterface): bool $invalidate
+     * @param callable(ElementInterface): mixed $invalidate
      */
     public function invalidate(ElementInterface $source, callable $invalidate): void
     {

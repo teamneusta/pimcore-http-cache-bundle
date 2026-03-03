@@ -240,6 +240,26 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
+    public function onDelete_should_not_call_dependency_invalidator_when_source_invalidation_is_canceled(
+        ElementEventInterface $event,
+    ): void {
+        $element = $event->getElement();
+        $invalidationEvent = ElementInvalidationEvent::fromElement($element);
+        $invalidationEvent->cancel = true;
+
+        $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
+            ->willReturn($invalidationEvent);
+
+        $this->invalidateElementListener->onDelete($event);
+
+        $this->dependencyInvalidator->invalidate(Argument::cetera())->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider elementProvider
+     */
     public function onDelete_does_not_invalidate_when_event_was_canceled(ElementEventInterface $event): void
     {
         $element = $event->getElement();
