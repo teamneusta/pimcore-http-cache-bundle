@@ -2,6 +2,7 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Element;
 
+use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Element\ElementInterface;
 
 final class DependentElementFinder
@@ -53,11 +54,24 @@ final class DependentElementFinder
                 ElementType::Object => $this->elementRepository->findObject((int) $required['id']),
             };
 
-            if ($element) {
+            if ($element && $this->isElementEnabled($dependentType, $element)) {
                 $elements[] = $element;
             }
         }
 
         return $elements;
+    }
+
+    private function isElementEnabled(ElementType $type, ElementInterface $element): bool
+    {
+        if (!$this->config->isTypeEnabled($type, $element->getType())) {
+            return false;
+        }
+
+        if ($type === ElementType::Object && $element instanceof Concrete) {
+            return $this->config->isClassEnabled($element->getClassName());
+        }
+
+        return true;
     }
 }

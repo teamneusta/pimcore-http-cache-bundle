@@ -9,6 +9,7 @@ use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject;
+use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\TestObject;
 use Pimcore\Model\Dependency;
 use Pimcore\Model\Document;
@@ -154,6 +155,7 @@ final class DependentElementFinderTest extends TestCase
         $dependentElement = $this->prophesize(DataObject::class);
         $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentElement->getType()->willReturn('object');
         $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
         $this->elementRepository->findObject(23)->willReturn($dependentElement->reveal());
 
@@ -179,6 +181,8 @@ final class DependentElementFinderTest extends TestCase
         $dependent2 = $this->prophesize(DataObject::class);
         $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
+        $dependent1->getType()->willReturn('object');
+        $dependent2->getType()->willReturn('object');
         $dependency->getRequiredBy()->willReturn([
             ['id' => 11, 'type' => 'object'],
             ['id' => 22, 'type' => 'object'],
@@ -208,6 +212,7 @@ final class DependentElementFinderTest extends TestCase
         $dependentDocument = $this->prophesize(Document::class);
         $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentDocument->getType()->willReturn('page');
         $dependency->getRequiredBy()->willReturn([['id' => 5, 'type' => 'document']]);
         $this->elementRepository->findDocument(5)->willReturn($dependentDocument->reveal());
 
@@ -232,6 +237,7 @@ final class DependentElementFinderTest extends TestCase
         $dependentAsset = $this->prophesize(Asset::class);
         $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentAsset->getType()->willReturn('image');
         $dependency->getRequiredBy()->willReturn([['id' => 7, 'type' => 'asset']]);
         $this->elementRepository->findAsset(7)->willReturn($dependentAsset->reveal());
 
@@ -256,6 +262,7 @@ final class DependentElementFinderTest extends TestCase
         $dependentObject = $this->prophesize(DataObject::class);
         $element->getType()->willReturn(ElementType::Asset->value);
         $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentObject->getType()->willReturn('object');
         $dependency->getRequiredBy()->willReturn([['id' => 9, 'type' => 'object']]);
         $this->elementRepository->findObject(9)->willReturn($dependentObject->reveal());
 
@@ -280,6 +287,7 @@ final class DependentElementFinderTest extends TestCase
         $dependentObject = $this->prophesize(DataObject::class);
         $element->getType()->willReturn(ElementType::Document->value);
         $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentObject->getType()->willReturn('object');
         $dependency->getRequiredBy()->willReturn([['id' => 14, 'type' => 'object']]);
         $this->elementRepository->findObject(14)->willReturn($dependentObject->reveal());
 
@@ -287,5 +295,78 @@ final class DependentElementFinderTest extends TestCase
 
         self::assertCount(1, $result);
         self::assertSame($dependentObject->reveal(), $result[0]);
+    }
+
+    /**
+     * @test
+     */
+    public function findFor_skips_dependent_object_with_disabled_subtype(): void
+    {
+        $finder = new DependentElementFinder(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['objects' => true]], 'types' => ['folder' => false]]]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentFolder = $this->prophesize(DataObject::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentFolder->getType()->willReturn('folder');
+        $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
+        $this->elementRepository->findObject(23)->willReturn($dependentFolder->reveal());
+
+        $result = $finder->findFor($element->reveal());
+
+        self::assertSame([], $result);
+    }
+
+    /**
+     * @test
+     */
+    public function findFor_skips_dependent_object_with_disabled_class(): void
+    {
+        $finder = new DependentElementFinder(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['objects' => true]], 'classes' => ['IgnoredClass' => false]]]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentObject = $this->prophesize(Concrete::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentObject->getType()->willReturn('object');
+        $dependentObject->getClassName()->willReturn('IgnoredClass');
+        $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
+        $this->elementRepository->findObject(23)->willReturn($dependentObject->reveal());
+
+        $result = $finder->findFor($element->reveal());
+
+        self::assertSame([], $result);
+    }
+
+    /**
+     * @test
+     */
+    public function findFor_skips_dependent_document_with_disabled_subtype(): void
+    {
+        $finder = new DependentElementFinder(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['documents' => true]]], 'documents' => ['types' => ['email' => false]]]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentDocument = $this->prophesize(Document::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentDocument->getType()->willReturn('email');
+        $dependency->getRequiredBy()->willReturn([['id' => 5, 'type' => 'document']]);
+        $this->elementRepository->findDocument(5)->willReturn($dependentDocument->reveal());
+
+        $result = $finder->findFor($element->reveal());
+
+        self::assertSame([], $result);
     }
 }
