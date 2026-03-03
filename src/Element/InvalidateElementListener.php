@@ -61,12 +61,12 @@ final class InvalidateElementListener
 
     private function isDependencyTraversalEnabled(ElementType $type): bool
     {
-        return $this->config[$this->configKey($type)]['invalidate_dependencies']['enabled'] ?? false;
+        return $this->config[$type->configKey()]['invalidate_dependencies']['enabled'] ?? false;
     }
 
     private function invalidateDependencies(Dependency $dependency, ElementType $sourceType): void
     {
-        $typesConfig = $this->config[$this->configKey($sourceType)]['invalidate_dependencies']['types'] ?? [];
+        $typesConfig = $this->config[$sourceType->configKey()]['invalidate_dependencies']['types'] ?? [];
 
         foreach ($dependency->getRequiredBy() as $required) {
             if (!isset($required['id'], $required['type'])) {
@@ -74,7 +74,7 @@ final class InvalidateElementListener
             }
 
             $dependentType = ElementType::tryFrom($required['type']);
-            if ($dependentType === null || !($typesConfig[$this->configKey($dependentType)] ?? false)) {
+            if ($dependentType === null || !($typesConfig[$dependentType->configKey()] ?? false)) {
                 continue;
             }
 
@@ -90,12 +90,4 @@ final class InvalidateElementListener
         }
     }
 
-    private function configKey(ElementType $type): string
-    {
-        return match ($type) {
-            ElementType::Asset => 'assets',
-            ElementType::Document => 'documents',
-            ElementType::Object => 'objects',
-        };
-    }
 }

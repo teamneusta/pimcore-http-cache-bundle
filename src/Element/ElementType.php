@@ -20,4 +20,13 @@ enum ElementType: string
     {
         return self::tryFrom(Service::getElementType($element) ?? '');
     }
+
+    public function configKey(): string
+    {
+        return match ($this) {
+            self::Asset => 'assets',
+            self::Document => 'documents',
+            self::Object => 'objects',
+        };
+    }
 }
