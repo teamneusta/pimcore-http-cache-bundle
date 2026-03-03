@@ -21,11 +21,16 @@ final class InvalidateElementListener
 
     public function onUpdate(ElementEventInterface $event): void
     {
-        if ($event->hasArgument('saveVersionOnly') || $event->hasArgument('autoSave')) {
+        if ($this->shouldSkipInvalidation($event)) {
             return;
         }
 
         $this->invalidateWithDependencies($event->getElement());
+    }
+
+    private function shouldSkipInvalidation(ElementEventInterface $event): bool
+    {
+        return $event->hasArgument('saveVersionOnly') || $event->hasArgument('autoSave');
     }
 
     public function onDelete(ElementEventInterface $event): void
@@ -89,5 +94,4 @@ final class InvalidateElementListener
             }
         }
     }
-
 }
