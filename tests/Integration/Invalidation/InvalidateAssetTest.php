@@ -146,7 +146,7 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
         'elements' => [
             'assets' => [
                 'enabled' => true,
-                'invalidate_dependencies' => [
+                'invalidate_dependent_elements' => [
                     'enabled' => true,
                     'types' => [
                         'objects' => true,
@@ -175,7 +175,7 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
         'elements' => [
             'assets' => [
                 'enabled' => true,
-                'invalidate_dependencies' => [
+                'invalidate_dependent_elements' => [
                     'enabled' => true,
                     'types' => [
                         'objects' => true,
@@ -206,7 +206,7 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
             'assets' => true,
         ],
     ])]
-    public function dependency_traversal_is_not_triggered_when_asset_is_updated(): void
+    public function dependent_elements_are_not_invalidated_when_asset_is_updated(): void
     {
         $object = self::arrange(
             fn () => TestObjectFactory::simpleObject(12, 'test_object_with_asset', [$this->asset])->save(),

@@ -64,7 +64,7 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
         'elements' => [
             'objects' => [
                 'enabled' => true,
-                'invalidate_dependencies' => [
+                'invalidate_dependent_elements' => [
                     'enabled' => true,
                     'types' => [
                         'objects' => true,
@@ -108,7 +108,7 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
         'elements' => [
             'objects' => [
                 'enabled' => true,
-                'invalidate_dependencies' => [
+                'invalidate_dependent_elements' => [
                     'enabled' => true,
                     'types' => [
                         'objects' => true,

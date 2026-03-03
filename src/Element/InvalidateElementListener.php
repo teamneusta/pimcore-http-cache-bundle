@@ -12,7 +12,7 @@ final class InvalidateElementListener
     public function __construct(
         private readonly CacheInvalidator $cacheInvalidator,
         private readonly EventDispatcherInterface $dispatcher,
-        private readonly DependencyInvalidator $dependencyInvalidator,
+        private readonly DependentElementInvalidator $dependentElementInvalidator,
     ) {
     }
 
@@ -22,7 +22,7 @@ final class InvalidateElementListener
             return;
         }
 
-        $this->invalidateWithDependencies($event->getElement());
+        $this->invalidateWithDependentElements($event->getElement());
     }
 
     private function shouldSkipInvalidation(ElementEventInterface $event): bool
@@ -32,16 +32,16 @@ final class InvalidateElementListener
 
     public function onDelete(ElementEventInterface $event): void
     {
-        $this->invalidateWithDependencies($event->getElement());
+        $this->invalidateWithDependentElements($event->getElement());
     }
 
-    private function invalidateWithDependencies(ElementInterface $element): void
+    private function invalidateWithDependentElements(ElementInterface $element): void
     {
         if (!$this->invalidateElement($element)) {
             return;
         }
 
-        $this->dependencyInvalidator->invalidate($element, fn ($e) => $this->invalidateElement($e));
+        $this->dependentElementInvalidator->invalidate($element, fn ($e) => $this->invalidateElement($e));
     }
 
     private function invalidateElement(ElementInterface $element): bool

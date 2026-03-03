@@ -4,7 +4,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Element;
 
 use Pimcore\Model\Element\ElementInterface;
 
-final class DependencyInvalidator
+final class DependentElementInvalidator
 {
     public function __construct(
         private readonly ElementRepository $elementRepository,
@@ -21,7 +21,7 @@ final class DependencyInvalidator
     public function invalidate(ElementInterface $source, callable $invalidate): void
     {
         $type = ElementType::tryFromElement($source);
-        if ($type === null || !$this->config->isDependencyTraversalEnabled($type)) {
+        if ($type === null || !$this->config->isDependentElementsEnabled($type)) {
             return;
         }
 
@@ -31,14 +31,24 @@ final class DependencyInvalidator
             }
 
             $dependentType = ElementType::tryFrom($required['type']);
-            if ($dependentType === null || !$this->config->isDependentTypeEnabled($type, $dependentType)) {
+            if ($dependentType === null) {
+                continue;
+            }
+
+            $enabled = match ($dependentType) {
+                ElementType::Asset => $this->config->isDependentAssetInvalidationEnabled($type),
+                ElementType::Document => $this->config->isDependentDocumentInvalidationEnabled($type),
+                ElementType::Object => $this->config->isDependentObjectInvalidationEnabled($type),
+            };
+
+            if (!$enabled) {
                 continue;
             }
 
             $element = match ($dependentType) {
-                ElementType::Object => $this->elementRepository->findObject((int) $required['id']),
-                ElementType::Document => $this->elementRepository->findDocument((int) $required['id']),
                 ElementType::Asset => $this->elementRepository->findAsset((int) $required['id']),
+                ElementType::Document => $this->elementRepository->findDocument((int) $required['id']),
+                ElementType::Object => $this->elementRepository->findObject((int) $required['id']),
             };
 
             if ($element) {

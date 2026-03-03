@@ -6,27 +6,27 @@ readonly class ElementsConfig
 {
     /**
      * @param array<string, bool> $assetTypes
-     * @param array<string, bool> $assetDependencyTypes
+     * @param array<string, bool> $assetDependentElementTypes
      * @param array<string, bool> $documentTypes
-     * @param array<string, bool> $documentDependencyTypes
+     * @param array<string, bool> $documentDependentElementTypes
      * @param array<string, bool> $objectTypes
      * @param array<string, bool> $objectClasses
-     * @param array<string, bool> $objectDependencyTypes
+     * @param array<string, bool> $objectDependentElementTypes
      */
     public function __construct(
         private bool $assetsEnabled,
         private array $assetTypes,
-        private bool $assetDependencyTraversalEnabled,
-        private array $assetDependencyTypes,
+        private bool $assetDependentElementsEnabled,
+        private array $assetDependentElementTypes,
         private bool $documentsEnabled,
         private array $documentTypes,
-        private bool $documentDependencyTraversalEnabled,
-        private array $documentDependencyTypes,
+        private bool $documentDependentElementsEnabled,
+        private array $documentDependentElementTypes,
         private bool $objectsEnabled,
         private array $objectTypes,
         private array $objectClasses,
-        private bool $objectDependencyTraversalEnabled,
-        private array $objectDependencyTypes,
+        private bool $objectDependentElementsEnabled,
+        private array $objectDependentElementTypes,
     ) {
     }
 
@@ -36,17 +36,17 @@ readonly class ElementsConfig
         return new self(
             assetsEnabled: $config['assets']['enabled'] ?? false,
             assetTypes: $config['assets']['types'] ?? [],
-            assetDependencyTraversalEnabled: $config['assets']['invalidate_dependencies']['enabled'] ?? false,
-            assetDependencyTypes: $config['assets']['invalidate_dependencies']['types'] ?? [],
+            assetDependentElementsEnabled: $config['assets']['invalidate_dependent_elements']['enabled'] ?? false,
+            assetDependentElementTypes: $config['assets']['invalidate_dependent_elements']['types'] ?? [],
             documentsEnabled: $config['documents']['enabled'] ?? false,
             documentTypes: $config['documents']['types'] ?? [],
-            documentDependencyTraversalEnabled: $config['documents']['invalidate_dependencies']['enabled'] ?? false,
-            documentDependencyTypes: $config['documents']['invalidate_dependencies']['types'] ?? [],
+            documentDependentElementsEnabled: $config['documents']['invalidate_dependent_elements']['enabled'] ?? false,
+            documentDependentElementTypes: $config['documents']['invalidate_dependent_elements']['types'] ?? [],
             objectsEnabled: $config['objects']['enabled'] ?? false,
             objectTypes: $config['objects']['types'] ?? [],
             objectClasses: $config['objects']['classes'] ?? [],
-            objectDependencyTraversalEnabled: $config['objects']['invalidate_dependencies']['enabled'] ?? false,
-            objectDependencyTypes: $config['objects']['invalidate_dependencies']['types'] ?? [],
+            objectDependentElementsEnabled: $config['objects']['invalidate_dependent_elements']['enabled'] ?? false,
+            objectDependentElementTypes: $config['objects']['invalidate_dependent_elements']['types'] ?? [],
         );
     }
 
@@ -75,23 +75,37 @@ readonly class ElementsConfig
         return $this->objectClasses[$class] ?? true;
     }
 
-    public function isDependencyTraversalEnabled(ElementType $type): bool
+    public function isDependentElementsEnabled(ElementType $type): bool
     {
         return match ($type) {
-            ElementType::Asset => $this->assetDependencyTraversalEnabled,
-            ElementType::Document => $this->documentDependencyTraversalEnabled,
-            ElementType::Object => $this->objectDependencyTraversalEnabled,
+            ElementType::Asset => $this->assetDependentElementsEnabled,
+            ElementType::Document => $this->documentDependentElementsEnabled,
+            ElementType::Object => $this->objectDependentElementsEnabled,
         };
     }
 
-    public function isDependentTypeEnabled(ElementType $source, ElementType $dependent): bool
+    public function isDependentAssetInvalidationEnabled(ElementType $source): bool
     {
-        $types = match ($source) {
-            ElementType::Asset => $this->assetDependencyTypes,
-            ElementType::Document => $this->documentDependencyTypes,
-            ElementType::Object => $this->objectDependencyTypes,
-        };
+        return $this->dependentElementTypes($source)[ElementType::Asset->configKey()] ?? false;
+    }
 
-        return $types[$dependent->configKey()] ?? false;
+    public function isDependentDocumentInvalidationEnabled(ElementType $source): bool
+    {
+        return $this->dependentElementTypes($source)[ElementType::Document->configKey()] ?? false;
+    }
+
+    public function isDependentObjectInvalidationEnabled(ElementType $source): bool
+    {
+        return $this->dependentElementTypes($source)[ElementType::Object->configKey()] ?? false;
+    }
+
+    /** @return array<string, bool> */
+    private function dependentElementTypes(ElementType $source): array
+    {
+        return match ($source) {
+            ElementType::Asset => $this->assetDependentElementTypes,
+            ElementType::Document => $this->documentDependentElementTypes,
+            ElementType::Object => $this->objectDependentElementTypes,
+        };
     }
 }

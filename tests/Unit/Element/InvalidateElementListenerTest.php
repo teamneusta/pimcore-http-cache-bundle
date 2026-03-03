@@ -5,7 +5,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Element;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
-use Neusta\Pimcore\HttpCacheBundle\Element\DependencyInvalidator;
+use Neusta\Pimcore\HttpCacheBundle\Element\DependentElementInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementInvalidationEvent;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
@@ -34,23 +34,23 @@ final class InvalidateElementListenerTest extends TestCase
     /** @var ObjectProphecy<EventDispatcherInterface> */
     private $eventDispatcher;
 
-    /** @var ObjectProphecy<DependencyInvalidator> */
-    private $dependencyInvalidator;
+    /** @var ObjectProphecy<DependentElementInvalidator> */
+    private $dependentElementInvalidator;
 
     protected function setUp(): void
     {
         $this->cacheInvalidator = $this->prophesize(CacheInvalidator::class);
         $this->eventDispatcher = $this->prophesize(EventDispatcherInterface::class);
-        $this->dependencyInvalidator = $this->prophesize(DependencyInvalidator::class);
+        $this->dependentElementInvalidator = $this->prophesize(DependentElementInvalidator::class);
         $this->invalidateElementListener = new InvalidateElementListener(
             $this->cacheInvalidator->reveal(),
             $this->eventDispatcher->reveal(),
-            $this->dependencyInvalidator->reveal(),
+            $this->dependentElementInvalidator->reveal(),
         );
 
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
             ->willReturnArgument();
-        $this->dependencyInvalidator->invalidate(Argument::cetera());
+        $this->dependentElementInvalidator->invalidate(Argument::cetera());
     }
 
     /**
@@ -118,13 +118,13 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function onUpdate_should_call_dependency_invalidator(ElementEventInterface $event): void
+    public function onUpdate_should_call_dependent_element_invalidator(ElementEventInterface $event): void
     {
         $element = $event->getElement();
 
         $this->invalidateElementListener->onUpdate($event);
 
-        $this->dependencyInvalidator->invalidate($element, Argument::type('callable'))
+        $this->dependentElementInvalidator->invalidate($element, Argument::type('callable'))
             ->shouldHaveBeenCalledOnce();
     }
 
@@ -133,7 +133,7 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function onUpdate_should_not_call_dependency_invalidator_when_source_invalidation_is_canceled(
+    public function onUpdate_should_not_call_dependent_element_invalidator_when_source_invalidation_is_canceled(
         ElementEventInterface $event,
     ): void {
         $element = $event->getElement();
@@ -145,7 +145,7 @@ final class InvalidateElementListenerTest extends TestCase
 
         $this->invalidateElementListener->onUpdate($event);
 
-        $this->dependencyInvalidator->invalidate(Argument::cetera())->shouldNotHaveBeenCalled();
+        $this->dependentElementInvalidator->invalidate(Argument::cetera())->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -225,13 +225,13 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function onDelete_should_call_dependency_invalidator(ElementEventInterface $event): void
+    public function onDelete_should_call_dependent_element_invalidator(ElementEventInterface $event): void
     {
         $element = $event->getElement();
 
         $this->invalidateElementListener->onDelete($event);
 
-        $this->dependencyInvalidator->invalidate($element, Argument::type('callable'))
+        $this->dependentElementInvalidator->invalidate($element, Argument::type('callable'))
             ->shouldHaveBeenCalledOnce();
     }
 
@@ -240,7 +240,7 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
-    public function onDelete_should_not_call_dependency_invalidator_when_source_invalidation_is_canceled(
+    public function onDelete_should_not_call_dependent_element_invalidator_when_source_invalidation_is_canceled(
         ElementEventInterface $event,
     ): void {
         $element = $event->getElement();
@@ -252,7 +252,7 @@ final class InvalidateElementListenerTest extends TestCase
 
         $this->invalidateElementListener->onDelete($event);
 
-        $this->dependencyInvalidator->invalidate(Argument::cetera())->shouldNotHaveBeenCalled();
+        $this->dependentElementInvalidator->invalidate(Argument::cetera())->shouldNotHaveBeenCalled();
     }
 
     /**

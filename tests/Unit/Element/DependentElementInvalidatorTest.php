@@ -2,7 +2,7 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Element;
 
-use Neusta\Pimcore\HttpCacheBundle\Element\DependencyInvalidator;
+use Neusta\Pimcore\HttpCacheBundle\Element\DependentElementInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementsConfig;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
@@ -16,7 +16,7 @@ use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 
-final class DependencyInvalidatorTest extends TestCase
+final class DependentElementInvalidatorTest extends TestCase
 {
     use ProphecyTrait;
 
@@ -31,9 +31,9 @@ final class DependencyInvalidatorTest extends TestCase
     /**
      * @test
      */
-    public function invalidate_does_nothing_when_traversal_is_disabled_for_source_type(): void
+    public function invalidate_does_nothing_when_dependent_elements_are_disabled(): void
     {
-        $invalidator = new DependencyInvalidator(
+        $invalidator = new DependentElementInvalidator(
             $this->elementRepository->reveal(),
             ElementsConfig::fromArray([]),
         );
@@ -53,9 +53,9 @@ final class DependencyInvalidatorTest extends TestCase
      */
     public function invalidate_skips_entries_without_id_or_type(): void
     {
-        $invalidator = new DependencyInvalidator(
+        $invalidator = new DependentElementInvalidator(
             $this->elementRepository->reveal(),
-            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]]),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['objects' => true]]]]),
         );
 
         $element = $this->prophesize(TestObject::class);
@@ -80,9 +80,9 @@ final class DependencyInvalidatorTest extends TestCase
      */
     public function invalidate_skips_entries_with_unknown_type(): void
     {
-        $invalidator = new DependencyInvalidator(
+        $invalidator = new DependentElementInvalidator(
             $this->elementRepository->reveal(),
-            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]]),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['objects' => true]]]]),
         );
 
         $element = $this->prophesize(TestObject::class);
@@ -101,11 +101,11 @@ final class DependencyInvalidatorTest extends TestCase
     /**
      * @test
      */
-    public function invalidate_skips_entries_when_dependent_type_is_disabled(): void
+    public function invalidate_skips_entries_when_dependent_element_type_is_disabled(): void
     {
-        $invalidator = new DependencyInvalidator(
+        $invalidator = new DependentElementInvalidator(
             $this->elementRepository->reveal(),
-            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => false]]]]),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['objects' => false]]]]),
         );
 
         $element = $this->prophesize(TestObject::class);
@@ -126,9 +126,9 @@ final class DependencyInvalidatorTest extends TestCase
      */
     public function invalidate_skips_dependent_element_when_not_found(): void
     {
-        $invalidator = new DependencyInvalidator(
+        $invalidator = new DependentElementInvalidator(
             $this->elementRepository->reveal(),
-            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]]),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['objects' => true]]]]),
         );
 
         $element = $this->prophesize(TestObject::class);
@@ -149,9 +149,9 @@ final class DependencyInvalidatorTest extends TestCase
      */
     public function invalidate_calls_callable_for_each_dependent_object(): void
     {
-        $invalidator = new DependencyInvalidator(
+        $invalidator = new DependentElementInvalidator(
             $this->elementRepository->reveal(),
-            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]]),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['objects' => true]]]]),
         );
 
         $element = $this->prophesize(TestObject::class);
@@ -173,11 +173,11 @@ final class DependencyInvalidatorTest extends TestCase
     /**
      * @test
      */
-    public function invalidate_calls_callable_for_all_dependents(): void
+    public function invalidate_calls_callable_for_all_dependent_elements(): void
     {
-        $invalidator = new DependencyInvalidator(
+        $invalidator = new DependentElementInvalidator(
             $this->elementRepository->reveal(),
-            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]]),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['objects' => true]]]]),
         );
 
         $element = $this->prophesize(TestObject::class);
@@ -208,9 +208,9 @@ final class DependencyInvalidatorTest extends TestCase
      */
     public function invalidate_calls_callable_for_dependent_document(): void
     {
-        $invalidator = new DependencyInvalidator(
+        $invalidator = new DependentElementInvalidator(
             $this->elementRepository->reveal(),
-            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['documents' => true]]]]),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['documents' => true]]]]),
         );
 
         $element = $this->prophesize(TestObject::class);
@@ -234,9 +234,9 @@ final class DependencyInvalidatorTest extends TestCase
      */
     public function invalidate_calls_callable_for_dependent_asset(): void
     {
-        $invalidator = new DependencyInvalidator(
+        $invalidator = new DependentElementInvalidator(
             $this->elementRepository->reveal(),
-            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['assets' => true]]]]),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['assets' => true]]]]),
         );
 
         $element = $this->prophesize(TestObject::class);

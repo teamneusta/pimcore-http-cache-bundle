@@ -66,7 +66,7 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
         'elements' => [
             'objects' => [
                 'enabled' => true,
-                'invalidate_dependencies' => [
+                'invalidate_dependent_elements' => [
                     'enabled' => true,
                     'types' => [
                         'documents' => true,
@@ -113,7 +113,7 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
         'elements' => [
             'objects' => [
                 'enabled' => true,
-                'invalidate_dependencies' => [
+                'invalidate_dependent_elements' => [
                     'enabled' => true,
                     'types' => [
                         'documents' => true,
@@ -273,7 +273,7 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
         'elements' => [
             'documents' => [
                 'enabled' => true,
-                'invalidate_dependencies' => [
+                'invalidate_dependent_elements' => [
                     'enabled' => true,
                     'types' => [
                         'objects' => true,
@@ -302,7 +302,7 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
         'elements' => [
             'documents' => [
                 'enabled' => true,
-                'invalidate_dependencies' => [
+                'invalidate_dependent_elements' => [
                     'enabled' => true,
                     'types' => [
                         'objects' => true,
@@ -333,7 +333,7 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
             'documents' => true,
         ],
     ])]
-    public function dependency_traversal_is_not_triggered_when_document_is_updated(): void
+    public function dependent_elements_are_not_invalidated_when_document_is_updated(): void
     {
         $object = self::arrange(
             fn () => TestObjectFactory::simpleObject(12)->save(),
