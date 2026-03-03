@@ -2,7 +2,7 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Element;
 
-readonly class ElementsConfig
+final readonly class ElementsConfig
 {
     /**
      * @param array<string, bool> $assetTypes

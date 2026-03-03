@@ -254,4 +254,56 @@ final class DependentElementInvalidatorTest extends TestCase
         self::assertCount(1, $received);
         self::assertSame($dependentAsset->reveal(), $received[0]);
     }
+
+    /**
+     * @test
+     */
+    public function invalidate_calls_callable_when_source_is_an_asset(): void
+    {
+        $invalidator = new DependentElementInvalidator(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['assets' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['objects' => true]]]]),
+        );
+
+        $element = $this->prophesize(Asset::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentObject = $this->prophesize(DataObject::class);
+        $element->getType()->willReturn(ElementType::Asset->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentObject->getId()->willReturn(9);
+        $dependency->getRequiredBy()->willReturn([['id' => 9, 'type' => 'object']]);
+        $this->elementRepository->findObject(9)->willReturn($dependentObject->reveal());
+
+        $received = [];
+        $invalidator->invalidate($element->reveal(), function ($e) use (&$received) { $received[] = $e; });
+
+        self::assertCount(1, $received);
+        self::assertSame($dependentObject->reveal(), $received[0]);
+    }
+
+    /**
+     * @test
+     */
+    public function invalidate_calls_callable_when_source_is_a_document(): void
+    {
+        $invalidator = new DependentElementInvalidator(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['documents' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['objects' => true]]]]),
+        );
+
+        $element = $this->prophesize(Document::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentObject = $this->prophesize(DataObject::class);
+        $element->getType()->willReturn(ElementType::Document->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentObject->getId()->willReturn(14);
+        $dependency->getRequiredBy()->willReturn([['id' => 14, 'type' => 'object']]);
+        $this->elementRepository->findObject(14)->willReturn($dependentObject->reveal());
+
+        $received = [];
+        $invalidator->invalidate($element->reveal(), function ($e) use (&$received) { $received[] = $e; });
+
+        self::assertCount(1, $received);
+        self::assertSame($dependentObject->reveal(), $received[0]);
+    }
 }
