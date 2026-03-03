@@ -175,6 +175,74 @@ final class InvalidateElementListenerTest extends TestCase
 
     /**
      * @test
+     */
+    public function onUpdate_should_not_invalidate_dependencies_when_dependent_type_is_disabled(): void
+    {
+        $listener = new InvalidateElementListener(
+            $this->cacheInvalidator->reveal(),
+            $this->eventDispatcher->reveal(),
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => false]]]]),
+        );
+
+        $element = $this->prophesize(DataObject\TestObject::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $dependency = $this->prophesize(Dependency::class);
+        $event = new DataObjectEvent($element->reveal());
+
+        $element->getId()->willReturn(42);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
+
+        $listener->onUpdate($event);
+
+        $this->elementRepository->findObject(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     */
+    public function onUpdate_should_not_invalidate_dependent_element_when_its_invalidation_is_canceled(): void
+    {
+        $listener = new InvalidateElementListener(
+            $this->cacheInvalidator->reveal(),
+            $this->eventDispatcher->reveal(),
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependencies' => ['enabled' => true, 'types' => ['objects' => true]]]]),
+        );
+
+        $element = $this->prophesize(DataObject\TestObject::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentElement = $this->prophesize(DataObject::class);
+        $event = new DataObjectEvent($element->reveal());
+
+        $element->getId()->willReturn(42);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentElement->getId()->willReturn(23);
+        $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
+        $this->elementRepository->findObject(23)->willReturn($dependentElement->reveal());
+
+        $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
+            ->will(function (array $args) {
+                $event = $args[0];
+                if ($event->element->getId() === 23) {
+                    $event->cancel = true;
+                }
+
+                return $event;
+            });
+
+        $listener->onUpdate($event);
+
+        $this->cacheInvalidator->invalidate(Argument::which('toString', CacheTag::fromElement($element->reveal())->toString()))
+            ->shouldHaveBeenCalledOnce();
+        $this->cacheInvalidator->invalidate(Argument::which('toString', CacheTag::fromElement($dependentElement->reveal())->toString()))
+            ->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
      *
      * @dataProvider notObjectElementProvider
      */

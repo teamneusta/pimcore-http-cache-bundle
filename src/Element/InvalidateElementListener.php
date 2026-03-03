@@ -63,6 +63,10 @@ final class InvalidateElementListener
         return true;
     }
 
+    /**
+     * Invalidates dependent elements one level deep.
+     * Dependencies of dependent elements are intentionally not traversed to prevent cycles.
+     */
     private function invalidateDependencies(Dependency $dependency, ElementType $sourceType): void
     {
         foreach ($dependency->getRequiredBy() as $required) {
