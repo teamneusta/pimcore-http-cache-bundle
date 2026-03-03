@@ -14,7 +14,7 @@ neusta_pimcore_http_cache:
 
             # Invalidate dependent elements when an asset changes (disabled by default).
             # Note: a dependent element type must also be enabled above for invalidation to take effect.
-            invalidate_dependencies:
+            invalidate_dependent_elements:
                 enabled: true
                 types:
                     objects: true
@@ -30,7 +30,7 @@ neusta_pimcore_http_cache:
 
             # Invalidate dependent elements when a document changes (disabled by default).
             # Note: a dependent element type must also be enabled above for invalidation to take effect.
-            invalidate_dependencies:
+            invalidate_dependent_elements:
                 enabled: true
                 types:
                     objects: true
@@ -49,7 +49,7 @@ neusta_pimcore_http_cache:
 
             # Invalidate dependent elements when an object changes (disabled by default).
             # Note: a dependent element type must also be enabled above for invalidation to take effect.
-            invalidate_dependencies:
+            invalidate_dependent_elements:
                 enabled: true
                 types:
                     objects: true

@@ -92,7 +92,7 @@ Dependent element invalidation — traversing Pimcore's dependency graph to also
 
 The dependency graph is one level deep: only elements that directly reference the changed element are invalidated, not transitive dependencies.
 
-> **Note:** For a dependent element type to actually be invalidated, it must also be enabled in the main `elements` configuration. For example, setting `objects.invalidate_dependencies.types.documents: true` has no effect if `documents` is disabled — the cache tag will be silently dropped.
+> **Note:** For a dependent element type to actually be invalidated, it must also be enabled in the main `elements` configuration. For example, setting `objects.invalidate_dependent_elements.types.documents: true` has no effect if `documents` is disabled — the cache tag will be silently dropped.
 
 ### Enable dependent invalidation for objects
 
@@ -103,7 +103,7 @@ The listed dependent types (`documents`, `objects`) must also be enabled in the 
 neusta_pimcore_http_cache:
     elements:
         objects:
-            invalidate_dependencies:
+            invalidate_dependent_elements:
                 enabled: true
                 types:
                     documents: true  # invalidate documents that reference the object
@@ -121,7 +121,7 @@ The listed dependent types must also be enabled in the `elements` configuration:
 neusta_pimcore_http_cache:
     elements:
         assets:
-            invalidate_dependencies:
+            invalidate_dependent_elements:
                 enabled: true
                 types:
                     objects: true    # invalidate objects that reference the asset
@@ -139,7 +139,7 @@ The listed dependent types must also be enabled in the `elements` configuration:
 neusta_pimcore_http_cache:
     elements:
         documents:
-            invalidate_dependencies:
+            invalidate_dependent_elements:
                 enabled: true
                 types:
                     objects: true  # invalidate objects that reference the document
