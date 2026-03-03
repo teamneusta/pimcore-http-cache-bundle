@@ -418,4 +418,70 @@ final class DependentElementFinderTest extends TestCase
 
         self::assertSame([], $result);
     }
+
+    /**
+     * @test
+     *
+     * Global config allows the subtype, but dependent config disables it — element is skipped.
+     */
+    public function findFor_skips_dependent_object_when_global_allows_but_dependent_config_disables_subtype(): void
+    {
+        $finder = new DependentElementFinder(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray([
+                'objects' => [
+                    'types' => ['folder' => true],  // global: folders allowed
+                    'invalidate_dependent_elements' => ['enabled' => true, 'types' => [
+                        'objects' => ['enabled' => true, 'types' => ['folder' => false]],  // dependent: folders excluded
+                    ]],
+                ],
+            ]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentFolder = $this->prophesize(DataObject::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentFolder->getType()->willReturn('folder');
+        $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
+        $this->elementRepository->findObject(23)->willReturn($dependentFolder->reveal());
+
+        $result = $finder->findFor($element->reveal());
+
+        self::assertSame([], $result);
+    }
+
+    /**
+     * @test
+     *
+     * Dependent config allows the subtype, but global config disables it — global takes precedence.
+     */
+    public function findFor_skips_dependent_object_when_dependent_config_allows_but_global_disables_subtype(): void
+    {
+        $finder = new DependentElementFinder(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray([
+                'objects' => [
+                    'types' => ['folder' => false],  // global: folders disabled
+                    'invalidate_dependent_elements' => ['enabled' => true, 'types' => [
+                        'objects' => ['enabled' => true, 'types' => ['folder' => true]],  // dependent: folders allowed
+                    ]],
+                ],
+            ]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentFolder = $this->prophesize(DataObject::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentFolder->getType()->willReturn('folder');
+        $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
+        $this->elementRepository->findObject(23)->willReturn($dependentFolder->reveal());
+
+        $result = $finder->findFor($element->reveal());
+
+        self::assertSame([], $result);
+    }
 }

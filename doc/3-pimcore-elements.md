@@ -145,3 +145,28 @@ neusta_pimcore_http_cache:
                     objects: true  # invalidate objects that reference the document
         objects: true  # must be enabled for object invalidation to take effect
 ```
+
+### Fine-grained control per dependent type
+
+Each dependent type under `types` accepts either a boolean shorthand or a full configuration
+with its own `types` (and `classes` for objects) to exclude specific subtypes or classes:
+
+```yaml
+neusta_pimcore_http_cache:
+    elements:
+        objects:
+            invalidate_dependent_elements:
+                enabled: true
+                types:
+                    assets: true          # shorthand: invalidate all asset subtypes
+                    documents: false      # shorthand: skip all documents
+                    objects:              # fine-grained: invalidate objects, but with exclusions
+                        enabled: true
+                        types:
+                            folder: false         # don't cascade to object folders
+                        classes:
+                            MyIgnoredClass: false # don't cascade to this class
+```
+
+The `types` and `classes` filters under each dependent type work alongside the global
+`elements` configuration — both must allow an element for it to be invalidated as a dependent.
