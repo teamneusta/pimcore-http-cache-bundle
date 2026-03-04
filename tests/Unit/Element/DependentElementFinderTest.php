@@ -484,4 +484,203 @@ final class DependentElementFinderTest extends TestCase
 
         self::assertSame([], $result);
     }
+
+    /**
+     * @test
+     */
+    public function findFor_skips_dependent_asset_with_disabled_subtype(): void
+    {
+        $finder = new DependentElementFinder(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray([
+                'objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['assets' => true]]],
+                'assets' => ['types' => ['folder' => false]],
+            ]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentAssetFolder = $this->prophesize(Asset::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentAssetFolder->getType()->willReturn('folder');
+        $dependency->getRequiredBy()->willReturn([['id' => 7, 'type' => 'asset']]);
+        $this->elementRepository->findAsset(7)->willReturn($dependentAssetFolder->reveal());
+
+        $result = $finder->findFor($element->reveal());
+
+        self::assertSame([], $result);
+    }
+
+    /**
+     * @test
+     */
+    public function findFor_skips_dependent_asset_with_subtype_disabled_in_dependent_config(): void
+    {
+        $finder = new DependentElementFinder(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['assets' => ['enabled' => true, 'types' => ['folder' => false]]]]]]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentAssetFolder = $this->prophesize(Asset::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentAssetFolder->getType()->willReturn('folder');
+        $dependency->getRequiredBy()->willReturn([['id' => 7, 'type' => 'asset']]);
+        $this->elementRepository->findAsset(7)->willReturn($dependentAssetFolder->reveal());
+
+        $result = $finder->findFor($element->reveal());
+
+        self::assertSame([], $result);
+    }
+
+    /**
+     * @test
+     */
+    public function findFor_skips_dependent_document_with_subtype_disabled_in_dependent_config(): void
+    {
+        $finder = new DependentElementFinder(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['documents' => ['enabled' => true, 'types' => ['email' => false]]]]]]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentDocument = $this->prophesize(Document::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentDocument->getType()->willReturn('email');
+        $dependency->getRequiredBy()->willReturn([['id' => 5, 'type' => 'document']]);
+        $this->elementRepository->findDocument(5)->willReturn($dependentDocument->reveal());
+
+        $result = $finder->findFor($element->reveal());
+
+        self::assertSame([], $result);
+    }
+
+    /**
+     * @test
+     *
+     * Global config allows the asset subtype, but dependent config disables it — element is skipped.
+     */
+    public function findFor_skips_dependent_asset_when_global_allows_but_dependent_config_disables_subtype(): void
+    {
+        $finder = new DependentElementFinder(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray([
+                'assets' => ['types' => ['folder' => true]],  // global: asset folders allowed
+                'objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => [
+                    'assets' => ['enabled' => true, 'types' => ['folder' => false]],  // dependent: asset folders excluded
+                ]]],
+            ]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentAssetFolder = $this->prophesize(Asset::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentAssetFolder->getType()->willReturn('folder');
+        $dependency->getRequiredBy()->willReturn([['id' => 7, 'type' => 'asset']]);
+        $this->elementRepository->findAsset(7)->willReturn($dependentAssetFolder->reveal());
+
+        $result = $finder->findFor($element->reveal());
+
+        self::assertSame([], $result);
+    }
+
+    /**
+     * @test
+     *
+     * Dependent config allows the asset subtype, but global config disables it — global takes precedence.
+     */
+    public function findFor_skips_dependent_asset_when_dependent_config_allows_but_global_disables_subtype(): void
+    {
+        $finder = new DependentElementFinder(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray([
+                'assets' => ['types' => ['folder' => false]],  // global: asset folders disabled
+                'objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => [
+                    'assets' => ['enabled' => true, 'types' => ['folder' => true]],  // dependent: asset folders allowed
+                ]]],
+            ]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentAssetFolder = $this->prophesize(Asset::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentAssetFolder->getType()->willReturn('folder');
+        $dependency->getRequiredBy()->willReturn([['id' => 7, 'type' => 'asset']]);
+        $this->elementRepository->findAsset(7)->willReturn($dependentAssetFolder->reveal());
+
+        $result = $finder->findFor($element->reveal());
+
+        self::assertSame([], $result);
+    }
+
+    /**
+     * @test
+     *
+     * Global config allows the document subtype, but dependent config disables it — element is skipped.
+     */
+    public function findFor_skips_dependent_document_when_global_allows_but_dependent_config_disables_subtype(): void
+    {
+        $finder = new DependentElementFinder(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray([
+                'documents' => ['types' => ['link' => true]],  // global: link documents allowed
+                'objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => [
+                    'documents' => ['enabled' => true, 'types' => ['link' => false]],  // dependent: link documents excluded
+                ]]],
+            ]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentDocument = $this->prophesize(Document::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentDocument->getType()->willReturn('link');
+        $dependency->getRequiredBy()->willReturn([['id' => 5, 'type' => 'document']]);
+        $this->elementRepository->findDocument(5)->willReturn($dependentDocument->reveal());
+
+        $result = $finder->findFor($element->reveal());
+
+        self::assertSame([], $result);
+    }
+
+    /**
+     * @test
+     *
+     * Dependent config allows the document subtype, but global config disables it — global takes precedence.
+     */
+    public function findFor_skips_dependent_document_when_dependent_config_allows_but_global_disables_subtype(): void
+    {
+        $finder = new DependentElementFinder(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray([
+                'documents' => ['types' => ['link' => false]],  // global: link documents disabled
+                'objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => [
+                    'documents' => ['enabled' => true, 'types' => ['link' => true]],  // dependent: link documents allowed
+                ]]],
+            ]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentDocument = $this->prophesize(Document::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentDocument->getType()->willReturn('link');
+        $dependency->getRequiredBy()->willReturn([['id' => 5, 'type' => 'document']]);
+        $this->elementRepository->findDocument(5)->willReturn($dependentDocument->reveal());
+
+        $result = $finder->findFor($element->reveal());
+
+        self::assertSame([], $result);
+    }
 }

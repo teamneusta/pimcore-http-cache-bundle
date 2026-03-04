@@ -6,7 +6,7 @@ use Pimcore\Model\Asset;
 
 final class TestAssetFactory
 {
-    public static function simpleAsset(int $id, string $fileName = 'test-asset.txt'): Asset
+    public static function simpleAsset(int $id = 42, string $fileName = 'test-asset.txt'): Asset
     {
         $asset = new Asset();
         $asset->setId($id);
@@ -18,7 +18,7 @@ final class TestAssetFactory
         return $asset;
     }
 
-    public static function simpleImage(int $id, string $fileName = 'test-asset.jpg'): Asset\Image
+    public static function simpleImage(int $id = 17, string $fileName = 'test-asset.jpg'): Asset\Image
     {
         $image = new Asset\Image();
         $image->setId($id);
@@ -29,7 +29,7 @@ final class TestAssetFactory
         return $image;
     }
 
-    public static function simpleFolder(int $id, string $key = 'test-asset-folder'): Asset\Folder
+    public static function simpleFolder(int $id = 23, string $key = 'test-asset-folder'): Asset\Folder
     {
         $folder = new Asset\Folder();
         $folder->setId($id);

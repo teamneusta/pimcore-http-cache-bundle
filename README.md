@@ -42,7 +42,6 @@ You will find the detailed documentation in the following links:
 * [Disabling caching behavior](doc/8-disable-caching-behavior.md)
 * [Error handling](doc/9-error-handling.md)
 * [Contribution](doc/10-contribution.md)
-* [Working with Claude Code](doc/11-claude-code.md)
 
 We hope you will enjoy this bundle as much as we do. If you have any questions or suggestions, please feel free to open an issue on GitHub.
 This repository is maintained by [neusta](https://www.team-neusta.de/).

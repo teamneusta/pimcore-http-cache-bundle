@@ -224,7 +224,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
         'elements' => [
             'objects' => [
                 'classes' => [
-                    'TestDataObject' => false,
+                    'TestObject' => false,
                 ],
                 'enabled' => true,
             ],

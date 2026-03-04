@@ -13,7 +13,7 @@ final class TestObjectFactory
     /**
      * @param list<TestObject|Page|Image> $related
      */
-    public static function simpleObject(int $id, string $key = 'test_object', array $related = []): TestObject
+    public static function simpleObject(int $id = 42, string $key = 'test_object', array $related = []): TestObject
     {
         $object = new TestObject();
         $object->setId($id);
@@ -26,7 +26,7 @@ final class TestObjectFactory
         return $object;
     }
 
-    public static function simpleVariant(int $id, string $key = 'simple_variant'): TestObject
+    public static function simpleVariant(int $id = 17, string $key = 'simple_variant'): TestObject
     {
         $object = new TestObject();
         $object->setId($id);
@@ -39,7 +39,7 @@ final class TestObjectFactory
         return $object;
     }
 
-    public static function simpleFolder(int $id, string $key = 'simple_folder'): DataObject\Folder
+    public static function simpleFolder(int $id = 43, string $key = 'simple_folder'): DataObject\Folder
     {
         $folder = new DataObject\Folder();
         $folder->setId($id);

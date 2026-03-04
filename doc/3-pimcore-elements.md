@@ -5,7 +5,9 @@ types. You can enable or disable cache handling for specific element types and c
 
 ### Assets
 
-By default, all asset types except "folder" are enabled. You can disable specific asset types or disable assets
+The available asset types are: `image`, `video`, `audio`, `document`, `archive`, `text`, `unknown`, `folder`.
+
+By default, all asset types except `folder` are enabled. You can disable specific asset types or disable assets
 completely.
 
 #### Disable specific asset types
@@ -28,7 +30,10 @@ neusta_pimcore_http_cache:
 ```
 
 ### Documents
-By default, all document types except "email", "folder" and "hardlink" are enabled. You can disable specific document types or disable documents completely.
+
+The available document types are: `page`, `snippet`, `link`, `hardlink`, `email`, `folder`.
+
+By default, all document types except `email`, `folder`, and `hardlink` are enabled. You can disable specific document types or disable documents completely.
 
 #### Disable specific document types
 Example configuration to disable the "link" document type:
@@ -50,7 +55,10 @@ neusta_pimcore_http_cache:
 ```
 
 ### Objects
-By default, all object types except "folder" are enabled. You can disable specific object types or disable objects completely. Also, you can enable or disable cache handling for specific data object classes.
+
+The available object types are: `object`, `variant`, `folder`.
+
+By default, all object types except `folder` are enabled. You can disable specific object types or disable objects completely. Also, you can enable or disable cache handling for specific data object classes.
 
 #### Disable specific object types
 Example configuration to disable the "variant" object type:
@@ -158,8 +166,14 @@ neusta_pimcore_http_cache:
             invalidate_dependent_elements:
                 enabled: true
                 types:
-                    assets: true          # shorthand: invalidate all asset subtypes
-                    documents: false      # shorthand: skip all documents
+                    assets:               # fine-grained: invalidate assets, but with exclusions
+                        enabled: true
+                        types:
+                            folder: false         # don't cascade to asset folders
+                    documents:            # fine-grained: invalidate documents, but with exclusions
+                        enabled: true
+                        types:
+                            link: false           # don't cascade to link documents
                     objects:              # fine-grained: invalidate objects, but with exclusions
                         enabled: true
                         types:
@@ -168,5 +182,7 @@ neusta_pimcore_http_cache:
                             MyIgnoredClass: false # don't cascade to this class
 ```
 
-The `types` and `classes` filters under each dependent type work alongside the global
-`elements` configuration — both must allow an element for it to be invalidated as a dependent.
+The `types` filter applies to all dependent element types (assets, documents, objects).
+The `classes` filter is only available for `objects`.
+
+Both filters work alongside the global `elements` configuration — both must allow an element for it to be invalidated as a dependent.

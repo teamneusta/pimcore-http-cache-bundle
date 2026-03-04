@@ -152,7 +152,7 @@ final class TagObjectTest extends ConfigurableWebTestcase
         'elements' => [
             'objects' => [
                 'classes' => [
-                    'TestDataObject' => false,
+                    'TestObject' => false,
                 ],
                 'enabled' => true,
             ],
@@ -179,7 +179,7 @@ final class TagObjectTest extends ConfigurableWebTestcase
         'elements' => [
             'objects' => [
                 'classes' => [
-                    'TestDataObject' => true,
+                    'TestObject' => true,
                 ],
                 'enabled' => true,
             ],
