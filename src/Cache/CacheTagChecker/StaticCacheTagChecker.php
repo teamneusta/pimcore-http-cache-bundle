@@ -21,6 +21,6 @@ final class StaticCacheTagChecker implements CacheTagChecker
             return true;
         }
 
-        return $this->types[$tag->type->toString()] ?? false;
+        return $this->types[$tag->type->identifier()] ?? false;
     }
 }

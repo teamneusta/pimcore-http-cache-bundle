@@ -5,16 +5,16 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Cache\ResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
-use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\CacheTagCollectionResponseTagger;
+use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\TraceableResponseTagger;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 
-final class CacheTagCollectionResponseTaggerTest extends TestCase
+final class TraceableResponseTaggerTest extends TestCase
 {
     use ProphecyTrait;
 
-    private CacheTagCollectionResponseTagger $collectTagsResponseTagger;
+    private TraceableResponseTagger $collectTagsResponseTagger;
 
     /** @var ObjectProphecy<ResponseTagger> */
     private ObjectProphecy $innerTagger;
@@ -22,7 +22,7 @@ final class CacheTagCollectionResponseTaggerTest extends TestCase
     protected function setUp(): void
     {
         $this->innerTagger = $this->prophesize(ResponseTagger::class);
-        $this->collectTagsResponseTagger = new CacheTagCollectionResponseTagger($this->innerTagger->reveal());
+        $this->collectTagsResponseTagger = new TraceableResponseTagger($this->innerTagger->reveal());
     }
 
     /**
@@ -38,7 +38,7 @@ final class CacheTagCollectionResponseTaggerTest extends TestCase
 
         self::assertSame(
             'tag1,tag2',
-            $this->collectTagsResponseTagger->collectedTags->toString(),
+            $this->collectTagsResponseTagger->recordedTags->toString(),
         );
     }
 
@@ -71,7 +71,7 @@ final class CacheTagCollectionResponseTaggerTest extends TestCase
         $this->collectTagsResponseTagger->reset();
 
         self::assertTrue(
-            $this->collectTagsResponseTagger->collectedTags->isEmpty(),
+            $this->collectTagsResponseTagger->recordedTags->isEmpty(),
         );
     }
 }

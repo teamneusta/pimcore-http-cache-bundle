@@ -34,16 +34,16 @@ final class TagObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_expected_tags_when_object_is_loaded(): void
     {
-        self::arrange(fn () => TestObjectFactory::simpleObject(5)->save());
+        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
 
-        $this->client->request('GET', '/get-object?id=5');
+        $this->client->request('GET', '/get-object?id=42');
 
         $response = $this->client->getResponse();
         self::assertSame('Test content', $response->getContent());
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertSame('o5', $response->headers->get('X-Cache-Tags'));
+        self::assertSame('o42', $response->headers->get('X-Cache-Tags'));
     }
 
     /**
@@ -56,9 +56,9 @@ final class TagObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_objects_is_not_enabled(): void
     {
-        self::arrange(fn () => TestObjectFactory::simpleObject(5)->save());
+        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
 
-        $this->client->request('GET', '/get-object?id=5');
+        $this->client->request('GET', '/get-object?id=42');
 
         $response = $this->client->getResponse();
         self::assertSame('Test content', $response->getContent());
@@ -78,10 +78,10 @@ final class TagObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_caching_is_deactivated(): void
     {
-        self::arrange(fn () => TestObjectFactory::simpleObject(5)->save());
+        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
         self::getContainer()->get(CacheActivator::class)->deactivateCaching();
 
-        $this->client->request('GET', '/get-object?id=5');
+        $this->client->request('GET', '/get-object?id=42');
 
         $response = $this->client->getResponse();
         self::assertSame('Test content', $response->getContent());
@@ -106,9 +106,9 @@ final class TagObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_object_type_is_disabled(): void
     {
-        self::arrange(fn () => TestObjectFactory::simpleVariant(5)->save());
+        self::arrange(static fn () => TestObjectFactory::simpleVariant()->save());
 
-        $this->client->request('GET', '/get-object?id=5');
+        $this->client->request('GET', '/get-object?id=17');
 
         $response = $this->client->getResponse();
         self::assertSame('Test content', $response->getContent());
@@ -133,16 +133,16 @@ final class TagObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_ist_tagged_when_object_type_is_enabled(): void
     {
-        self::arrange(fn () => TestObjectFactory::simpleVariant(12)->save());
+        self::arrange(static fn () => TestObjectFactory::simpleVariant()->save());
 
-        $this->client->request('GET', '/get-object?id=12');
+        $this->client->request('GET', '/get-object?id=17');
 
         $response = $this->client->getResponse();
         self::assertSame('Test content', $response->getContent());
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertSame('o12', $response->headers->get('X-Cache-Tags'));
+        self::assertSame('o17', $response->headers->get('X-Cache-Tags'));
     }
 
     /**
@@ -152,7 +152,7 @@ final class TagObjectTest extends ConfigurableWebTestcase
         'elements' => [
             'objects' => [
                 'classes' => [
-                    'TestObject' => false,
+                    'TestDataObject' => false,
                 ],
                 'enabled' => true,
             ],
@@ -160,9 +160,9 @@ final class TagObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_object_class_is_disabled(): void
     {
-        self::arrange(fn () => TestObjectFactory::simpleObject(5)->save());
+        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
 
-        $this->client->request('GET', '/get-object?id=5');
+        $this->client->request('GET', '/get-object?id=42');
 
         $response = $this->client->getResponse();
         self::assertSame('Test content', $response->getContent());
@@ -179,7 +179,7 @@ final class TagObjectTest extends ConfigurableWebTestcase
         'elements' => [
             'objects' => [
                 'classes' => [
-                    'TestObject' => true,
+                    'TestDataObject' => true,
                 ],
                 'enabled' => true,
             ],
@@ -187,15 +187,15 @@ final class TagObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_when_object_class_is_enabled(): void
     {
-        self::arrange(fn () => TestObjectFactory::simpleObject(5)->save());
+        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
 
-        $this->client->request('GET', '/get-object?id=5');
+        $this->client->request('GET', '/get-object?id=42');
 
         $response = $this->client->getResponse();
         self::assertSame('Test content', $response->getContent());
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertSame('o5', $response->headers->get('X-Cache-Tags'));
+        self::assertSame('o42', $response->headers->get('X-Cache-Tags'));
     }
 }

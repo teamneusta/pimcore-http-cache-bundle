@@ -17,11 +17,9 @@ use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureRoute;
 use Neusta\Pimcore\TestingFramework\Test\ConfigurableWebTestcase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
-#[
-    ConfigureRoute(__DIR__ . '/../Fixtures/get_asset_route.php'),
-    ConfigureRoute(__DIR__ . '/../Fixtures/get_document_route.php'),
-    ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php'),
-]
+#[ConfigureRoute(__DIR__ . '/../Fixtures/get_asset_route.php')]
+#[ConfigureRoute(__DIR__ . '/../Fixtures/get_document_route.php')]
+#[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
 final class TagAdditionalTagTest extends ConfigurableWebTestcase
 {
     use ArrangeCacheTest;
@@ -44,24 +42,24 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_additional_tag_when_asset_is_loaded(): void
     {
-        self::arrange(fn () => TestAssetFactory::simpleAsset(5)->save());
-        self::arrange(fn () => TestAssetFactory::simpleImage(29)->save());
+        self::arrange(static fn () => TestAssetFactory::simpleAsset()->save());
+        self::arrange(static fn () => TestAssetFactory::simpleImage()->save());
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
-            fn (ElementTaggingEvent $event) => $event->addTag(
-                CacheTag::fromString('29', new ElementCacheType(ElementType::Asset)),
+            static fn (ElementTaggingEvent $event) => $event->addTag(
+                CacheTag::fromString('17', new ElementCacheType(ElementType::Asset)),
             ),
         );
 
-        $this->client->request('GET', '/get-asset?id=5');
+        $this->client->request('GET', '/get-asset?id=42');
 
         $response = $this->client->getResponse();
         self::assertSame('This is the content of the test asset.', $response->getContent());
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertStringContainsString('a29', $response->headers->get('X-Cache-Tags'));
+        self::assertStringContainsString('a17', $response->headers->get('X-Cache-Tags'));
     }
 
     /**
@@ -74,13 +72,13 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_additional_tag_when_document_is_loaded(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simplePage(5)->save());
-        self::arrange(fn () => TestDocumentFactory::simpleSnippet(12)->save());
+        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
+        self::arrange(static fn () => TestDocumentFactory::simpleSnippet()->save());
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
-            fn (ElementTaggingEvent $event) => $event->addTag(
-                CacheTag::fromString('12', new ElementCacheType(ElementType::Document)),
+            static fn (ElementTaggingEvent $event) => $event->addTag(
+                CacheTag::fromString('23', new ElementCacheType(ElementType::Document)),
             ),
         );
 
@@ -91,7 +89,7 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertStringContainsString('d12', $response->headers->get('X-Cache-Tags'));
+        self::assertStringContainsString('d23', $response->headers->get('X-Cache-Tags'));
     }
 
     /**
@@ -104,24 +102,24 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_additional_tag_when_object_is_loaded(): void
     {
-        self::arrange(fn () => TestObjectFactory::simpleObject(5)->save());
-        self::arrange(fn () => TestObjectFactory::simpleVariant(12)->save());
+        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
+        self::arrange(static fn () => TestObjectFactory::simpleVariant()->save());
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
-            fn (ElementTaggingEvent $event) => $event->addTag(
-                CacheTag::fromString('12', new ElementCacheType(ElementType::Object)),
+            static fn (ElementTaggingEvent $event) => $event->addTag(
+                CacheTag::fromString('17', new ElementCacheType(ElementType::Object)),
             ),
         );
 
-        $this->client->request('GET', '/get-object?id=5');
+        $this->client->request('GET', '/get-object?id=42');
 
         $response = $this->client->getResponse();
         self::assertSame('Test content', $response->getContent());
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertStringContainsString('o12', $response->headers->get('X-Cache-Tags'));
+        self::assertStringContainsString('o17', $response->headers->get('X-Cache-Tags'));
     }
 
     /**
@@ -137,16 +135,16 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_custom_tag_when_element_is_loaded(): void
     {
-        self::arrange(fn () => TestObjectFactory::simpleObject(5)->save());
+        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
-            fn (ElementTaggingEvent $event) => $event->addTag(
+            static fn (ElementTaggingEvent $event) => $event->addTag(
                 CacheTag::fromString('bar', new CustomCacheType('foo')),
             ),
         );
 
-        $this->client->request('GET', '/get-object?id=5');
+        $this->client->request('GET', '/get-object?id=42');
 
         $response = $this->client->getResponse();
         self::assertSame('Test content', $response->getContent());

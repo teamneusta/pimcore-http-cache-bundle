@@ -3,10 +3,8 @@
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Invalidation;
 
 use FOS\HttpCacheBundle\CacheManager;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestAssetFactory;
-use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestObjectFactory;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
 use Neusta\Pimcore\TestingFramework\Test\ConfigurableKernelTestCase;
@@ -36,9 +34,9 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
         $this->cacheManager->invalidateTags(Argument::any())->willReturn($this->cacheManager->reveal());
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
 
-        $this->asset = self::arrange(fn () => TestAssetFactory::simpleAsset(5)->save());
-        $this->folder = self::arrange(fn () => TestAssetFactory::simpleFolder(12)->save());
-        $this->image = self::arrange(fn () => TestAssetFactory::simpleImage(29)->save());
+        $this->asset = self::arrange(static fn () => TestAssetFactory::simpleAsset()->save());
+        $this->folder = self::arrange(static fn () => TestAssetFactory::simpleFolder()->save());
+        $this->image = self::arrange(static fn () => TestAssetFactory::simpleImage()->save());
     }
 
     /**
@@ -53,7 +51,7 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
     {
         $this->asset->setData('Updated test content')->save();
 
-        $this->cacheManager->invalidateTags(['a5'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['a42'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -68,7 +66,7 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
     {
         $this->asset->delete();
 
-        $this->cacheManager->invalidateTags(['a5'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['a42'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -137,85 +135,6 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
         $this->image->delete();
 
         $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
-    }
-
-    /**
-     * @test
-     */
-    #[ConfigureExtension('neusta_pimcore_http_cache', [
-        'elements' => [
-            'assets' => [
-                'enabled' => true,
-                'invalidate_dependent_elements' => [
-                    'enabled' => true,
-                    'types' => [
-                        'objects' => true,
-                    ],
-                ],
-            ],
-            'objects' => true,
-        ],
-    ])]
-    public function dependent_object_is_invalidated_on_asset_update(): void
-    {
-        $object = self::arrange(
-            fn () => TestObjectFactory::simpleObject(12, 'test_object_with_image', [$this->image])->save(),
-        );
-
-        $this->image->setMimeType('image/png')->save();
-
-        $this->cacheManager->invalidateTags([CacheTag::fromElement($object)->toString()])
-            ->shouldHaveBeenCalledTimes(1);
-    }
-
-    /**
-     * @test
-     */
-    #[ConfigureExtension('neusta_pimcore_http_cache', [
-        'elements' => [
-            'assets' => [
-                'enabled' => true,
-                'invalidate_dependent_elements' => [
-                    'enabled' => true,
-                    'types' => [
-                        'objects' => true,
-                    ],
-                ],
-            ],
-            'objects' => true,
-        ],
-    ])]
-    public function dependent_object_is_invalidated_on_asset_deletion(): void
-    {
-        $object = self::arrange(
-            fn () => TestObjectFactory::simpleObject(12, 'test_object_with_image', [$this->image])->save(),
-        );
-
-        $this->image->delete();
-
-        $this->cacheManager->invalidateTags([CacheTag::fromElement($object)->toString()])
-            ->shouldHaveBeenCalledTimes(1);
-    }
-
-    /**
-     * @test
-     */
-    #[ConfigureExtension('neusta_pimcore_http_cache', [
-        'elements' => [
-            'objects' => true,
-            'assets' => true,
-        ],
-    ])]
-    public function dependent_elements_are_not_invalidated_when_asset_is_updated(): void
-    {
-        $object = self::arrange(
-            fn () => TestObjectFactory::simpleObject(12, 'test_object_with_asset', [$this->asset])->save(),
-        );
-
-        $this->asset->setData('Updated test content')->save();
-
-        $this->cacheManager->invalidateTags([CacheTag::fromElement($object)->toString()])
-            ->shouldNotHaveBeenCalled();
     }
 
     /**

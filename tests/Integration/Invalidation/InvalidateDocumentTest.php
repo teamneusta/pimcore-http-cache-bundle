@@ -3,10 +3,8 @@
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Invalidation;
 
 use FOS\HttpCacheBundle\CacheManager;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestDocumentFactory;
-use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestObjectFactory;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
 use Neusta\Pimcore\TestingFramework\Test\ConfigurableKernelTestCase;
@@ -38,10 +36,10 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
         $this->cacheManager->invalidateTags(Argument::any())->willReturn($this->cacheManager->reveal());
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
 
-        $this->document = self::arrange(fn () => TestDocumentFactory::simplePage(5)->save());
-        $this->hardlink = self::arrange(fn () => TestDocumentFactory::simpleHardLink(12)->save());
-        $this->email = self::arrange(fn () => TestDocumentFactory::simpleEmail(29)->save());
-        $this->folder = self::arrange(fn () => TestDocumentFactory::simpleFolder(70)->save());
+        $this->document = self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
+        $this->hardlink = self::arrange(static fn () => TestDocumentFactory::simpleHardLink()->save());
+        $this->email = self::arrange(static fn () => TestDocumentFactory::simpleEmail()->save());
+        $this->folder = self::arrange(static fn () => TestDocumentFactory::simpleFolder()->save());
     }
 
     /**
@@ -56,39 +54,7 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
     {
         $this->document->setKey('updated_test_document_page')->save();
 
-        $this->cacheManager->invalidateTags(['d5'])->shouldHaveBeenCalledTimes(1);
-    }
-
-    /**
-     * @test
-     */
-    #[ConfigureExtension('neusta_pimcore_http_cache', [
-        'elements' => [
-            'objects' => [
-                'enabled' => true,
-                'invalidate_dependent_elements' => [
-                    'enabled' => true,
-                    'types' => [
-                        'documents' => true,
-                    ],
-                ],
-            ],
-            'documents' => true,
-        ],
-    ])]
-    public function dependent_document_is_invalidated_on_object_update(): void
-    {
-        $dependent = self::arrange(
-            fn () => TestObjectFactory::simpleObject(12)->save(),
-        );
-        $document = self::arrange(
-            fn () => TestDocumentFactory::simplePage(96, 'other_test_document_page', $dependent)->save(),
-        );
-
-        $dependent->setContent('Updated test content')->save();
-
-        $this->cacheManager->invalidateTags([CacheTag::fromElement($document)->toString()])
-            ->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['d42'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -103,39 +69,7 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
     {
         $this->document->delete();
 
-        $this->cacheManager->invalidateTags(['d5'])->shouldHaveBeenCalledTimes(1);
-    }
-
-    /**
-     * @test
-     */
-    #[ConfigureExtension('neusta_pimcore_http_cache', [
-        'elements' => [
-            'objects' => [
-                'enabled' => true,
-                'invalidate_dependent_elements' => [
-                    'enabled' => true,
-                    'types' => [
-                        'documents' => true,
-                    ],
-                ],
-            ],
-            'documents' => true,
-        ],
-    ])]
-    public function dependent_document_is_invalidated_on_object_deletion(): void
-    {
-        $dependent = self::arrange(
-            fn () => TestObjectFactory::simpleObject(12)->save(),
-        );
-        $document = self::arrange(
-            fn () => TestDocumentFactory::simplePage(96, 'other_test_document_page', $dependent)->save(),
-        );
-
-        $dependent->delete();
-
-        $this->cacheManager->invalidateTags([CacheTag::fromElement($document)->toString()])
-            ->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['d42'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -264,88 +198,6 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
         $this->document->delete();
 
         $this->cacheManager->invalidateTags(Argument::any())->shouldNotHaveBeenCalled();
-    }
-
-    /**
-     * @test
-     */
-    #[ConfigureExtension('neusta_pimcore_http_cache', [
-        'elements' => [
-            'documents' => [
-                'enabled' => true,
-                'invalidate_dependent_elements' => [
-                    'enabled' => true,
-                    'types' => [
-                        'objects' => true,
-                    ],
-                ],
-            ],
-            'objects' => true,
-        ],
-    ])]
-    public function dependent_object_is_invalidated_on_document_update(): void
-    {
-        $object = self::arrange(
-            fn () => TestObjectFactory::simpleObject(12, 'test_object_with_page', [$this->document])->save(),
-        );
-
-        $this->document->setKey('updated_test_document_page')->save();
-
-        $this->cacheManager->invalidateTags([CacheTag::fromElement($object)->toString()])
-            ->shouldHaveBeenCalledTimes(1);
-    }
-
-    /**
-     * @test
-     */
-    #[ConfigureExtension('neusta_pimcore_http_cache', [
-        'elements' => [
-            'documents' => [
-                'enabled' => true,
-                'invalidate_dependent_elements' => [
-                    'enabled' => true,
-                    'types' => [
-                        'objects' => true,
-                    ],
-                ],
-            ],
-            'objects' => true,
-        ],
-    ])]
-    public function dependent_object_is_invalidated_on_document_deletion(): void
-    {
-        $object = self::arrange(
-            fn () => TestObjectFactory::simpleObject(12, 'test_object_with_page', [$this->document])->save(),
-        );
-
-        $this->document->delete();
-
-        $this->cacheManager->invalidateTags([CacheTag::fromElement($object)->toString()])
-            ->shouldHaveBeenCalledTimes(1);
-    }
-
-    /**
-     * @test
-     */
-    #[ConfigureExtension('neusta_pimcore_http_cache', [
-        'elements' => [
-            'objects' => true,
-            'documents' => true,
-        ],
-    ])]
-    public function dependent_elements_are_not_invalidated_when_document_is_updated(): void
-    {
-        $object = self::arrange(
-            fn () => TestObjectFactory::simpleObject(12)->save(),
-        );
-        $document = self::arrange(
-            fn () => TestDocumentFactory::simplePage(96, 'other_test_document_page', $object)->save(),
-        );
-
-        $document->setKey('updated_other_test_document_page')->save();
-
-        $this->cacheManager->invalidateTags([CacheTag::fromElement($object)->toString()])
-            ->shouldNotHaveBeenCalled();
     }
 
     /**

@@ -34,7 +34,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_expected_tags_when_page_is_loaded(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simplePage(5)->save());
+        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
 
         $this->client->request('GET', '/test_document_page');
 
@@ -43,7 +43,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertStringContainsString('d5', $response->headers->get('X-Cache-Tags'));
+        self::assertStringContainsString('d42', $response->headers->get('X-Cache-Tags'));
     }
 
     /**
@@ -56,16 +56,16 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_expected_tags_when_snippet_is_loaded(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simpleSnippet(12)->save());
+        self::arrange(static fn () => TestDocumentFactory::simpleSnippet()->save());
 
-        $this->client->request('GET', '/get-document?id=12');
+        $this->client->request('GET', '/get-document?id=23');
 
         $response = $this->client->getResponse();
         self::assertSame('Document with key: test_document_snippet', $response->getContent());
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertStringContainsString('d12', $response->headers->get('X-Cache-Tags'));
+        self::assertStringContainsString('d23', $response->headers->get('X-Cache-Tags'));
     }
 
     /**
@@ -78,16 +78,16 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_document_type_is_email(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simpleEmail(29)->save());
+        self::arrange(static fn () => TestDocumentFactory::simpleEmail()->save());
 
-        $this->client->request('GET', '/get-document?id=29');
+        $this->client->request('GET', '/get-document?id=17');
 
         $response = $this->client->getResponse();
-        self::assertSame('Document with key: test_document_email', $response->getContent());
+        self::assertSame('Document with key: test_document_link', $response->getContent());
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertStringNotContainsString('d29', $response->headers->get('X-Cache-Tags'));
+        self::assertStringNotContainsString('d17', $response->headers->get('X-Cache-Tags'));
     }
 
     /**
@@ -100,16 +100,16 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_document_type_is_hard_link(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simpleHardLink(12)->save());
+        self::arrange(static fn () => TestDocumentFactory::simpleHardLink()->save());
 
-        $this->client->request('GET', '/get-document?id=12');
+        $this->client->request('GET', '/get-document?id=33');
 
         $response = $this->client->getResponse();
         self::assertSame('Document with key: test_document_hard_link', $response->getContent());
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertStringNotContainsString('d12', $response->headers->get('X-Cache-Tags'));
+        self::assertStringNotContainsString('d33', $response->headers->get('X-Cache-Tags'));
     }
 
     /**
@@ -122,16 +122,16 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_document_type_is_folder(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simpleFolder(70)->save());
+        self::arrange(static fn () => TestDocumentFactory::simpleFolder()->save());
 
-        $this->client->request('GET', '/get-document?id=70');
+        $this->client->request('GET', '/get-document?id=97');
 
         $response = $this->client->getResponse();
         self::assertSame('Document with key: test_document_folder', $response->getContent());
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertStringNotContainsString('d70', $response->headers->get('X-Cache-Tags'));
+        self::assertStringNotContainsString('d97', $response->headers->get('X-Cache-Tags'));
     }
 
     /**
@@ -144,7 +144,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_documents_is_not_enabled(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simplePage(5)->save());
+        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
 
         $this->client->request('GET', '/test_document_page');
 
@@ -166,7 +166,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_caching_is_deactivated(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simplePage(5)->save());
+        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
         self::getContainer()->get(CacheActivator::class)->deactivateCaching();
 
         $this->client->request('GET', '/test_document_page');
@@ -189,7 +189,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_root_document_tag_when_loaded(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simplePage(5)->save());
+        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
 
         $this->client->request('GET', '/test_document_page');
 
@@ -215,7 +215,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_type_is_disabled(): void
     {
-        self::arrange(fn () => TestDocumentFactory::simplePage(5)->save());
+        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
 
         $this->client->request('GET', '/test_document_page');
 

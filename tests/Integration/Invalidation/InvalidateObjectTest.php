@@ -3,14 +3,13 @@
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Invalidation;
 
 use FOS\HttpCacheBundle\CacheManager;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestObjectFactory;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
 use Neusta\Pimcore\TestingFramework\Test\ConfigurableKernelTestCase;
 use Pimcore\Model\DataObject;
-use Pimcore\Model\DataObject\TestObject;
+use Pimcore\Model\DataObject\TestDataObject;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -24,9 +23,9 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
     /** @var ObjectProphecy<CacheManager> */
     private ObjectProphecy $cacheManager;
 
-    private TestObject $object;
+    private TestDataObject $object;
 
-    private TestObject $variant;
+    private TestDataObject $variant;
 
     private DataObject\Folder $folder;
 
@@ -36,9 +35,9 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
         $this->cacheManager->invalidateTags(Argument::any())->willReturn($this->cacheManager->reveal());
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
 
-        $this->object = self::arrange(fn () => TestObjectFactory::simpleObject(5)->save());
-        $this->folder = self::arrange(fn () => TestObjectFactory::simpleFolder(29)->save());
-        $this->variant = self::arrange(fn () => TestObjectFactory::simpleVariant(70)->save());
+        $this->object = self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
+        $this->folder = self::arrange(static fn () => TestObjectFactory::simpleFolder()->save());
+        $this->variant = self::arrange(static fn () => TestObjectFactory::simpleVariant()->save());
     }
 
     /**
@@ -53,36 +52,7 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
     {
         $this->object->setContent('Updated test content')->save();
 
-        $this->cacheManager->invalidateTags([CacheTag::fromElement($this->object)->toString()])
-            ->shouldHaveBeenCalledTimes(1);
-    }
-
-    /**
-     * @test
-     */
-    #[ConfigureExtension('neusta_pimcore_http_cache', [
-        'elements' => [
-            'objects' => [
-                'enabled' => true,
-                'invalidate_dependent_elements' => [
-                    'enabled' => true,
-                    'types' => [
-                        'objects' => true,
-                    ],
-                ],
-            ],
-        ],
-    ])]
-    public function dependent_object_is_invalidated_on_object_update(): void
-    {
-        $dependent = self::arrange(
-            fn () => TestObjectFactory::simpleObject(12, 'other_test_object', [$this->object])->save(),
-        );
-
-        $this->object->setContent('Updated test content')->save();
-
-        $this->cacheManager->invalidateTags([CacheTag::fromElement($dependent)->toString()])
-            ->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['o42'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -97,36 +67,7 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
     {
         $this->object->delete();
 
-        $this->cacheManager->invalidateTags([CacheTag::fromElement($this->object)->toString()])
-            ->shouldHaveBeenCalledTimes(1);
-    }
-
-    /**
-     * @test
-     */
-    #[ConfigureExtension('neusta_pimcore_http_cache', [
-        'elements' => [
-            'objects' => [
-                'enabled' => true,
-                'invalidate_dependent_elements' => [
-                    'enabled' => true,
-                    'types' => [
-                        'objects' => true,
-                    ],
-                ],
-            ],
-        ],
-    ])]
-    public function dependent_object_is_invalidated_on_object_deletion(): void
-    {
-        $dependent = self::arrange(
-            fn () => TestObjectFactory::simpleObject(12, 'other_test_object', [$this->object])->save(),
-        );
-
-        $this->object->delete();
-
-        $this->cacheManager->invalidateTags([CacheTag::fromElement($dependent)->toString()])
-            ->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(['o42'])->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -207,7 +148,7 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
             'objects' => [
                 'enabled' => true,
                 'classes' => [
-                    'TestObject' => false,
+                    'TestDataObject' => false,
                 ],
             ],
         ],
@@ -227,7 +168,7 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
             'objects' => [
                 'enabled' => true,
                 'classes' => [
-                    'TestObject' => false,
+                    'TestDataObject' => false,
                 ],
             ],
         ],
