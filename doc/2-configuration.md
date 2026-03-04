@@ -52,9 +52,18 @@ neusta_pimcore_http_cache:
             invalidate_dependent_elements:
                 enabled: true
                 types:
-                    objects: true
-                    documents: true
-                    assets: true
+                    objects:              # fine-grained: invalidate objects, but with exclusions
+                        enabled: true
+                        types:
+                            folder: false         # skip object folders
+                            variant: false        # skip variants
+                        classes:
+                            MyIgnoredClass: false # skip this class
+                    documents:            # fine-grained: invalidate documents, but with exclusions
+                        enabled: true
+                        types:
+                            link: false           # skip link documents
+                    assets: true          # shorthand: invalidate all asset subtypes
 
             # Or disable data objects completely (mutually exclusive with the options above)
             enabled: false
