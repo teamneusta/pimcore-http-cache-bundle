@@ -36,6 +36,10 @@ final class DependentElementFinder
                 continue;
             }
 
+            if (!$this->config->isDependentTypeEnabled($sourceType, $dependentType)) {
+                continue;
+            }
+
             $element = match ($dependentType) {
                 ElementType::Asset => $this->elementRepository->findAsset((int) $required['id']),
                 ElementType::Document => $this->elementRepository->findDocument((int) $required['id']),

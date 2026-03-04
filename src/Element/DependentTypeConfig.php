@@ -37,8 +37,8 @@ final readonly class DependentTypeConfig
         return $this->types[$type] ?? true;
     }
 
-    public function isObjectClassEnabled(string $class): bool
+    public function isObjectClassEnabled(?string $class): bool
     {
-        return $this->classes[$class] ?? true;
+        return null === $class || ($this->classes[$class] ?? true);
     }
 }
