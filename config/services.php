@@ -76,8 +76,7 @@ return static function (ContainerConfigurator $configurator) {
     $services->set('.neusta_pimcore_http_cache.element.repository', ElementRepository::class);
 
     $services->set('neusta_pimcore_http_cache.elements_config', ElementsConfig::class)
-        ->factory([ElementsConfig::class, 'fromArray'])
-        ->arg('$config', []);
+        ->factory([ElementsConfig::class, 'fromArray']);
 
     $services->set('neusta_pimcore_http_cache.cache_tag_checker.element.asset', AssetCacheTagChecker::class)
         ->arg('$repository', service('.neusta_pimcore_http_cache.element.repository'))
