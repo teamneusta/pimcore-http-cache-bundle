@@ -12,32 +12,44 @@ final class InvalidateElementListener
     public function __construct(
         private readonly CacheInvalidator $cacheInvalidator,
         private readonly EventDispatcherInterface $dispatcher,
+        private readonly DependentElementFinder $dependentElementFinder,
     ) {
     }
 
     public function onUpdate(ElementEventInterface $event): void
     {
-        if ($event->hasArgument('saveVersionOnly') || $event->hasArgument('autoSave')) {
-            return;
+        if (!$event->hasArgument('saveVersionOnly') && !$event->hasArgument('autoSave')) {
+            $this->invalidateWithDependentElements($event->getElement());
         }
-
-        $this->invalidateElement($event->getElement());
     }
 
     public function onDelete(ElementEventInterface $event): void
     {
-        $this->invalidateElement($event->getElement());
+        $this->invalidateWithDependentElements($event->getElement());
     }
 
-    private function invalidateElement(ElementInterface $element): void
+    private function invalidateWithDependentElements(ElementInterface $element): void
+    {
+        if (!$this->invalidateElement($element)) {
+            return;
+        }
+
+        foreach ($this->dependentElementFinder->findFor($element) as $dependent) {
+            $this->invalidateElement($dependent);
+        }
+    }
+
+    private function invalidateElement(ElementInterface $element): bool
     {
         $invalidationEvent = $this->dispatcher->dispatch(ElementInvalidationEvent::fromElement($element));
         \assert($invalidationEvent instanceof ElementInvalidationEvent);
 
         if ($invalidationEvent->cancel) {
-            return;
+            return false;
         }
 
         $this->cacheInvalidator->invalidate($invalidationEvent->cacheTags());
+
+        return true;
     }
 }

@@ -5,6 +5,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Cache\CacheTagChecker\Elemen
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\Element\DocumentCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
+use Neusta\Pimcore\HttpCacheBundle\Element\ElementsConfig;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Model\Document;
 use Prophecy\PhpUnit\ProphecyTrait;
@@ -30,7 +31,7 @@ final class DocumentCacheTagCheckerTest extends TestCase
         $document = $this->prophesize(Document::class);
         $elementCacheTagChecker = new DocumentCacheTagChecker(
             $this->elementRepository->reveal(),
-            config: ['enabled' => false, 'types' => []],
+            config: ElementsConfig::fromArray(['documents' => ['enabled' => false, 'types' => []]]),
         );
 
         $document->getId()->willReturn(42);
@@ -48,7 +49,7 @@ final class DocumentCacheTagCheckerTest extends TestCase
         $document = $this->prophesize(Document::class);
         $elementCacheTagChecker = new DocumentCacheTagChecker(
             $this->elementRepository->reveal(),
-            config: ['enabled' => true, 'types' => []],
+            config: ElementsConfig::fromArray(['documents' => ['enabled' => true, 'types' => []]]),
         );
 
         $document->getId()->willReturn(42);
@@ -67,7 +68,7 @@ final class DocumentCacheTagCheckerTest extends TestCase
         $document = $this->prophesize(Document::class);
         $elementCacheTagChecker = new DocumentCacheTagChecker(
             $this->elementRepository->reveal(),
-            config: ['enabled' => true, 'types' => ['foo' => false]],
+            config: ElementsConfig::fromArray(['documents' => ['enabled' => true, 'types' => ['foo' => false]]]),
         );
 
         $document->getId()->willReturn(42);
@@ -88,7 +89,7 @@ final class DocumentCacheTagCheckerTest extends TestCase
         $document = $this->prophesize(Document::class);
         $elementCacheTagChecker = new DocumentCacheTagChecker(
             $this->elementRepository->reveal(),
-            config: ['enabled' => true, 'types' => ['foo' => true]],
+            config: ElementsConfig::fromArray(['documents' => ['enabled' => true, 'types' => ['foo' => true]]]),
         );
 
         $document->getId()->willReturn(42);
@@ -109,7 +110,7 @@ final class DocumentCacheTagCheckerTest extends TestCase
         $document = $this->prophesize(Document::class);
         $elementCacheTagChecker = new DocumentCacheTagChecker(
             $this->elementRepository->reveal(),
-            config: ['enabled' => true, 'types' => ['foo' => false]],
+            config: ElementsConfig::fromArray(['documents' => ['enabled' => true, 'types' => ['foo' => false]]]),
         );
 
         $document->getId()->willReturn(42);

@@ -2,6 +2,8 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers;
 
+use Pimcore\Model\DataObject\TestObject;
+use Pimcore\Model\Document\Editable\Relation;
 use Pimcore\Model\Document\Email;
 use Pimcore\Model\Document\Folder;
 use Pimcore\Model\Document\Hardlink;
@@ -10,55 +12,67 @@ use Pimcore\Model\Document\Snippet;
 
 final class TestDocumentFactory
 {
-    public static function simplePage(): Page
+    public static function simplePage(int $id = 42, string $key = 'test_document_page', ?TestObject $relatedObject = null): Page
     {
         $page = new Page();
-        $page->setId(42);
-        $page->setKey('test_document_page');
+        $page->setId($id);
+        $page->setKey($key);
         $page->setPublished(true);
         $page->setParentId(1);
+
+        if (null !== $relatedObject) {
+            $objectRelation = new Relation();
+            $objectRelation->setName('relatedObject');
+            $objectRelation->setDataFromResource([
+                'id' => $relatedObject->getId(),
+                'type' => 'object',
+                'subtype' => 'object',
+            ]);
+
+            $page->setEditable($objectRelation);
+        }
 
         return $page;
     }
 
-    public static function simpleSnippet(): Snippet
+    public static function simpleSnippet(int $id = 23, string $key = 'test_document_snippet'): Snippet
     {
         $snippet = new Snippet();
-        $snippet->setId(23);
-        $snippet->setKey('test_document_snippet');
+        $snippet->setId($id);
+        $snippet->setKey($key);
         $snippet->setPublished(true);
         $snippet->setParentId(1);
 
         return $snippet;
     }
 
-    public static function simpleEmail(): Email
+    public static function simpleEmail(int $id = 17, string $key = 'test_document_email'): Email
     {
         $email = new Email();
-        $email->setId(17);
-        $email->setKey('test_document_link');
+        $email->setId($id);
+        $email->setKey($key);
         $email->setPublished(true);
         $email->setParentId(1);
 
         return $email;
     }
 
-    public static function simpleHardLink(): Hardlink
+    public static function simpleHardLink(int $id = 33, string $key = 'test_document_hard_link'): Hardlink
     {
         $hardlink = new Hardlink();
-        $hardlink->setId(33);
-        $hardlink->setKey('test_document_hard_link');
+        $hardlink->setId($id);
+        $hardlink->setKey($key);
         $hardlink->setPublished(true);
         $hardlink->setParentId(1);
 
         return $hardlink;
     }
 
-    public static function simpleFolder(): Folder
+    public static function simpleFolder(int $id = 97, string $key = 'test_document_folder'): Folder
     {
         $folder = new Folder();
-        $folder->setId(97);
-        $folder->setKey('test_document_folder');
+        $folder->setId($id);
+        $folder->setKey($key);
         $folder->setPublished(true);
         $folder->setParentId(1);
 

@@ -5,7 +5,9 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Element;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
+use Neusta\Pimcore\HttpCacheBundle\Element\DependentElementFinder;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementInvalidationEvent;
+use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Event\Model\AssetEvent;
@@ -32,17 +34,23 @@ final class InvalidateElementListenerTest extends TestCase
     /** @var ObjectProphecy<EventDispatcherInterface> */
     private $eventDispatcher;
 
+    /** @var ObjectProphecy<DependentElementFinder> */
+    private $dependentElementFinder;
+
     protected function setUp(): void
     {
         $this->cacheInvalidator = $this->prophesize(CacheInvalidator::class);
         $this->eventDispatcher = $this->prophesize(EventDispatcherInterface::class);
+        $this->dependentElementFinder = $this->prophesize(DependentElementFinder::class);
         $this->invalidateElementListener = new InvalidateElementListener(
             $this->cacheInvalidator->reveal(),
             $this->eventDispatcher->reveal(),
+            $this->dependentElementFinder->reveal(),
         );
 
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
             ->willReturnArgument();
+        $this->dependentElementFinder->findFor(Argument::any())->willReturn([]);
     }
 
     /**
@@ -103,6 +111,41 @@ final class InvalidateElementListenerTest extends TestCase
 
         $this->cacheInvalidator->invalidate(Argument::which('toString', CacheTag::fromElement($element)->toString()))
             ->shouldHaveBeenCalledOnce();
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider elementProvider
+     */
+    public function onUpdate_should_call_dependent_element_finder(ElementEventInterface $event): void
+    {
+        $element = $event->getElement();
+
+        $this->invalidateElementListener->onUpdate($event);
+
+        $this->dependentElementFinder->findFor($element)
+            ->shouldHaveBeenCalledOnce();
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider elementProvider
+     */
+    public function onUpdate_should_not_call_dependent_element_invalidator_when_source_invalidation_is_canceled(
+        ElementEventInterface $event,
+    ): void {
+        $element = $event->getElement();
+        $invalidationEvent = ElementInvalidationEvent::fromElement($element);
+        $invalidationEvent->cancel = true;
+
+        $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
+            ->willReturn($invalidationEvent);
+
+        $this->invalidateElementListener->onUpdate($event);
+
+        $this->dependentElementFinder->findFor(Argument::any())->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -182,6 +225,41 @@ final class InvalidateElementListenerTest extends TestCase
      *
      * @dataProvider elementProvider
      */
+    public function onDelete_should_call_dependent_element_finder(ElementEventInterface $event): void
+    {
+        $element = $event->getElement();
+
+        $this->invalidateElementListener->onDelete($event);
+
+        $this->dependentElementFinder->findFor($element)
+            ->shouldHaveBeenCalledOnce();
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider elementProvider
+     */
+    public function onDelete_should_not_call_dependent_element_invalidator_when_source_invalidation_is_canceled(
+        ElementEventInterface $event,
+    ): void {
+        $element = $event->getElement();
+        $invalidationEvent = ElementInvalidationEvent::fromElement($element);
+        $invalidationEvent->cancel = true;
+
+        $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
+            ->willReturn($invalidationEvent);
+
+        $this->invalidateElementListener->onDelete($event);
+
+        $this->dependentElementFinder->findFor(Argument::any())->shouldNotHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider elementProvider
+     */
     public function onDelete_does_not_invalidate_when_event_was_canceled(ElementEventInterface $event): void
     {
         $element = $event->getElement();
@@ -225,14 +303,17 @@ final class InvalidateElementListenerTest extends TestCase
     {
         $asset = $this->prophesize(Asset::class);
         $asset->getId()->willReturn(42);
+        $asset->getType()->willReturn(ElementType::Asset->value);
         yield 'Asset' => ['event' => new AssetEvent($asset->reveal())];
 
         $document = $this->prophesize(Document::class);
         $document->getId()->willReturn(42);
+        $document->getType()->willReturn(ElementType::Document->value);
         yield 'Document' => ['event' => new DocumentEvent($document->reveal())];
 
         $dataObject = $this->prophesize(DataObject::class);
         $dataObject->getId()->willReturn(42);
+        $dataObject->getType()->willReturn(ElementType::Object->value);
         yield 'Object' => ['event' => new DataObjectEvent($dataObject->reveal())];
     }
 }

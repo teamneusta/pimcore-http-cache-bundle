@@ -5,6 +5,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Cache\CacheTagChecker\Elemen
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
+use Neusta\Pimcore\HttpCacheBundle\Element\ElementsConfig;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Model\Asset;
 use Prophecy\PhpUnit\ProphecyTrait;
@@ -30,7 +31,7 @@ final class AssetCacheTagCheckerTest extends TestCase
         $asset = $this->prophesize(Asset::class);
         $elementCacheTagChecker = new CacheTagChecker\Element\AssetCacheTagChecker(
             $this->elementRepository->reveal(),
-            config: ['enabled' => false, 'types' => []],
+            config: ElementsConfig::fromArray(['assets' => ['enabled' => false, 'types' => []]]),
         );
 
         $asset->getId()->willReturn(42);
@@ -48,7 +49,7 @@ final class AssetCacheTagCheckerTest extends TestCase
         $asset = $this->prophesize(Asset::class);
         $elementCacheTagChecker = new CacheTagChecker\Element\AssetCacheTagChecker(
             $this->elementRepository->reveal(),
-            config: ['enabled' => true, 'types' => ['foo' => true]],
+            config: ElementsConfig::fromArray(['assets' => ['enabled' => true, 'types' => ['foo' => true]]]),
         );
 
         $asset->getId()->willReturn(42);
@@ -67,7 +68,7 @@ final class AssetCacheTagCheckerTest extends TestCase
         $asset = $this->prophesize(Asset::class);
         $elementCacheTagChecker = new CacheTagChecker\Element\AssetCacheTagChecker(
             $this->elementRepository->reveal(),
-            config: ['enabled' => true, 'types' => ['foo' => false]],
+            config: ElementsConfig::fromArray(['assets' => ['enabled' => true, 'types' => ['foo' => false]]]),
         );
 
         $asset->getId()->willReturn(42);
@@ -87,7 +88,7 @@ final class AssetCacheTagCheckerTest extends TestCase
         $asset = $this->prophesize(Asset::class);
         $elementCacheTagChecker = new CacheTagChecker\Element\AssetCacheTagChecker(
             $this->elementRepository->reveal(),
-            config: ['enabled' => true, 'types' => ['foo' => true]],
+            config: ElementsConfig::fromArray(['assets' => ['enabled' => true, 'types' => ['foo' => true]]]),
         );
 
         $asset->getId()->willReturn(42);
@@ -107,7 +108,7 @@ final class AssetCacheTagCheckerTest extends TestCase
         $asset = $this->prophesize(Asset::class);
         $elementCacheTagChecker = new CacheTagChecker\Element\AssetCacheTagChecker(
             $this->elementRepository->reveal(),
-            config: ['enabled' => true, 'types' => ['foo' => false]],
+            config: ElementsConfig::fromArray(['assets' => ['enabled' => true, 'types' => ['foo' => false]]]),
         );
 
         $asset->getId()->willReturn(42);

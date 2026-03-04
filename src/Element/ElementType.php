@@ -15,4 +15,9 @@ enum ElementType: string
     {
         return self::from(Service::getElementType($element) ?? '');
     }
+
+    public static function tryFromElement(ElementInterface $element): ?self
+    {
+        return self::tryFrom(Service::getElementType($element) ?? '');
+    }
 }

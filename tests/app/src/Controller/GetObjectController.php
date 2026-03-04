@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use Pimcore\Model\DataObject\TestDataObject;
+use Pimcore\Model\DataObject\TestObject;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -10,7 +10,7 @@ final class GetObjectController
 {
     public function __invoke(Request $request): Response
     {
-        if (!$object = TestDataObject::getById($request->query->get('id'))) {
+        if (!$object = TestObject::getById($request->query->get('id'))) {
             return new Response('Object not found', Response::HTTP_NOT_FOUND);
         }
 

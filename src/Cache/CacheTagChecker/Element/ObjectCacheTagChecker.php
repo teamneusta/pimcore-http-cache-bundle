@@ -6,17 +6,15 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType\ElementCacheType;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
+use Neusta\Pimcore\HttpCacheBundle\Element\ElementsConfig;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 use Pimcore\Model\DataObject\Concrete;
 
 final class ObjectCacheTagChecker implements CacheTagChecker
 {
-    /**
-     * @param array{enabled: bool, types: array<string, bool>, classes: array<string, bool>} $config
-     */
     public function __construct(
         private readonly ElementRepository $repository,
-        private readonly array $config,
+        private readonly ElementsConfig $config,
     ) {
     }
 
@@ -25,7 +23,7 @@ final class ObjectCacheTagChecker implements CacheTagChecker
         \assert($tag->type instanceof ElementCacheType, \sprintf('Cache type must be an instance of %s', ElementCacheType::class));
         \assert(ElementType::Object === $tag->type->type, \sprintf('Cache type must be "%s"', ElementType::Object->value));
 
-        if (!$this->config['enabled']) {
+        if (!$this->config->isEnabled(ElementType::Object)) {
             return false;
         }
 
@@ -33,7 +31,7 @@ final class ObjectCacheTagChecker implements CacheTagChecker
             return false;
         }
 
-        if (!($this->config['types'][$object->getType()] ?? true)) {
+        if (!$this->config->isTypeEnabled(ElementType::Object, $object->getType())) {
             return false;
         }
 
@@ -41,6 +39,6 @@ final class ObjectCacheTagChecker implements CacheTagChecker
             return true;
         }
 
-        return $this->config['classes'][$object->getClassName()] ?? true;
+        return $this->config->isObjectClassEnabled($object->getClassName());
     }
 }

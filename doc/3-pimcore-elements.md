@@ -5,7 +5,9 @@ types. You can enable or disable cache handling for specific element types and c
 
 ### Assets
 
-By default, all asset types except "folder" are enabled. You can disable specific asset types or disable assets
+The available asset types are: `image`, `video`, `audio`, `document`, `archive`, `text`, `unknown`, `folder`.
+
+By default, all asset types except `folder` are enabled. You can disable specific asset types or disable assets
 completely.
 
 #### Disable specific asset types
@@ -28,7 +30,10 @@ neusta_pimcore_http_cache:
 ```
 
 ### Documents
-By default, all document types except "email", "folder" and "hardlink" are enabled. You can disable specific document types or disable documents completely.
+
+The available document types are: `page`, `snippet`, `link`, `hardlink`, `email`, `folder`.
+
+By default, all document types except `email`, `folder`, and `hardlink` are enabled. You can disable specific document types or disable documents completely.
 
 #### Disable specific document types
 Example configuration to disable the "link" document type:
@@ -50,7 +55,10 @@ neusta_pimcore_http_cache:
 ```
 
 ### Objects
-By default, all object types except "folder" are enabled. You can disable specific object types or disable objects completely. Also, you can enable or disable cache handling for specific data object classes.
+
+The available object types are: `object`, `variant`, `folder`.
+
+By default, all object types except `folder` are enabled. You can disable specific object types or disable objects completely. Also, you can enable or disable cache handling for specific data object classes.
 
 #### Disable specific object types
 Example configuration to disable the "variant" object type:
@@ -81,3 +89,100 @@ neusta_pimcore_http_cache:
             classes:
                 MyDataObjectClass: false
 ```
+
+## Dependent Element Invalidation
+
+When a Pimcore element is updated or deleted, other elements that reference it may also serve stale content.
+For example, a document that embeds a data object will be outdated as soon as that object changes.
+
+By default, the bundle only invalidates the cache tag of the element that was directly changed.
+Dependent element invalidation — traversing Pimcore's dependency graph to also purge referencing elements — is **disabled by default** and must be opted in via configuration.
+
+The dependency graph is one level deep: only elements that directly reference the changed element are invalidated, not transitive dependencies.
+
+> **Note:** For a dependent element type to actually be invalidated, it must also be enabled in the main `elements` configuration. For example, setting `objects.invalidate_dependent_elements.types.documents: true` has no effect if `documents` is disabled — the cache tag will be silently dropped.
+
+### Enable dependent invalidation for objects
+
+The most common use case is invalidating documents and other objects that reference a changed data object.
+The listed dependent types (`documents`, `objects`) must also be enabled in the `elements` configuration:
+
+```yaml
+neusta_pimcore_http_cache:
+    elements:
+        objects:
+            invalidate_dependent_elements:
+                enabled: true
+                types:
+                    documents: true  # invalidate documents that reference the object
+                    objects: true    # invalidate objects that reference the object
+                    assets: false    # leave assets out (default)
+        documents: true  # must be enabled for document invalidation to take effect
+```
+
+### Enable dependent invalidation for assets
+
+If an asset (e.g. an image) is referenced by objects or documents, those can be invalidated when the asset changes.
+The listed dependent types must also be enabled in the `elements` configuration:
+
+```yaml
+neusta_pimcore_http_cache:
+    elements:
+        assets:
+            invalidate_dependent_elements:
+                enabled: true
+                types:
+                    objects: true    # invalidate objects that reference the asset
+                    documents: true  # invalidate documents that reference the asset
+        objects: true    # must be enabled for object invalidation to take effect
+        documents: true  # must be enabled for document invalidation to take effect
+```
+
+### Enable dependent invalidation for documents
+
+If a document is referenced by other elements (e.g. an object with a document relation field), those elements can be invalidated when the document changes.
+The listed dependent types must also be enabled in the `elements` configuration:
+
+```yaml
+neusta_pimcore_http_cache:
+    elements:
+        documents:
+            invalidate_dependent_elements:
+                enabled: true
+                types:
+                    objects: true  # invalidate objects that reference the document
+        objects: true  # must be enabled for object invalidation to take effect
+```
+
+### Fine-grained control per dependent type
+
+Each dependent type under `types` accepts either a boolean shorthand or a full configuration
+with its own `types` (and `classes` for objects) to exclude specific subtypes or classes:
+
+```yaml
+neusta_pimcore_http_cache:
+    elements:
+        objects:
+            invalidate_dependent_elements:
+                enabled: true
+                types:
+                    assets:               # fine-grained: invalidate assets, but with exclusions
+                        enabled: true
+                        types:
+                            folder: false         # don't cascade to asset folders
+                    documents:            # fine-grained: invalidate documents, but with exclusions
+                        enabled: true
+                        types:
+                            link: false           # don't cascade to link documents
+                    objects:              # fine-grained: invalidate objects, but with exclusions
+                        enabled: true
+                        types:
+                            folder: false         # don't cascade to object folders
+                        classes:
+                            MyIgnoredClass: false # don't cascade to this class
+```
+
+The `types` filter applies to all dependent element types (assets, documents, objects).
+The `classes` filter is only available for `objects`.
+
+Both filters work alongside the global `elements` configuration — both must allow an element for it to be invalidated as a dependent.

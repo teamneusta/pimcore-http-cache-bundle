@@ -1,14 +1,23 @@
 <?php declare(strict_types=1);
 
+/**
+ * Inheritance: no
+ * Variants: no.
+ *
+ * Fields Summary:
+ * - content [input]
+ * - related [manyToManyRelation]
+ */
+
 return Pimcore\Model\DataObject\ClassDefinition::__set_state([
     'dao' => null,
-    'id' => 'test_data_object',
-    'name' => 'TestDataObject',
+    'id' => 'test_object',
+    'name' => 'TestObject',
     'description' => '',
     'creationDate' => 0,
-    'modificationDate' => 1685448671,
-    'userOwner' => 1,
-    'userModification' => 1,
+    'modificationDate' => 1755079708,
+    'userOwner' => 58,
+    'userModification' => 58,
     'parentClass' => '',
     'implementsInterfaces' => '',
     'listingParentClass' => '',
@@ -40,8 +49,8 @@ return Pimcore\Model\DataObject\ClassDefinition::__set_state([
                 'type' => null,
                 'region' => null,
                 'title' => '',
-                'width' => null,
-                'height' => null,
+                'width' => '',
+                'height' => '',
                 'collapsible' => false,
                 'collapsed' => false,
                 'bodyStyle' => '',
@@ -52,7 +61,7 @@ return Pimcore\Model\DataObject\ClassDefinition::__set_state([
                         'name' => 'content',
                         'title' => 'Content',
                         'tooltip' => '',
-                        'mandatory' => true,
+                        'mandatory' => false,
                         'noteditable' => false,
                         'index' => false,
                         'locked' => false,
@@ -66,7 +75,7 @@ return Pimcore\Model\DataObject\ClassDefinition::__set_state([
                         'visibleSearch' => false,
                         'blockedVarsForExport' => [
                         ],
-                        'width' => null,
+                        'width' => '',
                         'defaultValue' => null,
                         'columnLength' => 190,
                         'regex' => '',
@@ -76,6 +85,49 @@ return Pimcore\Model\DataObject\ClassDefinition::__set_state([
                         'showCharCount' => false,
                         'defaultValueGenerator' => '',
                     ]),
+                    1 => Pimcore\Model\DataObject\ClassDefinition\Data\ManyToManyRelation::__set_state([
+                        'name' => 'related',
+                        'title' => 'Related',
+                        'tooltip' => '',
+                        'mandatory' => false,
+                        'noteditable' => false,
+                        'index' => false,
+                        'locked' => false,
+                        'style' => '',
+                        'permissions' => null,
+                        'datatype' => 'data',
+                        'fieldtype' => 'manyToManyRelation',
+                        'relationType' => true,
+                        'invisible' => false,
+                        'visibleGridView' => false,
+                        'visibleSearch' => false,
+                        'blockedVarsForExport' => [
+                        ],
+                        'classes' => [
+                            0 => [
+                                'classes' => 'TestObject',
+                            ],
+                        ],
+                        'pathFormatterClass' => '',
+                        'width' => '',
+                        'height' => '',
+                        'maxItems' => null,
+                        'assetUploadPath' => '',
+                        'objectsAllowed' => true,
+                        'assetsAllowed' => true,
+                        'assetTypes' => [
+                            0 => [
+                                'assetTypes' => 'image',
+                            ],
+                        ],
+                        'documentsAllowed' => true,
+                        'documentTypes' => [
+                            0 => [
+                                'documentTypes' => 'page',
+                            ],
+                        ],
+                        'enableTextSelection' => false,
+                    ]),
                 ],
                 'locked' => false,
                 'blockedVarsForExport' => [
@@ -83,8 +135,8 @@ return Pimcore\Model\DataObject\ClassDefinition::__set_state([
                 'fieldtype' => 'panel',
                 'layout' => null,
                 'border' => false,
-                'icon' => null,
-                'labelWidth' => 100,
+                'icon' => '',
+                'labelWidth' => 0,
                 'labelAlign' => 'left',
             ]),
         ],

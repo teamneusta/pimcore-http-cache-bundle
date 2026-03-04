@@ -9,7 +9,7 @@ use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
 use Neusta\Pimcore\TestingFramework\Test\ConfigurableKernelTestCase;
 use Pimcore\Model\DataObject;
-use Pimcore\Model\DataObject\TestDataObject;
+use Pimcore\Model\DataObject\TestObject;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -23,9 +23,9 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
     /** @var ObjectProphecy<CacheManager> */
     private ObjectProphecy $cacheManager;
 
-    private TestDataObject $object;
+    private TestObject $object;
 
-    private TestDataObject $variant;
+    private TestObject $variant;
 
     private DataObject\Folder $folder;
 
@@ -148,7 +148,7 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
             'objects' => [
                 'enabled' => true,
                 'classes' => [
-                    'TestDataObject' => false,
+                    'TestObject' => false,
                 ],
             ],
         ],
@@ -168,7 +168,7 @@ final class InvalidateObjectTest extends ConfigurableKernelTestCase
             'objects' => [
                 'enabled' => true,
                 'classes' => [
-                    'TestDataObject' => false,
+                    'TestObject' => false,
                 ],
             ],
         ],
