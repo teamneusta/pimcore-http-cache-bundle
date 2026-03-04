@@ -39,6 +39,6 @@ final class ObjectCacheTagChecker implements CacheTagChecker
             return true;
         }
 
-        return $this->config->isClassEnabled($object->getClassName());
+        return $this->config->isObjectClassEnabled($object->getClassName());
     }
 }

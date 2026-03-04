@@ -2,9 +2,12 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Element;
 
+use Pimcore\Model\DataObject\Concrete;
+use Pimcore\Model\Element\ElementInterface;
+
 final readonly class ElementsConfig
 {
-    public function __construct(
+    private function __construct(
         private bool $assetsEnabled,
         /** @var array<string, bool> */
         private array $assetTypes,
@@ -77,7 +80,7 @@ final readonly class ElementsConfig
         return $types[$type] ?? true;
     }
 
-    public function isClassEnabled(string $class): bool
+    public function isObjectClassEnabled(string $class): bool
     {
         return $this->objectClasses[$class] ?? true;
     }
@@ -91,7 +94,37 @@ final readonly class ElementsConfig
         };
     }
 
-    public function getDependentTypeConfig(ElementType $source, ElementType $dependent): DependentTypeConfig
+    public function isDependentElementEnabled(ElementType $sourceType, ElementInterface $element): bool
+    {
+        $dependentType = ElementType::tryFromElement($element);
+
+        if ($dependentType === null) {
+            return false;
+        }
+
+        $dependentConfig = $this->getDependentTypeConfig($sourceType, $dependentType);
+
+        if (!$dependentConfig->isEnabled()) {
+            return false;
+        }
+
+        if (!$this->isTypeEnabled($dependentType, $element->getType())) {
+            return false;
+        }
+
+        if (!$dependentConfig->isTypeEnabled($element->getType())) {
+            return false;
+        }
+
+        if ($dependentType === ElementType::Object && $element instanceof Concrete) {
+            return $this->isObjectClassEnabled($element->getClassName())
+                && $dependentConfig->isObjectClassEnabled($element->getClassName());
+        }
+
+        return true;
+    }
+
+    private function getDependentTypeConfig(ElementType $source, ElementType $dependent): DependentTypeConfig
     {
         return match ($source) {
             ElementType::Asset => match ($dependent) {

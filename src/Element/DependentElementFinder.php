@@ -2,7 +2,6 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Element;
 
-use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Element\ElementInterface;
 
 final class DependentElementFinder
@@ -14,14 +13,12 @@ final class DependentElementFinder
     }
 
     /**
-     * Returns dependent elements one level deep.
-     * Dependencies of dependent elements are intentionally not traversed to prevent cycles.
-     *
      * @return list<ElementInterface>
      */
     public function findFor(ElementInterface $source): array
     {
         $sourceType = ElementType::tryFromElement($source);
+
         if ($sourceType === null || !$this->config->isDependentElementsEnabled($sourceType)) {
             return [];
         }
@@ -34,12 +31,8 @@ final class DependentElementFinder
             }
 
             $dependentType = ElementType::tryFrom($required['type']);
-            if ($dependentType === null) {
-                continue;
-            }
 
-            $depConfig = $this->config->getDependentTypeConfig($sourceType, $dependentType);
-            if (!$depConfig->isEnabled()) {
+            if ($dependentType === null) {
                 continue;
             }
 
@@ -49,31 +42,11 @@ final class DependentElementFinder
                 ElementType::Object => $this->elementRepository->findObject((int) $required['id']),
             };
 
-            if ($element && $this->isElementEnabled($dependentType, $depConfig, $element)) {
+            if ($element !== null && $this->config->isDependentElementEnabled($sourceType, $element)) {
                 $elements[] = $element;
             }
         }
 
         return $elements;
-    }
-
-    private function isElementEnabled(ElementType $type, DependentTypeConfig $depConfig, ElementInterface $element): bool
-    {
-        // Global config check
-        if (!$this->config->isTypeEnabled($type, $element->getType())) {
-            return false;
-        }
-
-        // Dependent-specific config check
-        if (!$depConfig->isTypeEnabled($element->getType())) {
-            return false;
-        }
-
-        if ($type === ElementType::Object && $element instanceof Concrete) {
-            return $this->config->isClassEnabled($element->getClassName())
-                && $depConfig->isClassEnabled($element->getClassName());
-        }
-
-        return true;
     }
 }
