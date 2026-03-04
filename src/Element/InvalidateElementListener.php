@@ -18,7 +18,7 @@ final class InvalidateElementListener
 
     public function onUpdate(ElementEventInterface $event): void
     {
-        if (!$event->hasArgument('saveVersionOnly') || !$event->hasArgument('autoSave')) {
+        if (!$event->hasArgument('saveVersionOnly') && !$event->hasArgument('autoSave')) {
             $this->invalidateWithDependentElements($event->getElement());
         }
     }
