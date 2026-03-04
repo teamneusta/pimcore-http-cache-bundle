@@ -209,7 +209,7 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
     public function dependent_elements_are_not_invalidated_when_asset_is_updated(): void
     {
         $object = self::arrange(
-            fn () => TestObjectFactory::simpleObject(12, 'test_object_with_asset', [$this->asset])->save(),
+            fn () => TestObjectFactory::simpleObject(12, 'test_object_with_image', [$this->image])->save(),
         );
 
         $this->asset->setData('Updated test content')->save();

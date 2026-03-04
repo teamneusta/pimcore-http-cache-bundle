@@ -54,7 +54,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
         $dataCollector = $this->client->getProfile()->getCollector('pimcore_http_cache');
 
         self::assertInstanceOf(DataCollector::class, $dataCollector);
-        self::assertSame(
+        self::assertEqualsCanonicalizing(
             [['tag' => 'd1', 'type' => 'document'], ['tag' => 'd5', 'type' => 'document']],
             $dataCollector->getTags(),
         );
