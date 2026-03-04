@@ -16,7 +16,7 @@ final readonly class DependentTypeConfig
     /** @param array<mixed>|bool $config */
     public static function fromArray(array|bool $config): self
     {
-        if (is_bool($config)) {
+        if (\is_bool($config)) {
             return new self(enabled: $config, types: [], classes: []);
         }
 
