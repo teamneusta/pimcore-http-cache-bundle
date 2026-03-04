@@ -300,6 +300,56 @@ final class DependentElementFinderTest extends TestCase
     /**
      * @test
      */
+    public function findFor_returns_dependent_asset_with_explicitly_enabled_subtype(): void
+    {
+        $finder = new DependentElementFinder(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['assets' => ['enabled' => true, 'types' => ['image' => true]]]]]]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentAsset = $this->prophesize(Asset::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentAsset->getType()->willReturn('image');
+        $dependency->getRequiredBy()->willReturn([['id' => 7, 'type' => 'asset']]);
+        $this->elementRepository->findAsset(7)->willReturn($dependentAsset->reveal());
+
+        $result = $finder->findFor($element->reveal());
+
+        self::assertCount(1, $result);
+        self::assertSame($dependentAsset->reveal(), $result[0]);
+    }
+
+    /**
+     * @test
+     */
+    public function findFor_returns_dependent_document_with_explicitly_enabled_subtype(): void
+    {
+        $finder = new DependentElementFinder(
+            $this->elementRepository->reveal(),
+            ElementsConfig::fromArray(['objects' => ['invalidate_dependent_elements' => ['enabled' => true, 'types' => ['documents' => ['enabled' => true, 'types' => ['page' => true]]]]]]),
+        );
+
+        $element = $this->prophesize(TestObject::class);
+        $dependency = $this->prophesize(Dependency::class);
+        $dependentDocument = $this->prophesize(Document::class);
+        $element->getType()->willReturn(ElementType::Object->value);
+        $element->getDependencies()->willReturn($dependency->reveal());
+        $dependentDocument->getType()->willReturn('page');
+        $dependency->getRequiredBy()->willReturn([['id' => 5, 'type' => 'document']]);
+        $this->elementRepository->findDocument(5)->willReturn($dependentDocument->reveal());
+
+        $result = $finder->findFor($element->reveal());
+
+        self::assertCount(1, $result);
+        self::assertSame($dependentDocument->reveal(), $result[0]);
+    }
+
+    /**
+     * @test
+     */
     public function findFor_skips_dependent_object_with_disabled_subtype(): void
     {
         $finder = new DependentElementFinder(
