@@ -47,6 +47,7 @@ final class InvalidateDependentElementTest extends ConfigurableKernelTestCase
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'objects' => [
+                'enabled' => true,
                 'invalidate_dependent_elements' => [
                     'enabled' => true,
                     'types' => [
@@ -71,6 +72,7 @@ final class InvalidateDependentElementTest extends ConfigurableKernelTestCase
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'objects' => [
+                'enabled' => true,
                 'invalidate_dependent_elements' => [
                     'enabled' => true,
                     'types' => [
@@ -99,6 +101,7 @@ final class InvalidateDependentElementTest extends ConfigurableKernelTestCase
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'objects' => [
+                'enabled' => true,
                 'invalidate_dependent_elements' => [
                     'enabled' => true,
                     'types' => [
@@ -128,6 +131,7 @@ final class InvalidateDependentElementTest extends ConfigurableKernelTestCase
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'objects' => [
+                'enabled' => true,
                 'invalidate_dependent_elements' => [
                     'enabled' => true,
                     'types' => [

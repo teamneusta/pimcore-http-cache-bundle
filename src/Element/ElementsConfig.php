@@ -80,9 +80,9 @@ final readonly class ElementsConfig
         return $types[$type] ?? true;
     }
 
-    public function isObjectClassEnabled(string $class): bool
+    public function isObjectClassEnabled(?string $class): bool
     {
-        return $this->objectClasses[$class] ?? true;
+        return null === $class || ($this->objectClasses[$class] ?? true);
     }
 
     public function isDependentElementsEnabled(ElementType $type): bool
@@ -92,6 +92,11 @@ final readonly class ElementsConfig
             ElementType::Document => $this->documentDependentElementsEnabled,
             ElementType::Object => $this->objectDependentElementsEnabled,
         };
+    }
+
+    public function isDependentTypeEnabled(ElementType $sourceType, ElementType $dependentType): bool
+    {
+        return $this->getDependentTypeConfig($sourceType, $dependentType)->isEnabled();
     }
 
     public function isDependentElementEnabled(ElementType $sourceType, ElementInterface $element): bool
