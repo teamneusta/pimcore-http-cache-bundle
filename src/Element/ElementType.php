@@ -20,6 +20,4 @@ enum ElementType: string
     {
         return self::tryFrom(Service::getElementType($element) ?? '');
     }
-
-
 }

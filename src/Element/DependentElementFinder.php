@@ -19,7 +19,7 @@ final class DependentElementFinder
     {
         $sourceType = ElementType::tryFromElement($source);
 
-        if ($sourceType === null || !$this->config->isDependentElementsEnabled($sourceType)) {
+        if (null === $sourceType || !$this->config->isDependentElementsEnabled($sourceType)) {
             return [];
         }
 
@@ -32,7 +32,7 @@ final class DependentElementFinder
 
             $dependentType = ElementType::tryFrom($required['type']);
 
-            if ($dependentType === null) {
+            if (null === $dependentType) {
                 continue;
             }
 
@@ -42,7 +42,7 @@ final class DependentElementFinder
                 ElementType::Object => $this->elementRepository->findObject((int) $required['id']),
             };
 
-            if ($element !== null && $this->config->isDependentElementEnabled($sourceType, $element)) {
+            if (null !== $element && $this->config->isDependentElementEnabled($sourceType, $element)) {
                 $elements[] = $element;
             }
         }

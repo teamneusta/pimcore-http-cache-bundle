@@ -6,8 +6,8 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType\ElementCacheType;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
-use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementsConfig;
+use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 
 final class AssetCacheTagChecker implements CacheTagChecker
 {

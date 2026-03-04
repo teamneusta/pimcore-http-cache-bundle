@@ -98,7 +98,7 @@ final readonly class ElementsConfig
     {
         $dependentType = ElementType::tryFromElement($element);
 
-        if ($dependentType === null) {
+        if (null === $dependentType) {
             return false;
         }
 
@@ -116,7 +116,7 @@ final readonly class ElementsConfig
             return false;
         }
 
-        if ($dependentType === ElementType::Object && $element instanceof Concrete) {
+        if (ElementType::Object === $dependentType && $element instanceof Concrete) {
             return $this->isObjectClassEnabled($element->getClassName())
                 && $dependentConfig->isObjectClassEnabled($element->getClassName());
         }
