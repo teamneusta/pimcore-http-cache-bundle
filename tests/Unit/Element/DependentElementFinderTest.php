@@ -5,7 +5,6 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Element;
 use Neusta\Pimcore\HttpCacheBundle\Element\DependentElementFinder;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementsConfig;
-use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject;
@@ -40,7 +39,6 @@ final class DependentElementFinderTest extends TestCase
         );
 
         $element = $this->prophesize(TestObject::class);
-        $element->getType()->willReturn(ElementType::Object->value);
 
         $result = $finder->findFor($element->reveal());
 
@@ -60,7 +58,6 @@ final class DependentElementFinderTest extends TestCase
 
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependency->getRequiredBy()->willReturn([
             ['type' => 'object'],    // missing id
@@ -86,7 +83,6 @@ final class DependentElementFinderTest extends TestCase
 
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'unknown']]);
 
@@ -108,7 +104,6 @@ final class DependentElementFinderTest extends TestCase
 
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
 
@@ -130,7 +125,6 @@ final class DependentElementFinderTest extends TestCase
 
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
         $this->elementRepository->findObject(23)->willReturn(null);
@@ -153,7 +147,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentElement = $this->prophesize(DataObject::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentElement->getType()->willReturn('object');
         $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
@@ -179,7 +172,6 @@ final class DependentElementFinderTest extends TestCase
         $dependency = $this->prophesize(Dependency::class);
         $dependent1 = $this->prophesize(DataObject::class);
         $dependent2 = $this->prophesize(DataObject::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependent1->getType()->willReturn('object');
         $dependent2->getType()->willReturn('object');
@@ -210,7 +202,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentDocument = $this->prophesize(Document::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentDocument->getType()->willReturn('page');
         $dependency->getRequiredBy()->willReturn([['id' => 5, 'type' => 'document']]);
@@ -235,7 +226,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentAsset = $this->prophesize(Asset::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentAsset->getType()->willReturn('image');
         $dependency->getRequiredBy()->willReturn([['id' => 7, 'type' => 'asset']]);
@@ -260,7 +250,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(Asset::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentObject = $this->prophesize(DataObject::class);
-        $element->getType()->willReturn(ElementType::Asset->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentObject->getType()->willReturn('object');
         $dependency->getRequiredBy()->willReturn([['id' => 9, 'type' => 'object']]);
@@ -285,7 +274,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(Document::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentObject = $this->prophesize(DataObject::class);
-        $element->getType()->willReturn(ElementType::Document->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentObject->getType()->willReturn('object');
         $dependency->getRequiredBy()->willReturn([['id' => 14, 'type' => 'object']]);
@@ -310,7 +298,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentAsset = $this->prophesize(Asset::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentAsset->getType()->willReturn('image');
         $dependency->getRequiredBy()->willReturn([['id' => 7, 'type' => 'asset']]);
@@ -335,7 +322,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentDocument = $this->prophesize(Document::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentDocument->getType()->willReturn('page');
         $dependency->getRequiredBy()->willReturn([['id' => 5, 'type' => 'document']]);
@@ -360,7 +346,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentFolder = $this->prophesize(DataObject::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentFolder->getType()->willReturn('folder');
         $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
@@ -384,7 +369,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentObject = $this->prophesize(Concrete::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentObject->getType()->willReturn('object');
         $dependentObject->getClassName()->willReturn('IgnoredClass');
@@ -409,7 +393,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentDocument = $this->prophesize(Document::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentDocument->getType()->willReturn('email');
         $dependency->getRequiredBy()->willReturn([['id' => 5, 'type' => 'document']]);
@@ -433,7 +416,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentFolder = $this->prophesize(DataObject::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentFolder->getType()->willReturn('folder');
         $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
@@ -457,7 +439,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentObject = $this->prophesize(Concrete::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentObject->getType()->willReturn('object');
         $dependentObject->getClassName()->willReturn('IgnoredClass');
@@ -491,7 +472,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentFolder = $this->prophesize(DataObject::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentFolder->getType()->willReturn('folder');
         $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
@@ -524,7 +504,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentFolder = $this->prophesize(DataObject::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentFolder->getType()->willReturn('folder');
         $dependency->getRequiredBy()->willReturn([['id' => 23, 'type' => 'object']]);
@@ -551,7 +530,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentAssetFolder = $this->prophesize(Asset::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentAssetFolder->getType()->willReturn('folder');
         $dependency->getRequiredBy()->willReturn([['id' => 7, 'type' => 'asset']]);
@@ -575,7 +553,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentAssetFolder = $this->prophesize(Asset::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentAssetFolder->getType()->willReturn('folder');
         $dependency->getRequiredBy()->willReturn([['id' => 7, 'type' => 'asset']]);
@@ -599,7 +576,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentDocument = $this->prophesize(Document::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentDocument->getType()->willReturn('email');
         $dependency->getRequiredBy()->willReturn([['id' => 5, 'type' => 'document']]);
@@ -630,7 +606,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentAssetFolder = $this->prophesize(Asset::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentAssetFolder->getType()->willReturn('folder');
         $dependency->getRequiredBy()->willReturn([['id' => 7, 'type' => 'asset']]);
@@ -661,7 +636,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentAssetFolder = $this->prophesize(Asset::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentAssetFolder->getType()->willReturn('folder');
         $dependency->getRequiredBy()->willReturn([['id' => 7, 'type' => 'asset']]);
@@ -692,7 +666,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentDocument = $this->prophesize(Document::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentDocument->getType()->willReturn('link');
         $dependency->getRequiredBy()->willReturn([['id' => 5, 'type' => 'document']]);
@@ -723,7 +696,6 @@ final class DependentElementFinderTest extends TestCase
         $element = $this->prophesize(TestObject::class);
         $dependency = $this->prophesize(Dependency::class);
         $dependentDocument = $this->prophesize(Document::class);
-        $element->getType()->willReturn(ElementType::Object->value);
         $element->getDependencies()->willReturn($dependency->reveal());
         $dependentDocument->getType()->willReturn('link');
         $dependency->getRequiredBy()->willReturn([['id' => 5, 'type' => 'document']]);
