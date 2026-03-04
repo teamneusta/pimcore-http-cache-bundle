@@ -12,7 +12,7 @@ use Pimcore\Model\Document\Snippet;
 
 final class TestDocumentFactory
 {
-    public static function simplePage(int $id, string $key = 'test_document_page', ?TestObject $relatedObject = null): Page
+    public static function simplePage(int $id = 42, string $key = 'test_document_page', ?TestObject $relatedObject = null): Page
     {
         $page = new Page();
         $page->setId($id);
@@ -35,7 +35,7 @@ final class TestDocumentFactory
         return $page;
     }
 
-    public static function simpleSnippet(int $id, string $key = 'test_document_snippet'): Snippet
+    public static function simpleSnippet(int $id = 23, string $key = 'test_document_snippet'): Snippet
     {
         $snippet = new Snippet();
         $snippet->setId($id);
@@ -46,7 +46,7 @@ final class TestDocumentFactory
         return $snippet;
     }
 
-    public static function simpleEmail(int $id, string $key = 'test_document_email'): Email
+    public static function simpleEmail(int $id = 17, string $key = 'test_document_email'): Email
     {
         $email = new Email();
         $email->setId($id);
@@ -57,7 +57,7 @@ final class TestDocumentFactory
         return $email;
     }
 
-    public static function simpleHardLink(int $id, string $key = 'test_document_hard_link'): Hardlink
+    public static function simpleHardLink(int $id = 33, string $key = 'test_document_hard_link'): Hardlink
     {
         $hardlink = new Hardlink();
         $hardlink->setId($id);
@@ -68,7 +68,7 @@ final class TestDocumentFactory
         return $hardlink;
     }
 
-    public static function simpleFolder(int $id, string $key = 'test_document_folder'): Folder
+    public static function simpleFolder(int $id = 97, string $key = 'test_document_folder'): Folder
     {
         $folder = new Folder();
         $folder->setId($id);
