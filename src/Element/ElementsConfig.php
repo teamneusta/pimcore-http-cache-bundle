@@ -4,27 +4,25 @@ namespace Neusta\Pimcore\HttpCacheBundle\Element;
 
 final readonly class ElementsConfig
 {
-    /**
-     * @param array<string, bool> $assetTypes
-     * @param array<string, bool> $documentTypes
-     * @param array<string, bool> $objectTypes
-     * @param array<string, bool> $objectClasses
-     */
     public function __construct(
         private bool $assetsEnabled,
+        /** @var array<string, bool> */
         private array $assetTypes,
         private bool $assetDependentElementsEnabled,
         private DependentTypeConfig $assetDependentAssetConfig,
         private DependentTypeConfig $assetDependentDocumentConfig,
         private DependentTypeConfig $assetDependentObjectConfig,
         private bool $documentsEnabled,
+        /** @var array<string, bool> */
         private array $documentTypes,
         private bool $documentDependentElementsEnabled,
         private DependentTypeConfig $documentDependentAssetConfig,
         private DependentTypeConfig $documentDependentDocumentConfig,
         private DependentTypeConfig $documentDependentObjectConfig,
         private bool $objectsEnabled,
+        /** @var array<string, bool> */
         private array $objectTypes,
+        /** @var array<string, bool> */
         private array $objectClasses,
         private bool $objectDependentElementsEnabled,
         private DependentTypeConfig $objectDependentAssetConfig,
