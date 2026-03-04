@@ -4,13 +4,11 @@ namespace Neusta\Pimcore\HttpCacheBundle\Element;
 
 final readonly class DependentTypeConfig
 {
-    /**
-     * @param array<string, bool> $types
-     * @param array<string, bool> $classes
-     */
     public function __construct(
         private bool $enabled,
+        /** @var array<string, bool> */
         private array $types,
+        /** @var array<string, bool> */
         private array $classes,
     ) {
     }
