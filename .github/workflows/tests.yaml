@@ -17,15 +17,49 @@ jobs:
     name: PHPUnit with PHP ${{ matrix.php-version }} ${{ matrix.dependencies }}
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Pimcore 11
+          - php-version: "8.1"
+            dependencies: "lowest" # Pimcore 11.5.0
+          - php-version: "8.1"
+            dependencies: "highest" # Pimcore 11.*
+          - php-version: "8.2"
+            dependencies: "lowest" # Pimcore 11.5.0
+          - php-version: "8.2"
+            dependencies: "highest" # Pimcore 11.*
+          - php-version: "8.3"
+            dependencies: "lowest" # Pimcore 11.5.0
+          - php-version: "8.3"
+            dependencies: "highest" # Pimcore 11.*
+            composer-options: "--with=pimcore/pimcore:^11.5"
+          # Pimcore 12
+          - php-version: "8.3"
+            dependencies: "lowest" # Pimcore 12.0.0
+            composer-options: "--with=pimcore/pimcore:12.0.0"
+          - php-version: "8.3"
+            dependencies: "highest" # Pimcore 12.*
+          - php-version: "8.4"
+            dependencies: "lowest" # Pimcore 12.0.0
+          - php-version: "8.4"
+            dependencies: "highest" # Pimcore 12.*
+
+    env:
+      MYSQL_HOST: 127.0.0.1
+      MYSQL_PORT: 3306
+      MYSQL_USER: root
+      MYSQL_PASSWORD: pimcore
+      MYSQL_DATABASE: pimcore
+      MYSQL_SERVER_VERSION: "10.11.16-MariaDB"
+
     # from https://ldarren.medium.com/number-of-ways-to-setup-database-in-github-actions-2cd48df9faae
     services:
       db:
-        image: mariadb:10.11.11
+        image: mariadb:10.11.16
         env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
-          MYSQL_DATABASE: 'pimcore'
-          MYSQL_USER: 'pimcore'
-          MYSQL_PASSWORD: 'pimcore'
+          MYSQL_ROOT_PASSWORD: pimcore
         options: >-
           --health-cmd="healthcheck.sh --connect --innodb_initialized"
           --health-interval=10s
@@ -34,47 +68,30 @@ jobs:
         ports:
           - 3306:3306
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - php-version: "8.1"
-            dependencies: "lowest" # Pimcore 10.6.0
-          - php-version: "8.1"
-            dependencies: "highest" # Pimcore 11.*
-            tests: --fail-on-risky
-          - php-version: "8.2"
-            dependencies: "highest" # Pimcore 11.*
-            tests: --fail-on-risky
-          - php-version: "8.3"
-            dependencies: "highest" # Pimcore 11.*
-            tests: --fail-on-risky
-
     steps:
       - name: Git Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: PHP Setup
+      - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
 
-      - name: Allow insecure packages for lowest dependencies (there's no secure Pimcore 10 version available)
-        run: composer config audit.block-insecure false
-        if: matrix.dependencies == 'lowest'
-
       - name: Install dependencies
-        uses: ramsey/composer-install@v3
+        uses: ramsey/composer-install@v4
         with:
           dependency-versions: ${{ matrix.dependencies }}
           composer-options: ${{ matrix.composer-options }}
 
-      - name: Add Pimcore Admin UI
-        run: composer require --dev pimcore/admin-ui-classic-bundle --no-interaction
-        if: matrix.dependencies == 'highest'
-
       - name: Execute tests
-        run: composer tests -- ${{ matrix.tests }}
         env:
-          MYSQL_HOST: '127.0.0.1'
-          MYSQL_SERVER_VERSION: '10.11.11-MariaDB'
+          PIMCORE_ENCRYPTION_SECRET: ${{ secrets.PIMCORE_ENCRYPTION_SECRET }}
+          PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
+          PIMCORE_PRODUCT_KEY: ${{ secrets.PIMCORE_PRODUCT_KEY }}
+        run: |
+          phpunit_options="--disallow-test-output"
+          if [[ "${{ matrix.php-version }}" == "8.4" && "${{ matrix.dependencies }}" == "lowest" ]]; then
+            phpunit_options=""
+          fi
+
+          composer tests -- $phpunit_options
