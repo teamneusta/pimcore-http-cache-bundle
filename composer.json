@@ -13,8 +13,8 @@
   ],
   "require": {
     "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
-    "friendsofsymfony/http-cache": "^2.16",
-    "friendsofsymfony/http-cache-bundle": "^2.17",
+    "friendsofsymfony/http-cache": "^2.16 || ^3.0",
+    "friendsofsymfony/http-cache-bundle": "^2.17 || ^3.0",
     "pimcore/pimcore": "^11.5 || ^12.0",
     "psr/log": "^2.0 || ^3.0",
     "symfony/config": "^6.4 || ^7.4",
@@ -85,7 +85,10 @@
     "cs:fix": "php-cs-fixer fix --ansi --verbose --diff",
     "phpstan": "phpstan analyse --ansi",
     "phpstan:ci": "phpstan analyse --ansi --no-interaction --no-progress --error-format=github",
-    "tests": "phpunit",
+    "tests": [
+      "Composer\\Config::disableProcessTimeout",
+      "phpunit"
+    ],
     "tests:coverage:ci": "phpunit --teamcity --coverage-cobertura .coverage/cobertura.xml"
   },
   "scripts-descriptions": {
