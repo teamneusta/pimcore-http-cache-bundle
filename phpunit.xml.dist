@@ -27,4 +27,8 @@
             <directory>./src/</directory>
         </include>
     </coverage>
+
+    <extensions>
+        <extension class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/>
+    </extensions>
 </phpunit>
