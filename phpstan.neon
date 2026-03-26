@@ -7,3 +7,5 @@ parameters:
 
 	bootstrapFiles:
 		- vendor/pimcore/pimcore/stubs/dynamic-constants.php
+
+	treatPhpDocTypesAsCertain: false

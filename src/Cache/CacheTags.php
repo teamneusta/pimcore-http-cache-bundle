@@ -72,12 +72,12 @@ final class CacheTags implements \IteratorAggregate
             }
         }
 
-        return new self(...$newTags);
+        return new self(...array_values($newTags));
     }
 
     public function withoutDisabled(CacheTagChecker $checker): self
     {
-        return new self(...array_filter($this->tags, $checker->isEnabled(...)));
+        return new self(...array_values(array_filter($this->tags, $checker->isEnabled(...))));
     }
 
     /**
@@ -91,7 +91,7 @@ final class CacheTags implements \IteratorAggregate
 
         natsort($tags);
 
-        return $tags;
+        return array_values($tags);
     }
 
     public function toString(): string
