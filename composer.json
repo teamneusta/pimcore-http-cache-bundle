@@ -52,8 +52,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Neusta\\Pimcore\\HttpCacheBundle\\Tests\\": "tests/",
       "App\\": "tests/app/src",
+      "Neusta\\Pimcore\\HttpCacheBundle\\Tests\\": "tests/",
       "Pimcore\\Model\\DataObject\\": "tests/app/var/classes/DataObject"
     },
     "classmap": [
