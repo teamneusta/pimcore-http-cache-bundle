@@ -17,11 +17,13 @@ final class CacheInvalidatorAdapterTest extends TestCase
     private CacheInvalidatorAdapter $subject;
 
     /** @var ObjectProphecy<FosCacheInvalidator> */
-    private $fosCacheInvalidator;
+    private ObjectProphecy $fosCacheInvalidator;
 
     protected function setUp(): void
     {
         $this->fosCacheInvalidator = $this->prophesize(FosCacheInvalidator::class);
+        $this->fosCacheInvalidator->invalidateTags(Argument::any())->willReturn($this->fosCacheInvalidator->reveal());
+
         $this->subject = new CacheInvalidatorAdapter(
             $this->fosCacheInvalidator->reveal(),
         );

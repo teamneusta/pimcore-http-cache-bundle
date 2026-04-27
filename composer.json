@@ -1,7 +1,7 @@
 {
   "name": "teamneusta/pimcore-http-cache-bundle",
   "description": "Adds active cache invalidation to pimcore via cache tags.",
-  "license": "GPL-3.0-or-later",
+  "license": "MIT",
   "type": "pimcore-bundle",
   "authors": [
     {
@@ -12,33 +12,33 @@
     }
   ],
   "require": {
-    "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
-    "friendsofsymfony/http-cache": "^2.16",
-    "friendsofsymfony/http-cache-bundle": "^2.17",
-    "pimcore/pimcore": "^10.6 || ^11.2",
-    "psr/log": "^1.0 || ^2.0 || ^3.0",
-    "symfony/config": "^5.4 || ^6.4",
+    "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
+    "friendsofsymfony/http-cache": "^2.16 || ^3.0",
+    "friendsofsymfony/http-cache-bundle": "^2.17 || ^3.0",
+    "pimcore/pimcore": "^11.5 || ^12.0",
+    "psr/log": "^2.0 || ^3.0",
+    "symfony/config": "^6.4 || ^7.4",
     "symfony/contracts": "^2.5 || ^3.5",
-    "symfony/dependency-injection": "^5.4 || ^6.4",
-    "symfony/event-dispatcher": "^5.4 || ^6.4",
-    "symfony/http-kernel": "^5.4 || ^6.4",
-    "symfony/messenger": "^5.4 || ^6.4"
+    "symfony/dependency-injection": "^6.4 || ^7.4",
+    "symfony/event-dispatcher": "^6.4 || ^7.4",
+    "symfony/http-kernel": "^6.4 || ^7.4",
+    "symfony/messenger": "^6.4 || ^7.4"
   },
   "require-dev": {
+    "dama/doctrine-test-bundle": "^8.2.2",
     "dg/bypass-finals": "^1.9",
-    "ergebnis/composer-normalize": "^2.45",
-    "friendsofphp/php-cs-fixer": "^3.71",
-    "jangregor/phpstan-prophecy": "^1.0",
-    "laminas/laminas-zendframework-bridge": "^1.8",
-    "phpspec/prophecy": "^1.20",
-    "phpspec/prophecy-phpunit": "^2.3",
-    "phpstan/extension-installer": "^1.4",
-    "phpstan/phpstan": "^1.12",
-    "phpstan/phpstan-phpunit": "^1.4",
-    "phpstan/phpstan-symfony": "^1.4",
-    "phpunit/phpunit": "^9.6",
-    "symfony/browser-kit": "^5.4 || ^6.4",
-    "teamneusta/pimcore-testing-framework": "^0.12.10"
+    "ergebnis/composer-normalize": "^2.50",
+    "friendsofphp/php-cs-fixer": "^3.94.2",
+    "jangregor/phpstan-prophecy": "^2.3.0",
+    "phpspec/prophecy": "^1.22",
+    "phpspec/prophecy-phpunit": "^2.5",
+    "phpstan/extension-installer": "^1.4.3",
+    "phpstan/phpstan": "^2.1.44",
+    "phpstan/phpstan-phpunit": "^2.0.16",
+    "phpstan/phpstan-symfony": "^2.0.15",
+    "phpunit/phpunit": "^9.6.34",
+    "symfony/browser-kit": "^6.4 || ^7.4",
+    "teamneusta/pimcore-testing-framework": "^0.13"
   },
   "conflict": {
     "jms/serializer-bundle": "<4.2",
@@ -53,8 +53,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Neusta\\Pimcore\\HttpCacheBundle\\Tests\\": "tests/",
       "App\\": "tests/app/src",
+      "Neusta\\Pimcore\\HttpCacheBundle\\Tests\\": "tests/",
       "Pimcore\\Model\\DataObject\\": "tests/app/var/classes/DataObject"
     },
     "classmap": [
@@ -66,6 +66,9 @@
       "ergebnis/composer-normalize": true,
       "php-http/discovery": false,
       "phpstan/extension-installer": true
+    },
+    "audit": {
+      "block-insecure": false
     },
     "preferred-install": "dist",
     "sort-packages": true
@@ -83,7 +86,10 @@
     "cs:fix": "php-cs-fixer fix --ansi --verbose --diff",
     "phpstan": "phpstan analyse --ansi",
     "phpstan:ci": "phpstan analyse --ansi --no-interaction --no-progress --error-format=github",
-    "tests": "phpunit",
+    "tests": [
+      "Composer\\Config::disableProcessTimeout",
+      "phpunit"
+    ],
     "tests:coverage:ci": "phpunit --teamcity --coverage-cobertura .coverage/cobertura.xml"
   },
   "scripts-descriptions": {

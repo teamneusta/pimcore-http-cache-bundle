@@ -1,6 +1,6 @@
 services:
   database:
-    image: mariadb:10.11.11
+    image: mariadb:10.11.16
     command: [ "mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci" ]
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
@@ -19,7 +19,7 @@ services:
     build:
       context: .
       dockerfile_inline: |
-        FROM pimcore/pimcore:php${PHP_VERSION:-8.2}-debug-latest
+        FROM pimcore/pimcore:php${PHP_VERSION:-8.4}-debug-latest
         # Install additional PHP extensions required by transient dependencies of this bundle.
         # See: https://github.com/mlocati/docker-php-extension-installer?tab=readme-ov-file#downloading-the-script-on-the-fly-with-add
         # If build-* helper scripts exist, execute them to install build additional dependencies.
@@ -30,7 +30,13 @@ services:
     volumes:
       - ./:/var/www/html/
     environment:
-      MYSQL_SERVER_VERSION: 10.11.11-MariaDB
+      # Enable step debugging (will be activated by trigger). See https://xdebug.org/docs/all_settings#mode
+      XDEBUG_MODE: debug
+      # Use Host IP from Docker Daemon. See https://xdebug.org/docs/all_settings#client_host
+      XDEBUG_CLIENT_HOST: "host.docker.internal"
+      MYSQL_SERVER_VERSION: 10.11.16-MariaDB
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       database:
         condition: service_healthy

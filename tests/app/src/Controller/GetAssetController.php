@@ -10,7 +10,7 @@ final class GetAssetController
 {
     public function __invoke(Request $request): Response
     {
-        if (!$asset = Asset::getById($request->query->get('id'))) {
+        if (!$asset = Asset::getById($request->query->getInt('id'))) {
             return new Response('Asset not found', Response::HTTP_NOT_FOUND);
         }
 

@@ -10,7 +10,7 @@ final class GetObjectController
 {
     public function __invoke(Request $request): Response
     {
-        if (!$object = TestDataObject::getById($request->query->get('id'))) {
+        if (!$object = TestDataObject::getById($request->query->getInt('id'))) {
             return new Response('Object not found', Response::HTTP_NOT_FOUND);
         }
 

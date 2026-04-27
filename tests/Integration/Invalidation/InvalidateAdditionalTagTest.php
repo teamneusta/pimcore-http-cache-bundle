@@ -57,7 +57,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $object->setContent('Updated test content')->save();
 
-        $this->cacheManager->invalidateTags(['o42', 'foo-bar'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(Argument::that($this->hasTags('o42', 'foo-bar')))->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -77,7 +77,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $object->setKey('updated_test_object')->save();
 
-        $this->cacheManager->invalidateTags(['o42', 'foo-bar'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(Argument::that($this->hasTags('o42', 'foo-bar')))->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -97,7 +97,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $document->setKey('updated_test_document_page')->save();
 
-        $this->cacheManager->invalidateTags(['d42', 'foo-bar'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(Argument::that($this->hasTags('d42', 'foo-bar')))->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -117,7 +117,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $document->setKey('updated_test_document_page')->save();
 
-        $this->cacheManager->invalidateTags(['d42', 'foo-bar'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(Argument::that($this->hasTags('d42', 'foo-bar')))->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -137,7 +137,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $asset->setData('Updated test content')->save();
 
-        $this->cacheManager->invalidateTags(['a42', 'foo-bar'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(Argument::that($this->hasTags('a42', 'foo-bar')))->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -157,7 +157,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $asset->setData('Updated test content')->save();
 
-        $this->cacheManager->invalidateTags(['a42', 'foo-bar'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(Argument::that($this->hasTags('a42', 'foo-bar')))->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -177,7 +177,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $object->delete();
 
-        $this->cacheManager->invalidateTags(['o42', 'foo-bar'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(Argument::that($this->hasTags('o42', 'foo-bar')))->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -197,7 +197,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $object->delete();
 
-        $this->cacheManager->invalidateTags(['o42', 'foo-bar'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(Argument::that($this->hasTags('o42', 'foo-bar')))->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -217,7 +217,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $asset->delete();
 
-        $this->cacheManager->invalidateTags(['a42', 'foo-bar'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(Argument::that($this->hasTags('a42', 'foo-bar')))->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -237,7 +237,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $asset->delete();
 
-        $this->cacheManager->invalidateTags(['a42', 'foo-bar'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(Argument::that($this->hasTags('a42', 'foo-bar')))->shouldNotHaveBeenCalled();
     }
 
     /**
@@ -257,7 +257,7 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $document->delete();
 
-        $this->cacheManager->invalidateTags(['d42', 'foo-bar'])->shouldHaveBeenCalledTimes(1);
+        $this->cacheManager->invalidateTags(Argument::that($this->hasTags('d42', 'foo-bar')))->shouldHaveBeenCalledTimes(1);
     }
 
     /**
@@ -277,6 +277,23 @@ final class InvalidateAdditionalTagTest extends ConfigurableKernelTestCase
 
         $document->delete();
 
-        $this->cacheManager->invalidateTags(['d42', 'foo-bar'])->shouldNotHaveBeenCalled();
+        $this->cacheManager->invalidateTags(Argument::that($this->hasTags('d42', 'foo-bar')))->shouldNotHaveBeenCalled();
+    }
+
+    private function hasTags(string ...$expectedTags): callable
+    {
+        return static function ($tags) use ($expectedTags): bool {
+            if (!\is_array($tags)) {
+                return false;
+            }
+
+            foreach ($expectedTags as $expectedTag) {
+                if (!\in_array($expectedTag, $tags, true)) {
+                    return false;
+                }
+            }
+
+            return true;
+        };
     }
 }

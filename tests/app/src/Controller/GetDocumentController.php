@@ -10,7 +10,7 @@ final class GetDocumentController
 {
     public function __invoke(Request $request): Response
     {
-        if (!$document = Document::getById($request->query->get('id'))) {
+        if (!$document = Document::getById($request->query->getInt('id'))) {
             return new Response('Document not found', Response::HTTP_NOT_FOUND);
         }
 
