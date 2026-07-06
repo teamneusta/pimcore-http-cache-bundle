@@ -33,14 +33,14 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 return static function (ContainerConfigurator $configurator) {
     $services = $configurator->services();
 
-    $services->set('neusta_pimcore_http_cache.cache_activator', CacheActivator::class)
-        ->deprecate('teamneusta/pimcore-http-cache-bundle', '0.7', 'The "%service_id%" is deprecated, use "neusta_pimcore_http_cache.cache_scope" instead.')
-        ->alias(CacheActivator::class, 'neusta_pimcore_http_cache.cache_activator')
-        ->deprecate('teamneusta/pimcore-http-cache-bundle', '0.7', 'The "%alias_id%" alias is deprecated, use "' . CacheScope::class . '" instead.');
-
-    $services->set('neusta_pimcore_http_cache.cache_scope', CacheScope::class)
+    $services->set('neusta_pimcore_http_cache.cache_scope', CacheActivator::class)
         ->tag('kernel.reset', ['method' => 'reset'])
         ->alias(CacheScope::class, 'neusta_pimcore_http_cache.cache_scope');
+
+    $services->alias('neusta_pimcore_http_cache.cache_activator', 'neusta_pimcore_http_cache.cache_scope')
+        ->deprecate('teamneusta/pimcore-http-cache-bundle', '0.7', 'The "%alias_id%" alias is deprecated, use "neusta_pimcore_http_cache.cache_scope" instead.')
+        ->alias(CacheActivator::class, 'neusta_pimcore_http_cache.cache_activator')
+        ->deprecate('teamneusta/pimcore-http-cache-bundle', '0.7', 'The "%alias_id%" alias is deprecated, use "' . CacheScope::class . '" instead.');
 
     $services->set('neusta_pimcore_http_cache.cache_scope.console_listener', ConsoleCacheScopeListener::class)
         ->arg('$cacheScope', service('neusta_pimcore_http_cache.cache_scope'))
