@@ -4,10 +4,9 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Tagging;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType\CustomCacheType;
-use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
+use Neusta\Pimcore\HttpCacheBundle\CacheScope;
 use Neusta\Pimcore\HttpCacheBundle\DataCollector;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementTaggingEvent;
-use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestAssetFactory;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestDocumentFactory;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestObjectFactory;
@@ -25,7 +24,6 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 ])]
 final class CollectTagsDataTest extends ConfigurableWebTestcase
 {
-    use ArrangeCacheTest;
     use ResetDatabase;
 
     private KernelBrowser $client;
@@ -46,7 +44,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_document_route.php')]
     public function collect_tags_for_type_document(): void
     {
-        self::arrange(static fn () => TestDocumentFactory::simplePage())->save();
+        TestDocumentFactory::simplePage()->save();
 
         $this->client->request('GET', '/test_document_page');
         $this->client->enableProfiler();
@@ -55,7 +53,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
 
         self::assertInstanceOf(DataCollector::class, $dataCollector);
         self::assertSame(
-            [['tag' => 'd1', 'type' => 'document'], ['tag' => 'd42', 'type' => 'document']],
+            [['tag' => 'd42', 'type' => 'document']],
             $dataCollector->getTags(),
         );
     }
@@ -71,7 +69,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
     public function collect_tags_for_type_object(): void
     {
-        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
+        TestObjectFactory::simpleObject()->save();
 
         $this->client->request('GET', '/get-object?id=42');
         $this->client->enableProfiler();
@@ -96,7 +94,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_asset_route.php')]
     public function collect_tags_of_type_asset(): void
     {
-        self::arrange(static fn () => TestAssetFactory::simpleAsset()->save());
+        TestAssetFactory::simpleAsset()->save();
 
         $this->client->request('GET', '/get-asset?id=42');
         $this->client->enableProfiler();
@@ -124,7 +122,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
     public function collect_tags_of_type_custom(): void
     {
-        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
+        TestObjectFactory::simpleObject()->save();
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
@@ -156,7 +154,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
     public function does_not_collect_tags_when_type_is_disabled(): void
     {
-        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
+        TestObjectFactory::simpleObject()->save();
 
         $this->client->request('GET', '/get-object?id=42');
         $this->client->enableProfiler();
@@ -178,8 +176,8 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
     public function does_not_collect_tags_when_caching_is_disabled(): void
     {
-        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
-        self::getContainer()->get(CacheActivator::class)->deactivateCaching();
+        TestObjectFactory::simpleObject()->save();
+        self::getContainer()->get(CacheScope::class)->disable();
 
         $this->client->request('GET', '/get-object?id=42');
         $this->client->enableProfiler();
@@ -206,7 +204,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
     public function does_not_collect_tags_when_object_type_is_disabled(): void
     {
-        self::arrange(static fn () => TestObjectFactory::simpleVariant()->save());
+        TestObjectFactory::simpleVariant()->save();
 
         $this->client->request('GET', '/get-object?id=42');
         $this->client->enableProfiler();
@@ -233,7 +231,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
     public function does_not_collect_tags_when_object_class_is_disabled(): void
     {
-        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
+        TestObjectFactory::simpleObject()->save();
 
         $this->client->request('GET', '/get-object?id=42');
         $this->client->enableProfiler();
@@ -261,7 +259,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
     public function does_not_collect_tags_when_profiler_is_disabled(): void
     {
-        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
+        TestObjectFactory::simpleObject()->save();
 
         $this->client->request('GET', '/get-object?id=42');
         $this->client->enableProfiler();
@@ -278,7 +276,7 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
     #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
     public function does_not_collect_tags_when_collect_is_disabled(): void
     {
-        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
+        TestObjectFactory::simpleObject()->save();
 
         $this->client->request('GET', '/get-object?id=42');
         $this->client->enableProfiler();

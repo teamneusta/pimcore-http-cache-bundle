@@ -5,7 +5,7 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Cache\CacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator\OnlyWhenActiveCacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
-use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
+use Neusta\Pimcore\HttpCacheBundle\CacheScope;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
@@ -20,16 +20,16 @@ final class OnlyWhenActiveCacheInvalidatorTest extends TestCase
     /** @var ObjectProphecy<CacheInvalidator> */
     private ObjectProphecy $decorated;
 
-    /** @var ObjectProphecy<CacheActivator> */
-    private ObjectProphecy $cacheActivator;
+    /** @var ObjectProphecy<CacheScope> */
+    private ObjectProphecy $cacheScope;
 
     protected function setUp(): void
     {
         $this->decorated = $this->prophesize(CacheInvalidator::class);
-        $this->cacheActivator = $this->prophesize(CacheActivator::class);
+        $this->cacheScope = $this->prophesize(CacheScope::class);
         $this->subject = new OnlyWhenActiveCacheInvalidator(
             $this->decorated->reveal(),
-            $this->cacheActivator->reveal(),
+            $this->cacheScope->reveal(),
         );
     }
 
@@ -40,7 +40,7 @@ final class OnlyWhenActiveCacheInvalidatorTest extends TestCase
     {
         $tags = CacheTags::fromStrings(['tag1', 'tag2']);
 
-        $this->cacheActivator->isCachingActive()->willReturn(true);
+        $this->cacheScope->isActive()->willReturn(true);
 
         $this->subject->invalidate($tags);
 
@@ -54,7 +54,7 @@ final class OnlyWhenActiveCacheInvalidatorTest extends TestCase
     {
         $tags = CacheTags::fromStrings(['tag1', 'tag2']);
 
-        $this->cacheActivator->isCachingActive()->willReturn(false);
+        $this->cacheScope->isActive()->willReturn(false);
 
         $this->subject->invalidate($tags);
 

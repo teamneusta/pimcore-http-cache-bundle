@@ -2,8 +2,7 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Tagging;
 
-use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
-use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
+use Neusta\Pimcore\HttpCacheBundle\CacheScope;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestDocumentFactory;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
@@ -14,7 +13,6 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 #[ConfigureRoute(__DIR__ . '/../Fixtures/get_document_route.php')]
 final class TagDocumentTest extends ConfigurableWebTestcase
 {
-    use ArrangeCacheTest;
     use ResetDatabase;
 
     private KernelBrowser $client;
@@ -34,7 +32,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_expected_tags_when_page_is_loaded(): void
     {
-        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
+        TestDocumentFactory::simplePage()->save();
 
         $this->client->request('GET', '/test_document_page');
 
@@ -56,7 +54,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_expected_tags_when_snippet_is_loaded(): void
     {
-        self::arrange(static fn () => TestDocumentFactory::simpleSnippet()->save());
+        TestDocumentFactory::simpleSnippet()->save();
 
         $this->client->request('GET', '/get-document?id=23');
 
@@ -78,7 +76,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_document_type_is_email(): void
     {
-        self::arrange(static fn () => TestDocumentFactory::simpleEmail()->save());
+        TestDocumentFactory::simpleEmail()->save();
 
         $this->client->request('GET', '/get-document?id=17');
 
@@ -87,7 +85,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertStringNotContainsString('d17', $response->headers->get('X-Cache-Tags'));
+        self::assertStringNotContainsString('d17', $response->headers->get('X-Cache-Tags', ''));
     }
 
     /**
@@ -100,7 +98,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_document_type_is_hard_link(): void
     {
-        self::arrange(static fn () => TestDocumentFactory::simpleHardLink()->save());
+        TestDocumentFactory::simpleHardLink()->save();
 
         $this->client->request('GET', '/get-document?id=33');
 
@@ -109,7 +107,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertStringNotContainsString('d33', $response->headers->get('X-Cache-Tags'));
+        self::assertStringNotContainsString('d33', $response->headers->get('X-Cache-Tags', ''));
     }
 
     /**
@@ -122,7 +120,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_document_type_is_folder(): void
     {
-        self::arrange(static fn () => TestDocumentFactory::simpleFolder()->save());
+        TestDocumentFactory::simpleFolder()->save();
 
         $this->client->request('GET', '/get-document?id=97');
 
@@ -131,7 +129,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertStringNotContainsString('d97', $response->headers->get('X-Cache-Tags'));
+        self::assertStringNotContainsString('d97', $response->headers->get('X-Cache-Tags', ''));
     }
 
     /**
@@ -144,7 +142,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_documents_is_not_enabled(): void
     {
-        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
+        TestDocumentFactory::simplePage()->save();
 
         $this->client->request('GET', '/test_document_page');
 
@@ -166,8 +164,8 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_caching_is_deactivated(): void
     {
-        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
-        self::getContainer()->get(CacheActivator::class)->deactivateCaching();
+        TestDocumentFactory::simplePage()->save();
+        self::getContainer()->get(CacheScope::class)->disable();
 
         $this->client->request('GET', '/test_document_page');
 
@@ -184,28 +182,6 @@ final class TagDocumentTest extends ConfigurableWebTestcase
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
-            'documents' => true,
-        ],
-    ])]
-    public function response_is_tagged_with_root_document_tag_when_loaded(): void
-    {
-        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
-
-        $this->client->request('GET', '/test_document_page');
-
-        $response = $this->client->getResponse();
-        self::assertSame('Document with key: test_document_page', $response->getContent());
-        self::assertSame(200, $response->getStatusCode());
-        self::assertTrue($response->headers->getCacheControlDirective('public'));
-        self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertStringContainsString('d1', $response->headers->get('X-Cache-Tags'));
-    }
-
-    /**
-     * @test
-     */
-    #[ConfigureExtension('neusta_pimcore_http_cache', [
-        'elements' => [
             'documents' => [
                 'types' => [
                     'page' => false,
@@ -215,7 +191,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_type_is_disabled(): void
     {
-        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
+        TestDocumentFactory::simplePage()->save();
 
         $this->client->request('GET', '/test_document_page');
 

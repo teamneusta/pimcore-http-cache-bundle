@@ -23,7 +23,4 @@ return static function (ContainerConfigurator $container): void {
         ->tag('kernel.event_listener', ['event' => DataObjectEvents::POST_DELETE])
         ->tag('kernel.event_listener', ['event' => DocumentEvents::POST_UPDATE])
         ->tag('kernel.event_listener', ['event' => DocumentEvents::POST_DELETE]);
-
-    $services->alias('test.cache_activator', 'neusta_pimcore_http_cache.cache_activator')
-        ->public();
 };

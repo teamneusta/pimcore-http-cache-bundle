@@ -4,19 +4,19 @@ namespace Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
-use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
+use Neusta\Pimcore\HttpCacheBundle\CacheScope;
 
 final class OnlyWhenActiveResponseTagger implements ResponseTagger
 {
     public function __construct(
         private readonly ResponseTagger $inner,
-        private readonly CacheActivator $cacheActivator,
+        private readonly CacheScope $cacheScope,
     ) {
     }
 
     public function tag(CacheTags $tags): void
     {
-        if ($this->cacheActivator->isCachingActive()) {
+        if ($this->cacheScope->isActive()) {
             $this->inner->tag($tags);
         }
     }

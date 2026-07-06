@@ -4,19 +4,19 @@ namespace Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
-use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
+use Neusta\Pimcore\HttpCacheBundle\CacheScope;
 
 final class OnlyWhenActiveCacheInvalidator implements CacheInvalidator
 {
     public function __construct(
         private readonly CacheInvalidator $inner,
-        private readonly CacheActivator $cacheActivator,
+        private readonly CacheScope $cacheScope,
     ) {
     }
 
     public function invalidate(CacheTags $tags): void
     {
-        if ($this->cacheActivator->isCachingActive()) {
+        if ($this->cacheScope->isActive()) {
             $this->inner->invalidate($tags);
         }
     }

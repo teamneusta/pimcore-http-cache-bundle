@@ -7,7 +7,6 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType\CustomCacheType;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheType\ElementCacheType;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementTaggingEvent;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementType;
-use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestAssetFactory;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestDocumentFactory;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestObjectFactory;
@@ -22,7 +21,6 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
 final class TagAdditionalTagTest extends ConfigurableWebTestcase
 {
-    use ArrangeCacheTest;
     use ResetDatabase;
 
     private KernelBrowser $client;
@@ -42,8 +40,8 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_additional_tag_when_asset_is_loaded(): void
     {
-        self::arrange(static fn () => TestAssetFactory::simpleAsset()->save());
-        self::arrange(static fn () => TestAssetFactory::simpleImage()->save());
+        TestAssetFactory::simpleAsset()->save();
+        TestAssetFactory::simpleImage()->save();
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
@@ -72,8 +70,8 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_additional_tag_when_document_is_loaded(): void
     {
-        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
-        self::arrange(static fn () => TestDocumentFactory::simpleSnippet()->save());
+        TestDocumentFactory::simplePage()->save();
+        TestDocumentFactory::simpleSnippet()->save();
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
@@ -82,7 +80,7 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
             ),
         );
 
-        $this->client->request('GET', '/test_document_page');
+        $this->client->request('GET', '/get-document?id=42');
 
         $response = $this->client->getResponse();
         self::assertSame('Document with key: test_document_page', $response->getContent());
@@ -102,8 +100,8 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_additional_tag_when_object_is_loaded(): void
     {
-        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
-        self::arrange(static fn () => TestObjectFactory::simpleVariant()->save());
+        TestObjectFactory::simpleObject()->save();
+        TestObjectFactory::simpleVariant()->save();
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
@@ -135,7 +133,7 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_custom_tag_when_element_is_loaded(): void
     {
-        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
+        TestObjectFactory::simpleObject()->save();
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,

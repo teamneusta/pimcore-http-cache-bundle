@@ -2,22 +2,31 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle;
 
-final class CacheActivator
+/**
+ * @deprecated since version 0.7, use {@see CacheScope} instead.
+ *
+ * @phpstan-ignore class.extendsFinalByPhpDoc
+ */
+final class CacheActivator extends CacheScope
 {
-    private bool $isCachingActive = true;
-
     public function isCachingActive(): bool
     {
-        return $this->isCachingActive;
+        trigger_deprecation('neusta/pimcore-http-cache-bundle', '0.7', '"%s" is deprecated, use "%s" instead.', self::class, CacheScope::class);
+
+        return $this->isActive();
     }
 
     public function activateCaching(): void
     {
-        $this->isCachingActive = true;
+        trigger_deprecation('neusta/pimcore-http-cache-bundle', '0.7', '"%s" is deprecated, use "%s" instead.', self::class, CacheScope::class);
+
+        $this->enable();
     }
 
     public function deactivateCaching(): void
     {
-        $this->isCachingActive = false;
+        trigger_deprecation('neusta/pimcore-http-cache-bundle', '0.7', '"%s" is deprecated, use "%s" instead.', self::class, CacheScope::class);
+
+        $this->disable();
     }
 }
