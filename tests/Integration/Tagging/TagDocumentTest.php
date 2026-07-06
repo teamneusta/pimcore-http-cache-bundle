@@ -181,6 +181,32 @@ final class TagDocumentTest extends ConfigurableWebTestcase
      * @test
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'scope' => 'request',
+        'elements' => [
+            'documents' => true,
+        ],
+    ])]
+    public function response_is_tagged_with_the_document_parents_when_in_request_scope(): void
+    {
+        $parent = TestDocumentFactory::simplePage()->save();
+        TestDocumentFactory::simpleSnippet()->setParent($parent)->save();
+
+        $this->client->request('GET', '/test_document_page/test_document_snippet');
+
+        $response = $this->client->getResponse();
+        self::assertSame('Document with key: test_document_snippet', $response->getContent());
+        self::assertSame(200, $response->getStatusCode());
+        self::assertTrue($response->headers->getCacheControlDirective('public'));
+        self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
+        self::assertStringContainsString('d23', $response->headers->get('X-Cache-Tags')); // The document itself
+        self::assertStringContainsString('d42', $response->headers->get('X-Cache-Tags')); // The document's parent
+        self::assertStringContainsString('d1', $response->headers->get('X-Cache-Tags'));  // The document's parent's parent
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'documents' => [
                 'types' => [

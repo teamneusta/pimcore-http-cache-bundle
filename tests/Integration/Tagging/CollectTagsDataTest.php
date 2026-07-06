@@ -62,6 +62,37 @@ final class CollectTagsDataTest extends ConfigurableWebTestcase
      * @test
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'scope' => 'request',
+        'elements' => [
+            'documents' => true,
+        ],
+    ])]
+    #[ConfigureRoute(__DIR__ . '/../Fixtures/get_document_route.php')]
+    public function collect_tags_for_type_document_in_request_scope(): void
+    {
+        $parent = TestDocumentFactory::simplePage()->save();
+        TestDocumentFactory::simpleSnippet()->setParent($parent)->save();
+
+        $this->client->request('GET', '/test_document_page/test_document_snippet');
+        $this->client->enableProfiler();
+
+        $dataCollector = $this->client->getProfile()->getCollector('pimcore_http_cache');
+
+        self::assertInstanceOf(DataCollector::class, $dataCollector);
+        self::assertSame(
+            [
+                ['tag' => 'd23', 'type' => 'document'], // The document itself
+                ['tag' => 'd42', 'type' => 'document'], // The document's parent
+                ['tag' => 'd1', 'type' => 'document'],  // The document's parent's parent
+            ],
+            $dataCollector->getTags(),
+        );
+    }
+
+    /**
+     * @test
+     */
+    #[ConfigureExtension('neusta_pimcore_http_cache', [
         'elements' => [
             'objects' => true,
         ],
