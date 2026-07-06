@@ -11,14 +11,14 @@ final class CacheActivator extends CacheScope
 {
     public function isCachingActive(): bool
     {
-        trigger_deprecation('neusta/pimcore-http-cache-bundle', '0.7', '"%s" is deprecated, use "%s" instead.', self::class, CacheScope::class);
+        trigger_deprecation('neusta/pimcore-http-cache-bundle', '0.7', '"%s()" is deprecated, use "%s::isActive()" instead.', __METHOD__, CacheScope::class);
 
         return $this->isActive();
     }
 
     public function activateCaching(): void
     {
-        trigger_deprecation('neusta/pimcore-http-cache-bundle', '0.7', '"%s" is deprecated, use "%s" instead.', self::class, CacheScope::class);
+        trigger_deprecation('neusta/pimcore-http-cache-bundle', '0.7', '"%s()" is deprecated, use "%s::enable()" instead.', __METHOD__, CacheScope::class);
 
         $this->reset();
         $this->enable();
@@ -26,7 +26,7 @@ final class CacheActivator extends CacheScope
 
     public function deactivateCaching(): void
     {
-        trigger_deprecation('neusta/pimcore-http-cache-bundle', '0.7', '"%s" is deprecated, use "%s" instead.', self::class, CacheScope::class);
+        trigger_deprecation('neusta/pimcore-http-cache-bundle', '0.7', '"%s()" is deprecated, use "%s::disable()" instead.', __METHOD__, CacheScope::class);
 
         $this->disable();
     }
