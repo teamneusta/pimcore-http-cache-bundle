@@ -31,6 +31,8 @@ final class CancelInvalidationTest extends ConfigurableKernelTestCase
             ElementInvalidationEvent::class,
             static fn ($event) => $event->cancel = true,
         );
+
+        self::getContainer()->get('neusta_pimcore_http_cache.cache_scope')->enable();
     }
 
     /**
