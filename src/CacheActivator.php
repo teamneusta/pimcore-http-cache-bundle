@@ -20,6 +20,7 @@ final class CacheActivator extends CacheScope
     {
         trigger_deprecation('neusta/pimcore-http-cache-bundle', '0.7', '"%s" is deprecated, use "%s" instead.', self::class, CacheScope::class);
 
+        $this->reset();
         $this->enable();
     }
 
