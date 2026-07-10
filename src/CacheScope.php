@@ -10,21 +10,21 @@ use Symfony\Contracts\Service\ResetInterface;
  */
 class CacheScope implements ResetInterface
 {
-    private bool $active = false;
+    private bool $enabled = false;
     private bool $disabled = false;
 
     /**
-     * Activates the tag collection.
+     * Enables cache-related behavior until the scope is reset.
      *
-     * Has no effect if {@see disable()] was already called.
+     * Has no effect if {@see disable()} was already called.
      */
     public function enable(): void
     {
-        $this->active = true;
+        $this->enabled = true;
     }
 
     /**
-     * Permanently disables the tag collection for the current request.
+     * Disables cache-related behavior until the scope is reset.
      *
      * Survives {@see enable()} calls.
      */
@@ -33,14 +33,17 @@ class CacheScope implements ResetInterface
         $this->disabled = true;
     }
 
-    public function isActive(): bool
+    /**
+     * Whether cache-related behavior is currently enabled.
+     */
+    public function isEnabled(): bool
     {
-        return $this->active && !$this->disabled;
+        return $this->enabled && !$this->disabled;
     }
 
     public function reset(): void
     {
-        $this->active = false;
+        $this->enabled = false;
         $this->disabled = false;
     }
 }

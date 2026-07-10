@@ -4,7 +4,7 @@ This bundle is configured via the `neusta_pimcore_http_cache` key in your `confi
 
 ```yaml
 neusta_pimcore_http_cache:
-    # When to start collecting cache tags: "controller" (default) or "request"
+    # When to enable the cache scope for collecting cache tags: "controller" (default) or "request"
     # See doc/8-cache-scope.md for details
     scope: controller
 

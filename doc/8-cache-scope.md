@@ -1,7 +1,7 @@
 ## Cache Scope
 
-The cache scope controls whether and from which point in the request lifecycle cache tags are collected.
-Tags are only collected while the scope is **active**. If the scope is inactive, all tagging and invalidation is skipped.
+The cache scope controls whether and from which point in the request lifecycle cache-related behavior is enabled.
+Tags are only collected while the scope is **enabled**. If the scope is disabled, all tagging and invalidation is skipped.
 
 ### Automatic activation
 
@@ -41,11 +41,15 @@ final class MyService
 
     public function doSomething(): void
     {
-        if ($this->cacheScope->isActive()) {
-            // cache tags are currently being collected
+        if ($this->cacheScope->isEnabled()) {
+            // cache-related behavior is currently enabled
         }
+
+        $this->cacheScope->disable();
+        // cache-related behavior is disabled from now on
     }
 }
 ```
 
-To **disable** cache tag collection for the current request (e.g. in tests), see [Disabling caching behavior](9-disable-caching-behavior.md).
+To disable cache-related behavior for the current request or command, see
+[Disabling caching behavior](9-disable-caching-behavior.md).
