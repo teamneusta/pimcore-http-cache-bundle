@@ -4,18 +4,18 @@ namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Cache\ResponseTagger;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
-use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\OnlyWhenEnabledResponseTagger;
+use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\OnlyWhenCollectingResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\CacheScope;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 
-final class OnlyWhenEnabledResponseTaggerTest extends TestCase
+final class OnlyWhenCollectingResponseTaggerTest extends TestCase
 {
     use ProphecyTrait;
 
-    private OnlyWhenEnabledResponseTagger $subject;
+    private OnlyWhenCollectingResponseTagger $subject;
 
     /** @var ObjectProphecy<ResponseTagger> */
     private ObjectProphecy $decorated;
@@ -27,7 +27,7 @@ final class OnlyWhenEnabledResponseTaggerTest extends TestCase
     {
         $this->decorated = $this->prophesize(ResponseTagger::class);
         $this->cacheScope = $this->prophesize(CacheScope::class);
-        $this->subject = new OnlyWhenEnabledResponseTagger(
+        $this->subject = new OnlyWhenCollectingResponseTagger(
             $this->decorated->reveal(),
             $this->cacheScope->reveal(),
         );
@@ -36,11 +36,11 @@ final class OnlyWhenEnabledResponseTaggerTest extends TestCase
     /**
      * @test
      */
-    public function it_should_invalidate_tags_when_caching_is_active(): void
+    public function it_should_invalidate_tags_when_scope_is_collecting(): void
     {
         $tags = CacheTags::fromStrings(['tag1', 'tag2']);
 
-        $this->cacheScope->isEnabled()->willReturn(true);
+        $this->cacheScope->isCollecting()->willReturn(true);
 
         $this->subject->tag($tags);
 
@@ -50,11 +50,11 @@ final class OnlyWhenEnabledResponseTaggerTest extends TestCase
     /**
      * @test
      */
-    public function it_should_not_invalidate_tags_when_caching_is_not_active(): void
+    public function it_should_not_invalidate_tags_when_scope_is_not_collecting(): void
     {
         $tags = CacheTags::fromStrings(['tag1', 'tag2']);
 
-        $this->cacheScope->isEnabled()->willReturn(false);
+        $this->cacheScope->isCollecting()->willReturn(false);
 
         $this->subject->tag($tags);
 

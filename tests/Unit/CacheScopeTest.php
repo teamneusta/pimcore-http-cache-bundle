@@ -15,6 +15,7 @@ final class CacheScopeTest extends TestCase
         $cacheScope = new CacheScope();
 
         self::assertFalse($cacheScope->isEnabled());
+        self::assertFalse($cacheScope->isCollecting());
     }
 
     /**
@@ -27,6 +28,7 @@ final class CacheScopeTest extends TestCase
         $cacheScope->enable();
 
         self::assertTrue($cacheScope->isEnabled());
+        self::assertTrue($cacheScope->isCollecting());
     }
 
     /**
@@ -40,6 +42,7 @@ final class CacheScopeTest extends TestCase
         $cacheScope->disable();
 
         self::assertFalse($cacheScope->isEnabled());
+        self::assertFalse($cacheScope->isCollecting());
     }
 
     /**
@@ -53,12 +56,157 @@ final class CacheScopeTest extends TestCase
         $cacheScope->enable();
 
         self::assertFalse($cacheScope->isEnabled());
+        self::assertFalse($cacheScope->isCollecting());
     }
 
     /**
      * @test
      */
-    public function reset_deactivates_the_scope(): void
+    public function withoutCollecting_keeps_scope_enabled_but_stops_collection(): void
+    {
+        $cacheScope = new CacheScope();
+        $cacheScope->enable();
+
+        $cacheScope->withoutCollecting(static function (CacheScope $scope): void {
+            self::assertTrue($scope->isEnabled());
+            self::assertFalse($scope->isCollecting());
+        });
+
+        self::assertTrue($cacheScope->isEnabled());
+        self::assertTrue($cacheScope->isCollecting());
+    }
+
+    /**
+     * @test
+     */
+    public function withoutCollecting_returns_the_closure_result(): void
+    {
+        $cacheScope = new CacheScope();
+
+        $result = $cacheScope->withoutCollecting(static fn () => 'result');
+
+        self::assertSame('result', $result);
+    }
+
+    /**
+     * @test
+     */
+    public function nested_withoutCollecting_keeps_scope_disabled_until_outer_scope_finishes(): void
+    {
+        $cacheScope = new CacheScope();
+        $cacheScope->enable();
+
+        $cacheScope->withoutCollecting(static function (CacheScope $scope): void {
+            self::assertTrue($scope->isEnabled());
+            self::assertFalse($scope->isCollecting());
+
+            $scope->withoutCollecting(static function (CacheScope $scope): void {
+                self::assertTrue($scope->isEnabled());
+                self::assertFalse($scope->isCollecting());
+            });
+
+            self::assertTrue($scope->isEnabled());
+            self::assertFalse($scope->isCollecting());
+        });
+
+        self::assertTrue($cacheScope->isEnabled());
+        self::assertTrue($cacheScope->isCollecting());
+    }
+
+    /**
+     * @test
+     */
+    public function withCollecting_temporarily_enables_the_scope(): void
+    {
+        $cacheScope = new CacheScope();
+
+        self::assertFalse($cacheScope->isEnabled());
+        self::assertFalse($cacheScope->isCollecting());
+
+        $cacheScope->withCollecting(static function (CacheScope $scope): void {
+            self::assertTrue($scope->isEnabled());
+            self::assertTrue($scope->isCollecting());
+        });
+
+        self::assertFalse($cacheScope->isEnabled());
+        self::assertFalse($cacheScope->isCollecting());
+    }
+
+    /**
+     * @test
+     */
+    public function withCollecting_returns_the_closure_result(): void
+    {
+        $cacheScope = new CacheScope();
+
+        $result = $cacheScope->withCollecting(static fn () => 'result');
+
+        self::assertSame('result', $result);
+    }
+
+    /**
+     * @test
+     */
+    public function withCollecting_respects_disable(): void
+    {
+        $cacheScope = new CacheScope();
+        $cacheScope->disable();
+
+        $cacheScope->withCollecting(static function (CacheScope $scope): void {
+            self::assertFalse($scope->isEnabled());
+            self::assertFalse($scope->isCollecting());
+        });
+
+        self::assertFalse($cacheScope->isEnabled());
+        self::assertFalse($cacheScope->isCollecting());
+    }
+
+    /**
+     * @test
+     */
+    public function withCollecting_temporarily_resumes_collection_inside_withoutCollecting(): void
+    {
+        $cacheScope = new CacheScope();
+        $cacheScope->enable();
+
+        $cacheScope->withoutCollecting(static function (CacheScope $scope): void {
+            self::assertTrue($scope->isEnabled());
+            self::assertFalse($scope->isCollecting());
+
+            $scope->withCollecting(static function (CacheScope $scope): void {
+                self::assertTrue($scope->isEnabled());
+                self::assertTrue($scope->isCollecting());
+            });
+
+            self::assertTrue($scope->isEnabled());
+            self::assertFalse($scope->isCollecting());
+        });
+
+        self::assertTrue($cacheScope->isEnabled());
+        self::assertTrue($cacheScope->isCollecting());
+    }
+
+    /**
+     * @test
+     */
+    public function withCollecting_restores_previous_state_after_closure(): void
+    {
+        $cacheScope = new CacheScope();
+        $cacheScope->enable();
+
+        $cacheScope->withCollecting(static function (CacheScope $scope): void {
+            self::assertTrue($scope->isEnabled());
+            self::assertTrue($scope->isCollecting());
+        });
+
+        self::assertTrue($cacheScope->isEnabled());
+        self::assertTrue($cacheScope->isCollecting());
+    }
+
+    /**
+     * @test
+     */
+    public function reset_disables_the_scope(): void
     {
         $cacheScope = new CacheScope();
         $cacheScope->enable();
@@ -66,6 +214,7 @@ final class CacheScopeTest extends TestCase
         $cacheScope->reset();
 
         self::assertFalse($cacheScope->isEnabled());
+        self::assertFalse($cacheScope->isCollecting());
     }
 
     /**
@@ -80,6 +229,7 @@ final class CacheScopeTest extends TestCase
         $cacheScope->enable();
 
         self::assertTrue($cacheScope->isEnabled());
+        self::assertTrue($cacheScope->isCollecting());
     }
 
     /**
