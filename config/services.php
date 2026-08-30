@@ -38,9 +38,9 @@ return static function (ContainerConfigurator $configurator) {
         ->alias(CacheScope::class, 'neusta_pimcore_http_cache.cache_scope');
 
     $services->alias('neusta_pimcore_http_cache.cache_activator', 'neusta_pimcore_http_cache.cache_scope')
-        ->deprecate('teamneusta/pimcore-http-cache-bundle', '0.7', 'The "%alias_id%" alias is deprecated, use "neusta_pimcore_http_cache.cache_scope" instead.')
+        ->deprecate('teamneusta/pimcore-http-cache-bundle', '0.8', 'The "%alias_id%" alias is deprecated, use "neusta_pimcore_http_cache.cache_scope" instead.')
         ->alias(CacheActivator::class, 'neusta_pimcore_http_cache.cache_activator')
-        ->deprecate('teamneusta/pimcore-http-cache-bundle', '0.7', 'The "%alias_id%" alias is deprecated, use "' . CacheScope::class . '" instead.');
+        ->deprecate('teamneusta/pimcore-http-cache-bundle', '0.8', 'The "%alias_id%" alias is deprecated, use "' . CacheScope::class . '" instead.');
 
     $services->set('neusta_pimcore_http_cache.cache_scope.console_listener', ConsoleCacheScopeListener::class)
         ->arg('$cacheScope', service('neusta_pimcore_http_cache.cache_scope'))
