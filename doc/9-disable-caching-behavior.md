@@ -7,7 +7,7 @@ To achieve this, you can use `CacheScope::disable()` to disable tagging and inva
 for the current request or command.
 
 > [!IMPORTANT]
-> Once disabled, the cache scope cannot be re-enabled by calling `startCollecting()` or `withCollecting()` during the same request or command.
+> Once disabled, the cache scope cannot be re-enabled by calling `enable()` or `withCollecting()`/`withInvalidating()` during the same request or command.
 > The disabled state is only cleared when the scope is reset.
 
 ### Example for disabling caching behavior in a specific test case

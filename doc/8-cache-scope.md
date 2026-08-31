@@ -55,16 +55,12 @@ final class MyService
 
     public function doSomething(): void
     {
-        if ($this->cacheScope->isEnabled()) {
-            // tagging is currently enabled
+        if ($this->cacheScope->isCollecting()) {
+            // tagging is currently active
         }
 
         if ($this->cacheScope->isInvalidating()) {
             // invalidation is currently active
-        }
-
-        if ($this->cacheScope->isCollecting()) {
-            // cache collection is currently enabled
         }
 
         $this->cacheScope->disable();
