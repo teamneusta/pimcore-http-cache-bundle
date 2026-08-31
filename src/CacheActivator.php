@@ -2,9 +2,17 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle;
 
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
+
 final class CacheActivator
 {
     private bool $isCachingActive = true;
+
+    public function __construct(
+        private readonly \Closure $responseTagger,
+    ) {
+    }
 
     public function isCachingActive(): bool
     {
@@ -19,5 +27,51 @@ final class CacheActivator
     public function deactivateCaching(): void
     {
         $this->isCachingActive = false;
+    }
+
+    /**
+     * @template T
+     *
+     * @param \Closure(): (T|\Generator<int, CacheTag|CacheTags, null, T>) $fn
+     *
+     * @return T
+     */
+    public function withoutAutomaticTagging(\Closure $fn): mixed
+    {
+        $previous = $this->isCachingActive;
+        $this->isCachingActive = false;
+
+        $tags = new CacheTags();
+
+        try {
+            $result = $fn();
+
+            if ($result instanceof \Generator) {
+                $index = 0;
+                foreach ($result as $key => $yielded) {
+                    ++$index;
+
+                    if (!$yielded instanceof CacheTag && !$yielded instanceof CacheTags) {
+                        throw new \LogicException(\sprintf(
+                            'Invalid yielded value at index %d (key: %s): Expected only "%s" or "%s", got "%s".',
+                            $index,
+                            \is_int($key) || \is_string($key) ? $key : get_debug_type($key),
+                            CacheTag::class,
+                            CacheTags::class,
+                            get_debug_type($yielded),
+                        ));
+                    }
+
+                    $tags = $tags->with($yielded);
+                }
+
+                $result = $result->getReturn();
+            }
+        } finally {
+            $this->isCachingActive = $previous;
+            ($this->responseTagger)()->tag($tags);
+        }
+
+        return $result;
     }
 }

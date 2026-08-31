@@ -24,11 +24,13 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use function Symfony\Component\DependencyInjection\Loader\Configurator\abstract_arg;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\service_closure;
 
 return static function (ContainerConfigurator $configurator) {
     $services = $configurator->services();
 
     $services->set('neusta_pimcore_http_cache.cache_activator', CacheActivator::class)
+        ->arg('$responseTagger', service_closure('neusta_pimcore_http_cache.response_tagger'))
         ->alias(CacheActivator::class, 'neusta_pimcore_http_cache.cache_activator');
 
     $services->set('neusta_pimcore_http_cache.cache_invalidator', CacheInvalidatorAdapter::class)
