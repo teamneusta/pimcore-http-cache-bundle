@@ -7,6 +7,7 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTag;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementInvalidationEvent;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
+use Neusta\Pimcore\HttpCacheBundle\Element\InvalidationType;
 use PHPUnit\Framework\TestCase;
 use Pimcore\Event\Model\AssetEvent;
 use Pimcore\Event\Model\DataObjectEvent;
@@ -113,7 +114,7 @@ final class InvalidateElementListenerTest extends TestCase
     public function onUpdate_does_not_invalidate_when_event_was_canceled(ElementEventInterface $event): void
     {
         $element = $event->getElement();
-        $invalidationEvent = ElementInvalidationEvent::fromElement($element);
+        $invalidationEvent = ElementInvalidationEvent::fromElement(InvalidationType::Update, $element);
         $invalidationEvent->cancel = true;
 
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
@@ -135,7 +136,7 @@ final class InvalidateElementListenerTest extends TestCase
         $element = $event->getElement();
         $additionalTag = CacheTag::fromString('tag1');
         $additionalTags = CacheTags::fromStrings(['tag2', 'tag3']);
-        $invalidationEvent = ElementInvalidationEvent::fromElement($element);
+        $invalidationEvent = ElementInvalidationEvent::fromElement(InvalidationType::Update, $element);
         $invalidationEvent->addTag($additionalTag);
         $invalidationEvent->addTags($additionalTags);
         $expected = CacheTags::fromElement($element)->with($additionalTag, $additionalTags);
@@ -185,7 +186,7 @@ final class InvalidateElementListenerTest extends TestCase
     public function onDelete_does_not_invalidate_when_event_was_canceled(ElementEventInterface $event): void
     {
         $element = $event->getElement();
-        $invalidationEvent = ElementInvalidationEvent::fromElement($element);
+        $invalidationEvent = ElementInvalidationEvent::fromElement(InvalidationType::Delete, $element);
         $invalidationEvent->cancel = true;
 
         $this->eventDispatcher->dispatch(Argument::type(ElementInvalidationEvent::class))
@@ -207,7 +208,7 @@ final class InvalidateElementListenerTest extends TestCase
         $element = $event->getElement();
         $additionalTag = CacheTag::fromString('tag1');
         $additionalTags = CacheTags::fromStrings(['tag2', 'tag3']);
-        $invalidationEvent = ElementInvalidationEvent::fromElement($element);
+        $invalidationEvent = ElementInvalidationEvent::fromElement(InvalidationType::Delete, $element);
         $invalidationEvent->addTag($additionalTag);
         $invalidationEvent->addTags($additionalTags);
         $expected = CacheTags::fromElement($element)->with($additionalTag, $additionalTags);
@@ -219,6 +220,34 @@ final class InvalidateElementListenerTest extends TestCase
 
         $this->cacheInvalidator->invalidate(Argument::which('toArray', $expected->toArray()))
             ->shouldHaveBeenCalledOnce();
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider elementProvider
+     */
+    public function onUpdate_should_dispatch_event_with_update_type(ElementEventInterface $event): void
+    {
+        $this->invalidateElementListener->onUpdate($event);
+
+        $this->eventDispatcher->dispatch(Argument::that(
+            static fn (ElementInvalidationEvent $e) => InvalidationType::Update === $e->type,
+        ))->shouldHaveBeenCalledOnce();
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider elementProvider
+     */
+    public function onDelete_should_dispatch_event_with_delete_type(ElementEventInterface $event): void
+    {
+        $this->invalidateElementListener->onDelete($event);
+
+        $this->eventDispatcher->dispatch(Argument::that(
+            static fn (ElementInvalidationEvent $e) => InvalidationType::Delete === $e->type,
+        ))->shouldHaveBeenCalledOnce();
     }
 
     public function elementProvider(): iterable
