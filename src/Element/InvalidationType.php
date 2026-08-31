@@ -2,7 +2,7 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Element;
 
-enum EventType
+enum InvalidationType
 {
     case Update;
     case Delete;

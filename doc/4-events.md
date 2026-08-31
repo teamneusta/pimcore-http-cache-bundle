@@ -11,25 +11,26 @@ This allows you to add additional tags, cancel the tagging/invalidation process,
 
 ### ElementInvalidationEvent: distinguishing update from delete
 
-`ElementInvalidationEvent` now exposes a `type` property of type `EventType`, which tells you whether the invalidation was triggered by a save or a delete:
+`ElementInvalidationEvent` exposes a `type` property of type `InvalidationType`, which tells you whether the invalidation was triggered by a save or a delete:
 
 ```php
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementInvalidationEvent;
-use Neusta\Pimcore\HttpCacheBundle\Element\EventType;
+use Neusta\Pimcore\HttpCacheBundle\Element\InvalidationType;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 #[AsEventListener]
 final class MyInvalidationListener
 {
     public function __invoke(ElementInvalidationEvent $event): void
     {
-        if (EventType::Delete === $event->type) {
+        if (InvalidationType::Delete === $event->type) {
             // React differently on delete vs update
         }
     }
 }
 ```
 
-| `EventType` | Triggered by |
+| `InvalidationType` | Triggered by |
 |---|---|
-| `EventType::Update` | Element saved (`POST_UPDATE`) |
-| `EventType::Delete` | Element deleted (`PRE_DELETE`) |
+| `InvalidationType::Update` | Element saved (`POST_UPDATE`) |
+| `InvalidationType::Delete` | Element deleted (`PRE_DELETE`) |

@@ -12,14 +12,14 @@ final class ElementInvalidationEvent extends Event
     public bool $cancel = false;
 
     private function __construct(
-        public readonly EventType $type,
+        public readonly InvalidationType $type,
         public readonly ElementInterface $element,
         public readonly ElementType $elementType,
         private CacheTags $cacheTags,
     ) {
     }
 
-    public static function fromElement(ElementInterface $element, EventType $type): self
+    public static function fromElement(InvalidationType $type, ElementInterface $element): self
     {
         return new self(
             $type,
