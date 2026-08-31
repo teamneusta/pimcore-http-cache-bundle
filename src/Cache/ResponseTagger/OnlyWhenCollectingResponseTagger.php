@@ -6,7 +6,7 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\CacheScope;
 
-final class OnlyWhenEnabledResponseTagger implements ResponseTagger
+final class OnlyWhenCollectingResponseTagger implements ResponseTagger
 {
     public function __construct(
         private readonly ResponseTagger $inner,
@@ -16,7 +16,7 @@ final class OnlyWhenEnabledResponseTagger implements ResponseTagger
 
     public function tag(CacheTags $tags): void
     {
-        if ($this->cacheScope->isEnabled()) {
+        if ($this->cacheScope->isCollecting()) {
             $this->inner->tag($tags);
         }
     }

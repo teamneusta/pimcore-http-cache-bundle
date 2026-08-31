@@ -60,4 +60,45 @@ final class OnlyWhenInvalidatingCacheInvalidatorTest extends TestCase
 
         $this->decorated->invalidate(Argument::any())->shouldNotHaveBeenCalled();
     }
+
+    /**
+     * @test
+     */
+    public function it_should_invalidate_tags_when_collection_is_paused(): void
+    {
+        $tags = CacheTags::fromStrings(['tag1', 'tag2']);
+        $cacheScope = new CacheScope();
+        $cacheScope->enable();
+
+        $subject = new OnlyWhenInvalidatingCacheInvalidator(
+            $this->decorated->reveal(),
+            $cacheScope,
+        );
+
+        $cacheScope->withoutCollecting(static function () use ($subject, $tags): void {
+            $subject->invalidate($tags);
+        });
+
+        $this->decorated->invalidate($tags)->shouldHaveBeenCalled();
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_not_invalidate_tags_when_invalidation_is_paused(): void
+    {
+        $tags = CacheTags::fromStrings(['tag1', 'tag2']);
+        $cacheScope = new CacheScope();
+
+        $subject = new OnlyWhenInvalidatingCacheInvalidator(
+            $this->decorated->reveal(),
+            $cacheScope,
+        );
+
+        $cacheScope->withoutInvalidating(static function () use ($subject, $tags): void {
+            $subject->invalidate($tags);
+        });
+
+        $this->decorated->invalidate(Argument::any())->shouldNotHaveBeenCalled();
+    }
 }
