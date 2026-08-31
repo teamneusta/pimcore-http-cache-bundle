@@ -11,9 +11,9 @@ final class CacheActivator extends CacheScope
 {
     public function isCachingActive(): bool
     {
-        trigger_deprecation('teamneusta/pimcore-http-cache-bundle', '0.8', '"%s()" is deprecated, use "%s::isEnabled()" instead.', __METHOD__, CacheScope::class);
+        trigger_deprecation('teamneusta/pimcore-http-cache-bundle', '0.8', '"%s()" is deprecated, use "%s::isInvalidating()" instead.', __METHOD__, CacheScope::class);
 
-        return $this->isEnabled();
+        return $this->isInvalidating();
     }
 
     public function activateCaching(): void

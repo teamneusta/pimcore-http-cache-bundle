@@ -3,6 +3,7 @@
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Tagging;
 
 use Neusta\Pimcore\HttpCacheBundle\CacheScope;
+use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestAssetFactory;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
@@ -13,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 #[ConfigureRoute(__DIR__ . '/../Fixtures/get_asset_route.php')]
 final class TagAssetTest extends ConfigurableWebTestcase
 {
+    use ArrangeCacheTest;
     use ResetDatabase;
 
     private KernelBrowser $client;
@@ -32,7 +34,7 @@ final class TagAssetTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_expected_tags_when_asset_is_loaded(): void
     {
-        TestAssetFactory::simpleAsset()->save();
+        self::arrange(static fn () => TestAssetFactory::simpleAsset()->save());
 
         $this->client->request('GET', '/get-asset?id=42');
 
@@ -54,7 +56,7 @@ final class TagAssetTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_assets_is_not_enabled(): void
     {
-        TestAssetFactory::simpleAsset()->save();
+        self::arrange(static fn () => TestAssetFactory::simpleAsset()->save());
 
         $this->client->request('GET', '/get-asset?id=42');
 
@@ -76,7 +78,7 @@ final class TagAssetTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_caching_is_deactivated(): void
     {
-        TestAssetFactory::simpleAsset()->save();
+        self::arrange(static fn () => TestAssetFactory::simpleAsset()->save());
         self::getContainer()->get(CacheScope::class)->disable();
 
         $this->client->request('GET', '/get-asset?id=42');
@@ -99,7 +101,7 @@ final class TagAssetTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_asset_is_of_type_folder(): void
     {
-        TestAssetFactory::simpleFolder()->save();
+        self::arrange(static fn () => TestAssetFactory::simpleFolder()->save());
 
         $this->client->request('GET', '/get-asset?id=23');
 
@@ -126,7 +128,7 @@ final class TagAssetTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_for_specified_asset_type(): void
     {
-        TestAssetFactory::simpleImage()->save();
+        self::arrange(static fn () => TestAssetFactory::simpleImage()->save());
 
         $this->client->request('GET', '/get-asset?id=17');
 

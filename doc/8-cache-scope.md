@@ -1,7 +1,16 @@
 ## Cache Scope
 
 The cache scope controls whether and from which point in the request lifecycle cache-related behavior is enabled.
-Tags are only collected while the scope is **enabled**. If the scope is disabled, all tagging and invalidation is skipped.
+
+Tagging and invalidation are gated independently:
+
+- **Tagging** only happens while the scope is **enabled**. Tagging only ever makes sense for a request whose response
+  can actually be cached, so the scope must be explicitly activated (see [Automatic activation](#automatic-activation)).
+- **Invalidation** is active by default — everywhere, including non-cacheable requests such as an admin-UI save or a
+  custom `POST` endpoint — and only stops once `disable()` has been called. Invalidation does not depend on the scope
+  being enabled.
+
+Calling `disable()` always stops both tagging and invalidation, regardless of the above.
 
 ### Automatic activation
 
@@ -10,6 +19,8 @@ The bundle activates the scope automatically in two contexts:
 - **HTTP requests**: The scope is activated for every cacheable request (`GET` or `HEAD`, non-admin context).
   When it is activated depends on the [`scope` configuration option](#scope-option).
 - **Console commands**: The scope is activated at the start of every console command.
+
+This only affects tagging; invalidation runs regardless of whether the current request or command activates the scope.
 
 ### Scope option
 
@@ -42,11 +53,15 @@ final class MyService
     public function doSomething(): void
     {
         if ($this->cacheScope->isEnabled()) {
-            // cache-related behavior is currently enabled
+            // tagging is currently enabled
+        }
+
+        if ($this->cacheScope->isInvalidating()) {
+            // invalidation is currently active
         }
 
         $this->cacheScope->disable();
-        // cache-related behavior is disabled from now on
+        // both tagging and invalidation are disabled from now on
     }
 }
 ```

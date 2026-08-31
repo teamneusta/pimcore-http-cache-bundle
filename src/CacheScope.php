@@ -41,6 +41,18 @@ class CacheScope implements ResetInterface
         return $this->enabled && !$this->disabled;
     }
 
+    /**
+     * Whether cache invalidation is currently active.
+     *
+     * Unlike {@see isEnabled()}, invalidation is active by default and only
+     * stops once {@see disable()} has been called; it does not require an
+     * explicit {@see enable()} call.
+     */
+    public function isInvalidating(): bool
+    {
+        return !$this->disabled;
+    }
+
     public function reset(): void
     {
         $this->enabled = false;

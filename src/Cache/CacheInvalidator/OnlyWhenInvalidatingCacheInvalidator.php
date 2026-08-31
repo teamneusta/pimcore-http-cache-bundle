@@ -6,7 +6,7 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
 use Neusta\Pimcore\HttpCacheBundle\CacheScope;
 
-final class OnlyWhenEnabledCacheInvalidator implements CacheInvalidator
+final class OnlyWhenInvalidatingCacheInvalidator implements CacheInvalidator
 {
     public function __construct(
         private readonly CacheInvalidator $inner,
@@ -16,7 +16,7 @@ final class OnlyWhenEnabledCacheInvalidator implements CacheInvalidator
 
     public function invalidate(CacheTags $tags): void
     {
-        if ($this->cacheScope->isEnabled()) {
+        if ($this->cacheScope->isInvalidating()) {
             $this->inner->invalidate($tags);
         }
     }

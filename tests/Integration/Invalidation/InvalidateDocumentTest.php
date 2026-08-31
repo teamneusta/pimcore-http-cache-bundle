@@ -3,6 +3,7 @@
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Invalidation;
 
 use FOS\HttpCacheBundle\CacheManager;
+use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestDocumentFactory;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
@@ -14,6 +15,7 @@ use Prophecy\Prophecy\ObjectProphecy;
 
 final class InvalidateDocumentTest extends ConfigurableKernelTestCase
 {
+    use ArrangeCacheTest;
     use ProphecyTrait;
     use ResetDatabase;
 
@@ -34,12 +36,12 @@ final class InvalidateDocumentTest extends ConfigurableKernelTestCase
         $this->cacheManager->invalidateTags(Argument::any())->willReturn($this->cacheManager->reveal());
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
 
-        $this->document = TestDocumentFactory::simplePage()->save();
-        $this->hardlink = TestDocumentFactory::simpleHardLink()->save();
-        $this->email = TestDocumentFactory::simpleEmail()->save();
-        $this->folder = TestDocumentFactory::simpleFolder()->save();
-
-        self::getContainer()->get('neusta_pimcore_http_cache.cache_scope')->enable();
+        self::arrange(function (): void {
+            $this->document = TestDocumentFactory::simplePage()->save();
+            $this->hardlink = TestDocumentFactory::simpleHardLink()->save();
+            $this->email = TestDocumentFactory::simpleEmail()->save();
+            $this->folder = TestDocumentFactory::simpleFolder()->save();
+        });
     }
 
     /**

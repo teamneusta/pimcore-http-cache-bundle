@@ -3,6 +3,7 @@
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Tagging;
 
 use Neusta\Pimcore\HttpCacheBundle\CacheScope;
+use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestObjectFactory;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
@@ -13,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 #[ConfigureRoute(__DIR__ . '/../Fixtures/get_object_route.php')]
 final class TagObjectTest extends ConfigurableWebTestcase
 {
+    use ArrangeCacheTest;
     use ResetDatabase;
 
     private KernelBrowser $client;
@@ -32,7 +34,7 @@ final class TagObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_expected_tags_when_object_is_loaded(): void
     {
-        TestObjectFactory::simpleObject()->save();
+        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
 
         $this->client->request('GET', '/get-object?id=42');
 
@@ -54,7 +56,7 @@ final class TagObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_objects_is_not_enabled(): void
     {
-        TestObjectFactory::simpleObject()->save();
+        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
 
         $this->client->request('GET', '/get-object?id=42');
 
@@ -76,7 +78,7 @@ final class TagObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_caching_is_deactivated(): void
     {
-        TestObjectFactory::simpleObject()->save();
+        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
         self::getContainer()->get(CacheScope::class)->disable();
 
         $this->client->request('GET', '/get-object?id=42');
@@ -104,7 +106,7 @@ final class TagObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_object_type_is_disabled(): void
     {
-        TestObjectFactory::simpleVariant()->save();
+        self::arrange(static fn () => TestObjectFactory::simpleVariant()->save());
 
         $this->client->request('GET', '/get-object?id=17');
 
@@ -131,7 +133,7 @@ final class TagObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_ist_tagged_when_object_type_is_enabled(): void
     {
-        TestObjectFactory::simpleVariant()->save();
+        self::arrange(static fn () => TestObjectFactory::simpleVariant()->save());
 
         $this->client->request('GET', '/get-object?id=17');
 
@@ -158,7 +160,7 @@ final class TagObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_object_class_is_disabled(): void
     {
-        TestObjectFactory::simpleObject()->save();
+        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
 
         $this->client->request('GET', '/get-object?id=42');
 
@@ -185,7 +187,7 @@ final class TagObjectTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_when_object_class_is_enabled(): void
     {
-        TestObjectFactory::simpleObject()->save();
+        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
 
         $this->client->request('GET', '/get-object?id=42');
 

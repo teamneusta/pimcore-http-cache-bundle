@@ -81,4 +81,50 @@ final class CacheScopeTest extends TestCase
 
         self::assertTrue($cacheScope->isEnabled());
     }
+
+    /**
+     * @test
+     */
+    public function it_is_invalidating_by_default(): void
+    {
+        $cacheScope = new CacheScope();
+
+        self::assertTrue($cacheScope->isInvalidating());
+    }
+
+    /**
+     * @test
+     */
+    public function it_is_invalidating_even_when_not_explicitly_enabled(): void
+    {
+        $cacheScope = new CacheScope();
+        $cacheScope->enable();
+
+        self::assertTrue($cacheScope->isInvalidating());
+    }
+
+    /**
+     * @test
+     */
+    public function disable_stops_invalidation(): void
+    {
+        $cacheScope = new CacheScope();
+
+        $cacheScope->disable();
+
+        self::assertFalse($cacheScope->isInvalidating());
+    }
+
+    /**
+     * @test
+     */
+    public function reset_clears_disabled_state_so_invalidation_resumes(): void
+    {
+        $cacheScope = new CacheScope();
+        $cacheScope->disable();
+
+        $cacheScope->reset();
+
+        self::assertTrue($cacheScope->isInvalidating());
+    }
 }

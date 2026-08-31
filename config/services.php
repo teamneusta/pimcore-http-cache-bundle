@@ -4,7 +4,7 @@ use FOS\HttpCacheBundle\CacheManager;
 use Neusta\Pimcore\HttpCacheBundle\Adapter\FOSHttpCache\CacheInvalidatorAdapter;
 use Neusta\Pimcore\HttpCacheBundle\Adapter\FOSHttpCache\ResponseTaggerAdapter;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator\OnlyWhenEnabledCacheInvalidator;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator\OnlyWhenInvalidatingCacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator\RemoveDisabledTagsCacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\Element\AssetCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\Element\DocumentCacheTagChecker;
@@ -62,7 +62,7 @@ return static function (ContainerConfigurator $configurator) {
         ->decorate('neusta_pimcore_http_cache.cache_invalidator', null, -99)
         ->args([service('.inner'), service('neusta_pimcore_http_cache.cache_tag_checker')]);
 
-    $services->set(null, OnlyWhenEnabledCacheInvalidator::class)
+    $services->set(null, OnlyWhenInvalidatingCacheInvalidator::class)
         ->decorate('neusta_pimcore_http_cache.cache_invalidator', null, -100)
         ->args([service('.inner'), service('neusta_pimcore_http_cache.cache_scope')]);
 

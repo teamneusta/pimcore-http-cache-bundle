@@ -3,6 +3,7 @@
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Tagging;
 
 use Neusta\Pimcore\HttpCacheBundle\CacheScope;
+use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestDocumentFactory;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
@@ -13,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 #[ConfigureRoute(__DIR__ . '/../Fixtures/get_document_route.php')]
 final class TagDocumentTest extends ConfigurableWebTestcase
 {
+    use ArrangeCacheTest;
     use ResetDatabase;
 
     private KernelBrowser $client;
@@ -32,7 +34,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_expected_tags_when_page_is_loaded(): void
     {
-        TestDocumentFactory::simplePage()->save();
+        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
 
         $this->client->request('GET', '/test_document_page');
 
@@ -54,7 +56,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_expected_tags_when_snippet_is_loaded(): void
     {
-        TestDocumentFactory::simpleSnippet()->save();
+        self::arrange(static fn () => TestDocumentFactory::simpleSnippet()->save());
 
         $this->client->request('GET', '/get-document?id=23');
 
@@ -76,7 +78,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_document_type_is_email(): void
     {
-        TestDocumentFactory::simpleEmail()->save();
+        self::arrange(static fn () => TestDocumentFactory::simpleEmail()->save());
 
         $this->client->request('GET', '/get-document?id=17');
 
@@ -98,7 +100,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_document_type_is_hard_link(): void
     {
-        TestDocumentFactory::simpleHardLink()->save();
+        self::arrange(static fn () => TestDocumentFactory::simpleHardLink()->save());
 
         $this->client->request('GET', '/get-document?id=33');
 
@@ -120,7 +122,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_document_type_is_folder(): void
     {
-        TestDocumentFactory::simpleFolder()->save();
+        self::arrange(static fn () => TestDocumentFactory::simpleFolder()->save());
 
         $this->client->request('GET', '/get-document?id=97');
 
@@ -142,7 +144,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_documents_is_not_enabled(): void
     {
-        TestDocumentFactory::simplePage()->save();
+        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
 
         $this->client->request('GET', '/test_document_page');
 
@@ -164,7 +166,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_caching_is_deactivated(): void
     {
-        TestDocumentFactory::simplePage()->save();
+        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
         self::getContainer()->get(CacheScope::class)->disable();
 
         $this->client->request('GET', '/test_document_page');
@@ -188,8 +190,8 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_the_document_parents_when_in_request_scope(): void
     {
-        $parent = TestDocumentFactory::simplePage()->save();
-        TestDocumentFactory::simpleSnippet()->setParent($parent)->save();
+        $parent = self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
+        self::arrange(static fn () => TestDocumentFactory::simpleSnippet()->setParent($parent)->save());
 
         $this->client->request('GET', '/test_document_page/test_document_snippet');
 
@@ -217,7 +219,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     ])]
     public function response_is_not_tagged_when_type_is_disabled(): void
     {
-        TestDocumentFactory::simplePage()->save();
+        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
 
         $this->client->request('GET', '/test_document_page');
 

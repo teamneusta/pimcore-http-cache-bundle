@@ -3,6 +3,7 @@
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Invalidation;
 
 use FOS\HttpCacheBundle\CacheManager;
+use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestAssetFactory;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
@@ -14,6 +15,7 @@ use Prophecy\Prophecy\ObjectProphecy;
 
 final class InvalidateAssetTest extends ConfigurableKernelTestCase
 {
+    use ArrangeCacheTest;
     use ProphecyTrait;
     use ResetDatabase;
 
@@ -32,11 +34,11 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
         $this->cacheManager->invalidateTags(Argument::any())->willReturn($this->cacheManager->reveal());
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
 
-        $this->asset = TestAssetFactory::simpleAsset()->save();
-        $this->folder = TestAssetFactory::simpleFolder()->save();
-        $this->image = TestAssetFactory::simpleImage()->save();
-
-        self::getContainer()->get('neusta_pimcore_http_cache.cache_scope')->enable();
+        self::arrange(function (): void {
+            $this->asset = TestAssetFactory::simpleAsset()->save();
+            $this->folder = TestAssetFactory::simpleFolder()->save();
+            $this->image = TestAssetFactory::simpleImage()->save();
+        });
     }
 
     /**
