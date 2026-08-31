@@ -8,3 +8,28 @@ You can listen to the following events:
 **ElementInvalidationEvent**: Triggered before a Pimcore element is invalidated; allows canceling the invalidation process or performing custom actions.
 
 This allows you to add additional tags, cancel the tagging/invalidation process, or implement custom logic.
+
+### ElementInvalidationEvent: distinguishing update from delete
+
+`ElementInvalidationEvent` now exposes a `type` property of type `EventType`, which tells you whether the invalidation was triggered by a save or a delete:
+
+```php
+use Neusta\Pimcore\HttpCacheBundle\Element\ElementInvalidationEvent;
+use Neusta\Pimcore\HttpCacheBundle\Element\EventType;
+
+#[AsEventListener]
+final class MyInvalidationListener
+{
+    public function __invoke(ElementInvalidationEvent $event): void
+    {
+        if (EventType::Delete === $event->type) {
+            // React differently on delete vs update
+        }
+    }
+}
+```
+
+| `EventType` | Triggered by |
+|---|---|
+| `EventType::Update` | Element saved (`POST_UPDATE`) |
+| `EventType::Delete` | Element deleted (`PRE_DELETE`) |
