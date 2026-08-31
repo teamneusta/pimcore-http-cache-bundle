@@ -30,8 +30,8 @@ final class MyAwesomeTest extends KernelTestCase
 }
 ```
 
-### Difference to temporarily pausing collection
+### Difference to temporarily pausing collection or invalidation
 
 `disable()` disables cache-related behavior for the whole request or command.
-If you only want to temporarily pause or resume tag collection for a specific block of code, use the cache scope methods
-described in [Cache Scope](8-cache-scope.md#temporarily-pausing-collection).
+If you only want to temporarily pause or resume tag collection or invalidation for a specific block of code, use the
+cache scope methods described in [Cache Scope](8-cache-scope.md#temporarily-pausing-collection) instead.

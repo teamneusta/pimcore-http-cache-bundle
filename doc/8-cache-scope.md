@@ -9,8 +9,9 @@ Tagging and invalidation are gated independently:
   whose response can actually be cached, so the scope must be explicitly activated (see
   [Automatic activation](#automatic-activation)).
 - **Invalidation** is active by default — everywhere, including non-cacheable requests such as an admin-UI save or a
-  custom `POST` endpoint — and only stops once `disable()` has been called. Invalidation does not depend on the scope
-  being enabled or on tag collection being paused.
+  custom `POST` endpoint — and only stops once `disable()` has been called, or while temporarily paused via
+  `withoutInvalidating()` (see [Temporarily pausing invalidation](#temporarily-pausing-invalidation)). Invalidation
+  does not depend on the scope being enabled or on tag collection being paused.
 
 Calling `disable()` always stops both tagging and invalidation, regardless of the above.
 
@@ -145,6 +146,86 @@ final class MyService
     }
     
     private function loadSomethingThatShouldBeTagged(): mixed
+    {
+        // ...
+    }
+}
+```
+
+### Temporarily pausing invalidation
+
+Use `withoutInvalidating()` to temporarily pause cache invalidation for a specific block of code, e.g. around a bulk
+import that saves many elements you don't want to trigger invalidation for.
+
+> [!NOTE]
+> `withoutInvalidating()` only pauses cache invalidation.
+> It does not disable response tagging.
+> Use `disable()` if you want to disable cache-related behavior entirely.
+
+```php
+use Neusta\Pimcore\HttpCacheBundle\CacheScope;
+
+final class MyService
+{
+    public function __construct(
+        private CacheScope $cacheScope,
+    ) {
+    }
+
+    public function doSomething(): mixed
+    {
+        return $this->cacheScope->withoutInvalidating(function (CacheScope $scope): mixed {
+            // cache invalidation does not happen here
+
+            return $this->importElements();
+        });
+    }
+
+    private function importElements(): mixed
+    {
+        // ...
+    }
+}
+```
+
+### Temporarily resuming invalidation
+
+Use `withInvalidating()` to temporarily enable invalidation within a callback.
+This can be useful inside `withoutInvalidating()` when only a smaller inner section should invalidate again.
+
+> [!NOTE]
+> `withInvalidating()` still respects `disable()`.
+> If the scope was disabled for the current request or command, `withInvalidating()` will not make invalidation active.
+
+```php
+use Neusta\Pimcore\HttpCacheBundle\CacheScope;
+
+final class MyService
+{
+    public function __construct(
+        private readonly CacheScope $cacheScope,
+    ) {
+    }
+
+    public function doSomething(): mixed
+    {
+        return $this->cacheScope->withoutInvalidating(function (CacheScope $scope): mixed {
+            // cache invalidation does not happen here
+
+            $result = $scope->withInvalidating(function (): mixed {
+                // cache invalidation happens here again,
+                // unless the scope was disabled for the request or command
+
+                return $this->saveElementThatShouldInvalidate();
+            });
+
+            // cache invalidation does not happen here again
+
+            return $result;
+        });
+    }
+
+    private function saveElementThatShouldInvalidate(): mixed
     {
         // ...
     }

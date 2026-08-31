@@ -13,6 +13,7 @@ class CacheScope implements ResetInterface
     private bool $enabled = false;
     private bool $disabled = false;
     private bool $paused = false;
+    private bool $invalidationPaused = false;
 
     /**
      * Enables cache-related behavior until the scope is reset.
@@ -50,11 +51,58 @@ class CacheScope implements ResetInterface
      *
      * Unlike {@see isEnabled()}, invalidation is active by default and only
      * stops once {@see disable()} has been called; it does not require an
-     * explicit {@see enable()} call.
+     * explicit {@see enable()} call. It may still be paused via {@see withoutInvalidating()}.
      */
     public function isInvalidating(): bool
     {
-        return !$this->disabled;
+        return !$this->disabled && !$this->invalidationPaused;
+    }
+
+    /**
+     * Executes the callable with cache invalidation temporarily paused.
+     *
+     * Useful for suppressing invalidation around code that saves elements you don't want
+     * to trigger cache invalidation, e.g. bulk imports.
+     *
+     * @template T
+     *
+     * @param (\Closure(self): T) $fn
+     *
+     * @return T
+     */
+    public function withoutInvalidating(\Closure $fn): mixed
+    {
+        $previousInvalidationPaused = $this->invalidationPaused;
+        $this->invalidationPaused = true;
+
+        try {
+            return $fn($this);
+        } finally {
+            $this->invalidationPaused = $previousInvalidationPaused;
+        }
+    }
+
+    /**
+     * Executes the callable with cache invalidation enabled.
+     *
+     * Temporarily resumes invalidation inside {@see withoutInvalidating()}, but still respects {@see disable()}.
+     *
+     * @template T
+     *
+     * @param (\Closure(self): T) $fn
+     *
+     * @return T
+     */
+    public function withInvalidating(\Closure $fn): mixed
+    {
+        $previousInvalidationPaused = $this->invalidationPaused;
+        $this->invalidationPaused = false;
+
+        try {
+            return $fn($this);
+        } finally {
+            $this->invalidationPaused = $previousInvalidationPaused;
+        }
     }
 
     /**
@@ -118,5 +166,6 @@ class CacheScope implements ResetInterface
         $this->enabled = false;
         $this->disabled = false;
         $this->paused = false;
+        $this->invalidationPaused = false;
     }
 }

@@ -277,4 +277,97 @@ final class CacheScopeTest extends TestCase
 
         self::assertTrue($cacheScope->isInvalidating());
     }
+
+    /**
+     * @test
+     */
+    public function withoutInvalidating_stops_invalidation(): void
+    {
+        $cacheScope = new CacheScope();
+
+        $cacheScope->withoutInvalidating(static function (CacheScope $scope): void {
+            self::assertFalse($scope->isInvalidating());
+        });
+
+        self::assertTrue($cacheScope->isInvalidating());
+    }
+
+    /**
+     * @test
+     */
+    public function withoutInvalidating_returns_the_closure_result(): void
+    {
+        $cacheScope = new CacheScope();
+
+        $result = $cacheScope->withoutInvalidating(static fn () => 'result');
+
+        self::assertSame('result', $result);
+    }
+
+    /**
+     * @test
+     */
+    public function nested_withoutInvalidating_keeps_invalidation_paused_until_outer_scope_finishes(): void
+    {
+        $cacheScope = new CacheScope();
+
+        $cacheScope->withoutInvalidating(static function (CacheScope $scope): void {
+            self::assertFalse($scope->isInvalidating());
+
+            $scope->withoutInvalidating(static function (CacheScope $scope): void {
+                self::assertFalse($scope->isInvalidating());
+            });
+
+            self::assertFalse($scope->isInvalidating());
+        });
+
+        self::assertTrue($cacheScope->isInvalidating());
+    }
+
+    /**
+     * @test
+     */
+    public function withInvalidating_returns_the_closure_result(): void
+    {
+        $cacheScope = new CacheScope();
+
+        $result = $cacheScope->withInvalidating(static fn () => 'result');
+
+        self::assertSame('result', $result);
+    }
+
+    /**
+     * @test
+     */
+    public function withInvalidating_respects_disable(): void
+    {
+        $cacheScope = new CacheScope();
+        $cacheScope->disable();
+
+        $cacheScope->withInvalidating(static function (CacheScope $scope): void {
+            self::assertFalse($scope->isInvalidating());
+        });
+
+        self::assertFalse($cacheScope->isInvalidating());
+    }
+
+    /**
+     * @test
+     */
+    public function withInvalidating_temporarily_resumes_invalidation_inside_withoutInvalidating(): void
+    {
+        $cacheScope = new CacheScope();
+
+        $cacheScope->withoutInvalidating(static function (CacheScope $scope): void {
+            self::assertFalse($scope->isInvalidating());
+
+            $scope->withInvalidating(static function (CacheScope $scope): void {
+                self::assertTrue($scope->isInvalidating());
+            });
+
+            self::assertFalse($scope->isInvalidating());
+        });
+
+        self::assertTrue($cacheScope->isInvalidating());
+    }
 }
