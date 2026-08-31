@@ -3,7 +3,6 @@
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Configuration;
 
 use Neusta\Pimcore\HttpCacheBundle\DataCollector;
-use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestDocumentFactory;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
 use Neusta\Pimcore\TestingFramework\Test\Attribute\ConfigureExtension;
@@ -19,7 +18,6 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 #[ConfigureRoute(__DIR__ . '/../Fixtures/get_document_route.php')]
 final class CollectConfigurationDataTest extends ConfigurableWebTestcase
 {
-    use ArrangeCacheTest;
     use ResetDatabase;
 
     private KernelBrowser $client;
@@ -40,7 +38,7 @@ final class CollectConfigurationDataTest extends ConfigurableWebTestcase
     ])]
     public function collects_configuration_data(): void
     {
-        self::arrange(static fn () => TestDocumentFactory::simplePage())->save();
+        TestDocumentFactory::simplePage()->save();
 
         $this->client->request('GET', '/test_document_page');
         $this->client->enableProfiler();
@@ -65,7 +63,7 @@ final class CollectConfigurationDataTest extends ConfigurableWebTestcase
     ])]
     public function does_not_collect_configuration_data_when_profiler_is_disabled(): void
     {
-        self::arrange(static fn () => TestDocumentFactory::simplePage())->save();
+        TestDocumentFactory::simplePage()->save();
 
         $this->client->request('GET', '/test_document_page');
         $this->client->enableProfiler();

@@ -42,8 +42,10 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_additional_tag_when_asset_is_loaded(): void
     {
-        self::arrange(static fn () => TestAssetFactory::simpleAsset()->save());
-        self::arrange(static fn () => TestAssetFactory::simpleImage()->save());
+        self::arrange(static function (): void {
+            TestAssetFactory::simpleAsset()->save();
+            TestAssetFactory::simpleImage()->save();
+        });
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
@@ -72,8 +74,10 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_additional_tag_when_document_is_loaded(): void
     {
-        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
-        self::arrange(static fn () => TestDocumentFactory::simpleSnippet()->save());
+        self::arrange(static function (): void {
+            TestDocumentFactory::simplePage()->save();
+            TestDocumentFactory::simpleSnippet()->save();
+        });
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,
@@ -82,7 +86,7 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
             ),
         );
 
-        $this->client->request('GET', '/test_document_page');
+        $this->client->request('GET', '/get-document?id=42');
 
         $response = $this->client->getResponse();
         self::assertSame('Document with key: test_document_page', $response->getContent());
@@ -102,8 +106,10 @@ final class TagAdditionalTagTest extends ConfigurableWebTestcase
     ])]
     public function response_is_tagged_with_additional_tag_when_object_is_loaded(): void
     {
-        self::arrange(static fn () => TestObjectFactory::simpleObject()->save());
-        self::arrange(static fn () => TestObjectFactory::simpleVariant()->save());
+        self::arrange(static function (): void {
+            TestObjectFactory::simpleObject()->save();
+            TestObjectFactory::simpleVariant()->save();
+        });
 
         self::getContainer()->get('event_dispatcher')->addListener(
             ElementTaggingEvent::class,

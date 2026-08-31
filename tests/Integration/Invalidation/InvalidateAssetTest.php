@@ -34,9 +34,11 @@ final class InvalidateAssetTest extends ConfigurableKernelTestCase
         $this->cacheManager->invalidateTags(Argument::any())->willReturn($this->cacheManager->reveal());
         self::getContainer()->set('fos_http_cache.cache_manager', $this->cacheManager->reveal());
 
-        $this->asset = self::arrange(static fn () => TestAssetFactory::simpleAsset()->save());
-        $this->folder = self::arrange(static fn () => TestAssetFactory::simpleFolder()->save());
-        $this->image = self::arrange(static fn () => TestAssetFactory::simpleImage()->save());
+        self::arrange(function (): void {
+            $this->asset = TestAssetFactory::simpleAsset()->save();
+            $this->folder = TestAssetFactory::simpleFolder()->save();
+            $this->image = TestAssetFactory::simpleImage()->save();
+        });
     }
 
     /**

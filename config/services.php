@@ -1,10 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 use FOS\HttpCacheBundle\CacheManager;
 use Neusta\Pimcore\HttpCacheBundle\Adapter\FOSHttpCache\CacheInvalidatorAdapter;
 use Neusta\Pimcore\HttpCacheBundle\Adapter\FOSHttpCache\ResponseTaggerAdapter;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator\OnlyWhenActiveCacheInvalidator;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator\OnlyWhenInvalidatingCacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator\RemoveDisabledTagsCacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\Element\AssetCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\Element\DocumentCacheTagChecker;
@@ -12,14 +12,19 @@ use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\Element\ObjectCacheTagC
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\ElementCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTagChecker\StaticCacheTagChecker;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger;
-use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\TraceableResponseTagger;
-use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\OnlyWhenActiveResponseTagger;
+use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\OnlyWhenEnabledResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\RemoveDisabledTagsResponseTagger;
+use Neusta\Pimcore\HttpCacheBundle\Cache\ResponseTagger\TraceableResponseTagger;
 use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
+use Neusta\Pimcore\HttpCacheBundle\CacheScope;
 use Neusta\Pimcore\HttpCacheBundle\DataCollector;
 use Neusta\Pimcore\HttpCacheBundle\Element\ElementRepository;
 use Neusta\Pimcore\HttpCacheBundle\Element\InvalidateElementListener;
 use Neusta\Pimcore\HttpCacheBundle\Element\TagElementListener;
+use Neusta\Pimcore\HttpCacheBundle\EventListener\ConsoleCacheScopeListener;
+use Neusta\Pimcore\HttpCacheBundle\EventListener\HttpCacheScopeListener;
+use Pimcore\Http\Request\Resolver\DocumentResolver;
+use Pimcore\Http\Request\Resolver\PimcoreContextResolver;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\abstract_arg;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
@@ -28,8 +33,27 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 return static function (ContainerConfigurator $configurator) {
     $services = $configurator->services();
 
-    $services->set('neusta_pimcore_http_cache.cache_activator', CacheActivator::class)
-        ->alias(CacheActivator::class, 'neusta_pimcore_http_cache.cache_activator');
+    $services->set('neusta_pimcore_http_cache.cache_scope', CacheActivator::class)
+        ->tag('kernel.reset', ['method' => 'reset'])
+        ->alias(CacheScope::class, 'neusta_pimcore_http_cache.cache_scope');
+
+    $services->alias('neusta_pimcore_http_cache.cache_activator', 'neusta_pimcore_http_cache.cache_scope')
+        ->deprecate('teamneusta/pimcore-http-cache-bundle', '0.8', 'The "%alias_id%" alias is deprecated, use "neusta_pimcore_http_cache.cache_scope" instead.')
+        ->alias(CacheActivator::class, 'neusta_pimcore_http_cache.cache_activator')
+        ->deprecate('teamneusta/pimcore-http-cache-bundle', '0.8', 'The "%alias_id%" alias is deprecated, use "' . CacheScope::class . '" instead.');
+
+    $services->set('neusta_pimcore_http_cache.cache_scope.console_listener', ConsoleCacheScopeListener::class)
+        ->arg('$cacheScope', service('neusta_pimcore_http_cache.cache_scope'))
+        ->autoconfigure();
+
+    $services->set('neusta_pimcore_http_cache.cache_scope.http_listener', HttpCacheScopeListener::class)
+        ->arg('$cacheScope', service('neusta_pimcore_http_cache.cache_scope'))
+        ->arg('$responseTagger', service('neusta_pimcore_http_cache.response_tagger'))
+        ->arg('$contextResolver', service(PimcoreContextResolver::class))
+        ->arg('$documentResolver', service(DocumentResolver::class))
+        ->arg('$collectFromRequest', abstract_arg('Set in the extension'))
+        ->arg('$tagFallbackDocument', abstract_arg('Set in the extension'))
+        ->autoconfigure();
 
     $services->set('neusta_pimcore_http_cache.cache_invalidator', CacheInvalidatorAdapter::class)
         ->arg('$invalidator', service(CacheManager::class));
@@ -38,9 +62,9 @@ return static function (ContainerConfigurator $configurator) {
         ->decorate('neusta_pimcore_http_cache.cache_invalidator', null, -99)
         ->args([service('.inner'), service('neusta_pimcore_http_cache.cache_tag_checker')]);
 
-    $services->set(null, OnlyWhenActiveCacheInvalidator::class)
+    $services->set(null, OnlyWhenInvalidatingCacheInvalidator::class)
         ->decorate('neusta_pimcore_http_cache.cache_invalidator', null, -100)
-        ->args([service('.inner'), service('neusta_pimcore_http_cache.cache_activator')]);
+        ->args([service('.inner'), service('neusta_pimcore_http_cache.cache_scope')]);
 
     $services->alias(CacheInvalidator::class, 'neusta_pimcore_http_cache.cache_invalidator');
 
@@ -51,9 +75,9 @@ return static function (ContainerConfigurator $configurator) {
         ->decorate('neusta_pimcore_http_cache.response_tagger', null, -99)
         ->args([service('.inner'), service('neusta_pimcore_http_cache.cache_tag_checker')]);
 
-    $services->set(null, OnlyWhenActiveResponseTagger::class)
+    $services->set(null, OnlyWhenEnabledResponseTagger::class)
         ->decorate('neusta_pimcore_http_cache.response_tagger', null, -100)
-        ->args([service('.inner'), service('neusta_pimcore_http_cache.cache_activator')]);
+        ->args([service('.inner'), service('neusta_pimcore_http_cache.cache_scope')]);
 
     $services->set('.neusta_pimcore_http_cache.response_tagger.traceable', TraceableResponseTagger::class)
         ->decorate('neusta_pimcore_http_cache.response_tagger', null, 100)

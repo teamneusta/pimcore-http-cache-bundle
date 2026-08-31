@@ -24,6 +24,10 @@ final class NeustaPimcoreHttpCacheExtension extends ConfigurableExtension
         $container->getDefinition('neusta_pimcore_http_cache.cache_tag_checker')
             ->setArgument('$types', $mergedConfig['cache_types']);
 
+        $container->getDefinition('neusta_pimcore_http_cache.cache_scope.http_listener')
+            ->setArgument('$collectFromRequest', 'request' === ($mergedConfig['scope'] ?? 'controller'))
+            ->setArgument('$tagFallbackDocument', $mergedConfig['tag_fallback_document'] ?? false);
+
         $this->registerElements($container, $mergedConfig['elements']);
     }
 

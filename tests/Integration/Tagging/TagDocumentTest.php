@@ -2,7 +2,7 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Tagging;
 
-use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
+use Neusta\Pimcore\HttpCacheBundle\CacheScope;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\ArrangeCacheTest;
 use Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers\TestDocumentFactory;
 use Neusta\Pimcore\TestingFramework\Database\ResetDatabase;
@@ -87,7 +87,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertStringNotContainsString('d17', $response->headers->get('X-Cache-Tags'));
+        self::assertStringNotContainsString('d17', $response->headers->get('X-Cache-Tags', ''));
     }
 
     /**
@@ -109,7 +109,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertStringNotContainsString('d33', $response->headers->get('X-Cache-Tags'));
+        self::assertStringNotContainsString('d33', $response->headers->get('X-Cache-Tags', ''));
     }
 
     /**
@@ -131,7 +131,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertStringNotContainsString('d97', $response->headers->get('X-Cache-Tags'));
+        self::assertStringNotContainsString('d97', $response->headers->get('X-Cache-Tags', ''));
     }
 
     /**
@@ -167,7 +167,7 @@ final class TagDocumentTest extends ConfigurableWebTestcase
     public function response_is_not_tagged_when_caching_is_deactivated(): void
     {
         self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
-        self::getContainer()->get(CacheActivator::class)->deactivateCaching();
+        self::getContainer()->get(CacheScope::class)->disable();
 
         $this->client->request('GET', '/test_document_page');
 
@@ -183,22 +183,26 @@ final class TagDocumentTest extends ConfigurableWebTestcase
      * @test
      */
     #[ConfigureExtension('neusta_pimcore_http_cache', [
+        'scope' => 'request',
         'elements' => [
             'documents' => true,
         ],
     ])]
-    public function response_is_tagged_with_root_document_tag_when_loaded(): void
+    public function response_is_tagged_with_the_document_parents_when_in_request_scope(): void
     {
-        self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
+        $parent = self::arrange(static fn () => TestDocumentFactory::simplePage()->save());
+        self::arrange(static fn () => TestDocumentFactory::simpleSnippet()->setParent($parent)->save());
 
-        $this->client->request('GET', '/test_document_page');
+        $this->client->request('GET', '/test_document_page/test_document_snippet');
 
         $response = $this->client->getResponse();
-        self::assertSame('Document with key: test_document_page', $response->getContent());
+        self::assertSame('Document with key: test_document_snippet', $response->getContent());
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($response->headers->getCacheControlDirective('public'));
         self::assertSame('3600', $response->headers->getCacheControlDirective('s-maxage'));
-        self::assertStringContainsString('d1', $response->headers->get('X-Cache-Tags'));
+        self::assertStringContainsString('d23', $response->headers->get('X-Cache-Tags')); // The document itself
+        self::assertStringContainsString('d42', $response->headers->get('X-Cache-Tags')); // The document's parent
+        self::assertStringContainsString('d1', $response->headers->get('X-Cache-Tags'));  // The document's parent's parent
     }
 
     /**

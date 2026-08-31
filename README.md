@@ -39,9 +39,11 @@ You will find the detailed documentation in the following links:
 * [Additional tags](doc/5-additional-tags.md)
 * [Cancel caching behavior](doc/6-cancel-caching-behavior.md)
 * [Custom cache types](doc/7-custom-cache-types.md)
-* [Disabling caching behavior](doc/8-disable-caching-behavior.md)
-* [Error handling](doc/9-error-handling.md)
-* [Contribution](doc/10-contribution.md)
+* [Cache scope](doc/8-cache-scope.md)
+* [Disabling caching behavior](doc/9-disable-caching-behavior.md)
+* [Error handling](doc/10-error-handling.md)
+* [Profiling](doc/11-profiling.md)
+* [Contribution](doc/12-contribution.md)
 
 We hope you will enjoy this bundle as much as we do. If you have any questions or suggestions, please feel free to open an issue on GitHub.
 This repository is maintained by [neusta](https://www.team-neusta.de/).

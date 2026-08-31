@@ -2,12 +2,12 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Integration\Helpers;
 
-use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
+use Neusta\Pimcore\HttpCacheBundle\CacheScope;
 
 trait ArrangeCacheTest
 {
     /**
-     * Lets you prepare the prerequisites for your test without interfering with the caching.
+     * Lets you prepare the prerequisites for your test without triggering tagging or invalidation.
      *
      * @template T
      *
@@ -17,15 +17,14 @@ trait ArrangeCacheTest
      */
     public static function arrange(\Closure $arrange): mixed
     {
-        $cacheActivator = self::getContainer()->get('test.cache_activator');
-        \assert($cacheActivator instanceof CacheActivator);
+        $cacheScope = self::getContainer()->get('neusta_pimcore_http_cache.cache_scope');
+        \assert($cacheScope instanceof CacheScope);
 
-        $wasActive = $cacheActivator->isCachingActive();
-        $cacheActivator->deactivateCaching();
+        $cacheScope->disable();
         try {
             return $arrange();
         } finally {
-            $wasActive && $cacheActivator->activateCaching();
+            $cacheScope->reset();
         }
     }
 }

@@ -2,22 +2,37 @@
 
 namespace Neusta\Pimcore\HttpCacheBundle;
 
-final class CacheActivator
+/**
+ * @deprecated since version 0.8, use {@see CacheScope} instead.
+ *
+ * @phpstan-ignore class.extendsFinalByPhpDoc
+ */
+final class CacheActivator extends CacheScope
 {
-    private bool $isCachingActive = true;
-
     public function isCachingActive(): bool
     {
-        return $this->isCachingActive;
+        trigger_deprecation('teamneusta/pimcore-http-cache-bundle', '0.8', '"%s()" is deprecated, use "%s::isInvalidating()" instead.', __METHOD__, CacheScope::class);
+
+        return $this->isInvalidating();
     }
 
+    /**
+     * @deprecated Calls {@see CacheScope::reset()} before enabling, which also clears a prior
+     * {@see CacheScope::disable()} call. Do not mix this deprecated API with the {@see CacheScope} API on
+     * the same instance; the two do not compose safely.
+     */
     public function activateCaching(): void
     {
-        $this->isCachingActive = true;
+        trigger_deprecation('teamneusta/pimcore-http-cache-bundle', '0.8', '"%s()" is deprecated, use "%s::enable()" instead.', __METHOD__, CacheScope::class);
+
+        $this->reset();
+        $this->enable();
     }
 
     public function deactivateCaching(): void
     {
-        $this->isCachingActive = false;
+        trigger_deprecation('teamneusta/pimcore-http-cache-bundle', '0.8', '"%s()" is deprecated, use "%s::disable()" instead.', __METHOD__, CacheScope::class);
+
+        $this->disable();
     }
 }

@@ -3,44 +3,44 @@
 namespace Neusta\Pimcore\HttpCacheBundle\Tests\Unit\Cache\CacheInvalidator;
 
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator;
-use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator\OnlyWhenActiveCacheInvalidator;
+use Neusta\Pimcore\HttpCacheBundle\Cache\CacheInvalidator\OnlyWhenInvalidatingCacheInvalidator;
 use Neusta\Pimcore\HttpCacheBundle\Cache\CacheTags;
-use Neusta\Pimcore\HttpCacheBundle\CacheActivator;
+use Neusta\Pimcore\HttpCacheBundle\CacheScope;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 
-final class OnlyWhenActiveCacheInvalidatorTest extends TestCase
+final class OnlyWhenInvalidatingCacheInvalidatorTest extends TestCase
 {
     use ProphecyTrait;
 
-    private OnlyWhenActiveCacheInvalidator $subject;
+    private OnlyWhenInvalidatingCacheInvalidator $subject;
 
     /** @var ObjectProphecy<CacheInvalidator> */
     private ObjectProphecy $decorated;
 
-    /** @var ObjectProphecy<CacheActivator> */
-    private ObjectProphecy $cacheActivator;
+    /** @var ObjectProphecy<CacheScope> */
+    private ObjectProphecy $cacheScope;
 
     protected function setUp(): void
     {
         $this->decorated = $this->prophesize(CacheInvalidator::class);
-        $this->cacheActivator = $this->prophesize(CacheActivator::class);
-        $this->subject = new OnlyWhenActiveCacheInvalidator(
+        $this->cacheScope = $this->prophesize(CacheScope::class);
+        $this->subject = new OnlyWhenInvalidatingCacheInvalidator(
             $this->decorated->reveal(),
-            $this->cacheActivator->reveal(),
+            $this->cacheScope->reveal(),
         );
     }
 
     /**
      * @test
      */
-    public function it_should_invalidate_tags_when_caching_is_active(): void
+    public function it_should_invalidate_tags_when_invalidation_is_active(): void
     {
         $tags = CacheTags::fromStrings(['tag1', 'tag2']);
 
-        $this->cacheActivator->isCachingActive()->willReturn(true);
+        $this->cacheScope->isInvalidating()->willReturn(true);
 
         $this->subject->invalidate($tags);
 
@@ -50,11 +50,11 @@ final class OnlyWhenActiveCacheInvalidatorTest extends TestCase
     /**
      * @test
      */
-    public function it_should_not_invalidate_tags_when_caching_is_not_active(): void
+    public function it_should_not_invalidate_tags_when_invalidation_is_not_active(): void
     {
         $tags = CacheTags::fromStrings(['tag1', 'tag2']);
 
-        $this->cacheActivator->isCachingActive()->willReturn(false);
+        $this->cacheScope->isInvalidating()->willReturn(false);
 
         $this->subject->invalidate($tags);
 

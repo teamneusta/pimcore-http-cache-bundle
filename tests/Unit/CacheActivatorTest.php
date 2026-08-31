@@ -17,8 +17,18 @@ final class CacheActivatorTest extends TestCase
     /**
      * @test
      */
-    public function it_must_be_activated_by_default(): void
+    public function it_is_caching_active_by_default(): void
     {
+        self::assertTrue($this->cacheActivator->isCachingActive());
+    }
+
+    /**
+     * @test
+     */
+    public function it_must_be_activated_after_activateCaching_is_called(): void
+    {
+        $this->cacheActivator->activateCaching();
+
         self::assertTrue($this->cacheActivator->isCachingActive());
     }
 
@@ -27,6 +37,7 @@ final class CacheActivatorTest extends TestCase
      */
     public function it_must_be_deactivated_after_deactivateCaching_is_called(): void
     {
+        $this->cacheActivator->activateCaching();
         $this->cacheActivator->deactivateCaching();
 
         self::assertFalse($this->cacheActivator->isCachingActive());
@@ -35,9 +46,12 @@ final class CacheActivatorTest extends TestCase
     /**
      * @test
      */
-    public function it_must_be_activated_after_activateCaching_is_called(): void
+    public function it_can_be_deactivated_and_activated_again(): void
     {
         $this->cacheActivator->deactivateCaching();
+
+        self::assertFalse($this->cacheActivator->isCachingActive());
+
         $this->cacheActivator->activateCaching();
 
         self::assertTrue($this->cacheActivator->isCachingActive());
